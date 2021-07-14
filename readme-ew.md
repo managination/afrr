@@ -3,7 +3,7 @@
 ![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
 
 
-Liquity is a decentralized protocol that allows Ether holders to obtain maximum liquidity against
+Liquity is a decentralized protocol that allows EWT holders to obtain maximum liquidity against
 their collateral without paying interest. After locking up EWT as collateral in a smart contract and
 creating an individual position called a "trove", the user can get instant liquidity by minting EEUR,
 a EUR-pegged stablecoin. Each trove is required to be collateralized at a minimum of 110%. Any
@@ -59,7 +59,7 @@ Visit [liquity.org](https://www.liquity.org) to find out more and join the discu
   - [Testnet PriceFeed and PriceFeed tests](#testnet-pricefeed-and-pricefeed-tests)
   - [PriceFeed limitations and known issues](#pricefeed-limitations-and-known-issues)
   - [Keeping a sorted list of Troves ordered by ICR](#keeping-a-sorted-list-of-troves-ordered-by-icr)
-  - [Flow of Ether in Liquity](#flow-of-ether-in-liquity)
+  - [Flow of EWT in Liquity](#flow-of-EWT-in-liquity)
   - [Flow of EEUR tokens in Liquity](#flow-of-eeur-tokens-in-liquity)
   - [Flow of AFRR Tokens in Liquity](#flow-of-afrr-tokens-in-liquity)
 - [Expected User Behaviors](#expected-user-behaviors)
@@ -91,10 +91,10 @@ Visit [liquity.org](https://www.liquity.org) to find out more and join the discu
   - [Gas compensation helper functions](#gas-compensation-helper-functions)
 - [The Stability Pool](#the-stability-pool)
   - [Mixed liquidations: offset and redistribution](#mixed-liquidations-offset-and-redistribution)
-  - [Stability Pool deposit losses and EWT gains - implementation](#stability-pool-deposit-losses-and-eth-gains---implementation)
+  - [Stability Pool deposit losses and EWT gains - implementation](#stability-pool-deposit-losses-and-EWT-gains---implementation)
   - [Stability Pool example](#stability-pool-example)
   - [Stability Pool implementation](#stability-pool-implementation)
-  - [How deposits and EWT gains are tracked](#how-deposits-and-eth-gains-are-tracked)
+  - [How deposits and EWT gains are tracked](#how-deposits-and-EWT-gains-are-tracked)
 - [AFRR Issuance to Stability Providers](#afrr-issuance-to-stability-providers)
   - [AFRR Issuance schedule](#afrr-issuance-schedule)
   - [AFRR Issuance implementation](#afrr-issuance-implementation)
@@ -139,17 +139,17 @@ Visit [liquity.org](https://www.liquity.org) to find out more and join the discu
 
 ## Liquity Overview
 
-Liquity is a collateralized debt platform. Users can lock up Ether, and issue stablecoin tokens (EEUR) to their own EWT address, and subsequently transfer those tokens to any other EWT address. The individual collateralized debt positions are called Troves.
+Liquity is a collateralized debt platform. Users can lock up EWT, and issue stablecoin tokens (EEUR) to their own EWT address, and subsequently transfer those tokens to any other EWT address. The individual collateralized debt positions are called Troves.
 
 The stablecoin tokens are economically geared towards maintaining value of 1 EEUR = \$1 EUR, due to the following properties:
 
-1. The system is designed to always be over-collateralized - the dollar value of the locked Ether exceeds the dollar value of the issued stablecoins
+1. The system is designed to always be over-collateralized - the dollar value of the locked EWT exceeds the dollar value of the issued stablecoins
 
 2. The stablecoins are fully redeemable - users can always swap $x worth of EEUR for $x worth of EWT (minus fees), directly with the system.
 
 3. The system algorithmically controls the generation of EEUR through a variable issuance fee.
 
-After opening a Trove with some Ether, users may issue ("borrow") tokens such that the collateralization ratio of their Trove remains above 110%. A user with $1000 worth of EWT in a Trove can issue up to 909.09 EEUR.
+After opening a Trove with some EWT, users may issue ("borrow") tokens such that the collateralization ratio of their Trove remains above 110%. A user with $1000 worth of EWT in a Trove can issue up to 909.09 EEUR.
 
 The tokens are freely exchangeable - anyone with an EWT address can send or receive EEUR tokens, whether they have an open Trove or not. The tokens are burned upon repayment of a Trove's debt.
 
@@ -165,9 +165,9 @@ Liquity utilizes a two-step liquidation mechanism in the following order of prio
 
 Liquity primarily uses the EEUR tokens in its Stability Pool to absorb the under-collateralized debt, i.e. to repay the liquidated borrower's liability.
 
-Any user may deposit EEUR tokens to the Stability Pool. This allows them to earn the collateral from the liquidated Trove. When a liquidation occurs, the liquidated debt is cancelled with the same amount of EEUR in the Pool (which is burned as a result), and the liquidated Ether is proportionally distributed to depositors.
+Any user may deposit EEUR tokens to the Stability Pool. This allows them to earn the collateral from the liquidated Trove. When a liquidation occurs, the liquidated debt is cancelled with the same amount of EEUR in the Pool (which is burned as a result), and the liquidated EWT is proportionally distributed to depositors.
 
-Stability Pool depositors can expect to earn net gains from liquidations, as in most cases, the value of the liquidated Ether will be greater than the value of the cancelled debt (since a liquidated Trove will likely have an ICR just slightly below 110%).
+Stability Pool depositors can expect to earn net gains from liquidations, as in most cases, the value of the liquidated EWT will be greater than the value of the cancelled debt (since a liquidated Trove will likely have an ICR just slightly below 110%).
 
 If the liquidated debt is higher than the amount of EEUR in the Stability Pool, the system tries to cancel as much debt as possible with the tokens in the Stability Pool, and then redistributes the remaining liquidated collateral and debt across all active Troves.
 
@@ -204,7 +204,7 @@ Here is the liquidation logic for a single Trove in Normal Mode and Recovery Mod
 
 ## Gains From Liquidations
 
-Stability Pool depositors gain Ether over time, as liquidated debt is cancelled with their deposit. When they withdraw all or part of their deposited tokens, or top up their deposit, the system sends them their accumulated EWT gains.
+Stability Pool depositors gain EWT over time, as liquidated debt is cancelled with their deposit. When they withdraw all or part of their deposited tokens, or top up their deposit, the system sends them their accumulated EWT gains.
 
 Similarly, a Trove's accumulated gains from liquidations are automatically applied to the Trove when the owner performs any operation - e.g. adding/withdrawing collateral, or issuing/repaying EEUR.
 
@@ -359,13 +359,13 @@ All application logic and data is contained in these contracts - there is no nee
 
 The system has no admin key or human governance. Once deployed, it is fully automated, decentralized and no user holds any special privileges in or control over the system.
 
-The three main contracts - `BorrowerOperations.sol`, `TroveManager.sol` and `StabilityPool.sol` - hold the user-facing public functions, and contain most of the internal system logic. Together they control Trove state updates and movements of Ether and EEUR tokens around the system.
+The three main contracts - `BorrowerOperations.sol`, `TroveManager.sol` and `StabilityPool.sol` - hold the user-facing public functions, and contain most of the internal system logic. TogEWT they control Trove state updates and movements of EWT and EEUR tokens around the system.
 
 ### Core Smart Contracts
 
-`BorrowerOperations.sol` - contains the basic operations by which borrowers interact with their Trove: Trove creation, EWT top-up / withdrawal, stablecoin issuance and repayment. It also sends issuance fees to the `AFRRStaking` contract. BorrowerOperations functions call in to TroveManager, telling it to update Trove state, where necessary. BorrowerOperations functions also call in to the various Pools, telling them to move Ether/Tokens between Pools or between Pool <> user, where necessary.
+`BorrowerOperations.sol` - contains the basic operations by which borrowers interact with their Trove: Trove creation, EWT top-up / withdrawal, stablecoin issuance and repayment. It also sends issuance fees to the `AFRRStaking` contract. BorrowerOperations functions call in to TroveManager, telling it to update Trove state, where necessary. BorrowerOperations functions also call in to the various Pools, telling them to move EWT/Tokens between Pools or between Pool <> user, where necessary.
 
-`TroveManager.sol` - contains functionality for liquidations and redemptions. It sends redemption fees to the `AFRRStaking` contract. Also contains the state of each Trove - i.e. a record of the Trove’s collateral and debt. TroveManager does not hold value (i.e. Ether / other tokens). TroveManager functions call in to the various Pools to tell them to move Ether/tokens between Pools, where necessary.
+`TroveManager.sol` - contains functionality for liquidations and redemptions. It sends redemption fees to the `AFRRStaking` contract. Also contains the state of each Trove - i.e. a record of the Trove’s collateral and debt. TroveManager does not hold value (i.e. EWT / other tokens). TroveManager functions call in to the various Pools to tell them to move EWT/tokens between Pools, where necessary.
 
 `LiquityBase.sol` - Both TroveManager and BorrowerOperations inherit from the parent contract LiquityBase, which contains global constants and some common functions.
 
@@ -381,11 +381,11 @@ The three main contracts - `BorrowerOperations.sol`, `TroveManager.sol` and `Sta
 
 ### Data and Value Silo Contracts
 
-Along with `StabilityPool.sol`, these contracts hold Ether and/or tokens for their respective parts of the system, and contain minimal logic:
+Along with `StabilityPool.sol`, these contracts hold EWT and/or tokens for their respective parts of the system, and contain minimal logic:
 
-`ActivePool.sol` - holds the total Ether balance and records the total stablecoin debt of the active Troves.
+`ActivePool.sol` - holds the total EWT balance and records the total stablecoin debt of the active Troves.
 
-`DefaultPool.sol` - holds the total Ether balance and records the total stablecoin debt of the liquidated Troves that are pending redistribution to active Troves. If a Trove has pending ether/debt “rewards” in the DefaultPool, then they will be applied to the Trove when it next undergoes a borrower operation, a redemption, or a liquidation.
+`DefaultPool.sol` - holds the total EWT balance and records the total stablecoin debt of the liquidated Troves that are pending redistribution to active Troves. If a Trove has pending EWT/debt “rewards” in the DefaultPool, then they will be applied to the Trove when it next undergoes a borrower operation, a redemption, or a liquidation.
 
 `CollSurplusPool.sol` - holds the EWT surplus from Troves that have been fully redeemed from as well as from Troves with an ICR > MCR that were liquidated in Recovery Mode. Sends the surplus back to the owning borrower, when told to do so by `BorrowerOperations.sol`.
 
@@ -475,17 +475,17 @@ Nodes also remain sorted as the EWT:EUR price varies, since price fluctuations c
 
 Thus, nodes need only be re-inserted to the sorted list upon a Trove operation - when the owner adds or removes collateral or debt to their position.
 
-### Flow of Ether in Liquity
+### Flow of EWT in Liquity
 
-![Flow of Ether](images/EWT_flows.svg)
+![Flow of EWT](images/EWT_flows.svg)
 
-Ether in the system lives in three Pools: the ActivePool, the DefaultPool and the StabilityPool. When an operation is made, Ether is transferred in one of three ways:
+EWT in the system lives in three Pools: the ActivePool, the DefaultPool and the StabilityPool. When an operation is made, EWT is transferred in one of three ways:
 
 - From a user to a Pool
 - From a Pool to a user
 - From one Pool to another Pool
 
-Ether is recorded on an _individual_ level, but stored in _aggregate_ in a Pool. An active Trove with collateral and debt has a struct in the TroveManager that stores its ether collateral value in a uint, but its actual Ether is in the balance of the ActivePool contract.
+EWT is recorded on an _individual_ level, but stored in _aggregate_ in a Pool. An active Trove with collateral and debt has a struct in the TroveManager that stores its EWT collateral value in a uint, but its actual EWT is in the balance of the ActivePool contract.
 
 Likewise, the StabilityPool holds the total accumulated EWT gains from liquidations for all depositors.
 
@@ -610,7 +610,7 @@ Generally, borrowers call functions that trigger Trove operations on their own T
 
 Anyone may call the public liquidation functions, and attempt to liquidate one or several Troves.
 
-EEUR token holders may also redeem their tokens, and swap an amount of tokens 1-for-1 in value (minus fees) with Ether.
+EEUR token holders may also redeem their tokens, and swap an amount of tokens 1-for-1 in value (minus fees) with EWT.
 
 AFRR token holders may stake their AFRR, to earn a share of the system fee revenue, in EWT and EEUR.
 
@@ -715,9 +715,9 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 ### Borrower (Trove) Operations - `BorrowerOperations.sol`
 
-`openTrove(uint _maxFeePercentage, uint _EEURAmount, address _upperHint, address _lowerHint)`: payable function that creates a Trove for the caller with the requested debt, and the Ether received as collateral. Successful execution is conditional mainly on the resulting collateralization ratio which must exceed the minimum (110% in Normal Mode, 150% in Recovery Mode). In addition to the requested debt, extra debt is issued to pay the issuance fee, and cover the gas compensation. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when a redemption transaction is processed first, driving up the issuance fee. 
+`openTrove(uint _maxFeePercentage, uint _EEURAmount, address _upperHint, address _lowerHint)`: payable function that creates a Trove for the caller with the requested debt, and the EWT received as collateral. Successful execution is conditional mainly on the resulting collateralization ratio which must exceed the minimum (110% in Normal Mode, 150% in Recovery Mode). In addition to the requested debt, extra debt is issued to pay the issuance fee, and cover the gas compensation. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when a redemption transaction is processed first, driving up the issuance fee. 
 
-`addColl(address _upperHint, address _lowerHint))`: payable function that adds the received Ether to the caller's active Trove.
+`addColl(address _upperHint, address _lowerHint))`: payable function that adds the received EWT to the caller's active Trove.
 
 `withdrawColl(uint _amount, address _upperHint, address _lowerHint)`: withdraws `_amount` of collateral from the caller’s Trove. Executes only if the user has an active Trove, the withdrawal would not pull the user’s Trove below the minimum collateralization ratio, and the resulting total collateralization ratio of the system is above 150%. 
 
@@ -739,7 +739,7 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 `batchLiquidateTroves(address[] calldata _troveArray)`: callable by anyone, accepts a custom list of Troves addresses as an argument. Steps through the provided list and attempts to liquidate every Trove, until it reaches the end or it runs out of gas. A Trove is liquidated only if it meets the conditions for liquidation. For a batch of 10 Troves, the gas costs per liquidated Trove are roughly between 75K-83K, for a batch of 50 Troves between 54K-69K.
 
-`redeemCollateral(uint _EEURAmount, address _firstRedemptionHint, address _upperPartialRedemptionHint, address _lowerPartialRedemptionHint, uint _partialRedemptionHintNICR, uint _maxIterations, uint _maxFeePercentage)`: redeems `_EEURamount` of stablecoins for ether from the system. Decreases the caller’s EEUR balance, and sends them the corresponding amount of EWT. Executes successfully if the caller has sufficient EEUR to redeem. The number of Troves redeemed from is capped by `_maxIterations`. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when another redemption transaction is processed first, driving up the redemption fee.
+`redeemCollateral(uint _EEURAmount, address _firstRedemptionHint, address _upperPartialRedemptionHint, address _lowerPartialRedemptionHint, uint _partialRedemptionHintNICR, uint _maxIterations, uint _maxFeePercentage)`: redeems `_EEURamount` of stablecoins for EWT from the system. Decreases the caller’s EEUR balance, and sends them the corresponding amount of EWT. Executes successfully if the caller has sufficient EEUR to redeem. The number of Troves redeemed from is capped by `_maxIterations`. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when another redemption transaction is processed first, driving up the redemption fee.
 
 `getCurrentICR(address _user, uint _price)`: computes the user’s individual collateralization ratio (ICR) based on their total collateral and total EEUR debt. Returns 2^256 -1 if they have 0 debt.
 
@@ -821,7 +821,7 @@ https://eips.ethereum.org/EIPS/eip-2612
 
 ## Supplying Hints to Trove operations
 
-Troves in Liquity are recorded in a sorted doubly linked list, sorted by their NICR, from high to low. NICR stands for the nominal collateral ratio that is simply the amount of collateral (in EWT) multiplied by 100e18 and divided by the amount of debt (in EEUR), without taking the EWT:EUR price into account. Given that all Troves are equally affected by Ether price changes, they do not need to be sorted by their real ICR.
+Troves in Liquity are recorded in a sorted doubly linked list, sorted by their NICR, from high to low. NICR stands for the nominal collateral ratio that is simply the amount of collateral (in EWT) multiplied by 100e18 and divided by the amount of debt (in EEUR), without taking the EWT:EUR price into account. Given that all Troves are equally affected by EWT price changes, they do not need to be sorted by their real ICR.
 
 All Trove operations that change the collateralization ratio need to either insert or reinsert the Trove to the `SortedTroves` list. To reduce the computational complexity (and gas cost) of the insertion to the linked list, two ‘hints’ may be provided.
 
@@ -1280,7 +1280,7 @@ For two Troves A and B with collateral `A.coll > B.coll`, Trove A should earn a 
 
 In Liquity it is important that all active Troves remain ordered by their ICR. We have proven that redistribution of the liquidated debt and collateral proportional to active Troves’ collateral, preserves the ordering of active Troves by ICR, as liquidations occur over time.  Please see the [proofs section](https://github.com/liquity/dev/tree/main/packages/contracts/mathProofs).
 
-However, when it comes to implementation, Ethereum gas costs make it too expensive to loop over all Troves and write new data to storage for each one. When a Trove receives redistribution rewards, the system does not update the Trove's collateral and debt properties - instead, the Trove’s rewards remain "pending" until the borrower's next operation.
+However, when it comes to implementation, gas costs (on Ethereum) make it too expensive to loop over all Troves and write new data to storage for each one. When a Trove receives redistribution rewards, the system does not update the Trove's collateral and debt properties - instead, the Trove’s rewards remain "pending" until the borrower's next operation.
 
 These “pending rewards” can not be accounted for in future reward calculations in a scalable way.
 
