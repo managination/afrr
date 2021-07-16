@@ -77,6 +77,15 @@ const oracleAddresses = {
   kovan: {
     chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
     tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
+  },
+  // RJA Edit:
+  ewVolta: {
+    chainlink: "0x0000000000000000000000000000000000000000",
+    tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
+  },
+  ewMainnet: {
+    chainlink: "0x0000000000000000000000000000000000000000",
+    tellor: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB" // Playground
   }
 };
 
@@ -88,7 +97,10 @@ const wethAddresses = {
   ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C"
+  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+  // RJA Edit:
+  ewVolta: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c", // WEWT
+  ewMainnet: "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd" // WEWT
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -98,6 +110,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: accounts.slice(0, numAccounts),
 
+      // TODO: RJA
       gas: 12e6, // tx gas limit
       blockGasLimit: 12e6,
 
@@ -116,7 +129,10 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("rinkeby"),
     ...infuraNetwork("goerli"),
     ...infuraNetwork("kovan"),
-    ...infuraNetwork("mainnet")
+    ...infuraNetwork("mainnet"),
+    // RJA Edit:
+    ...infuraNetwork("ewVolta"),
+    ...infuraNetwork("ewMainnet")
   },
 
   paths: {

@@ -8,7 +8,7 @@ const accounts = require("./hardhatAccountsList2k.js");
 const accountsList = accounts.accountsList
 
 const fs = require('fs')
-const getSecret = (secretKey, defaultValue='') => {
+const getSecret = (secretKey, defaultValue = '') => {
     const SECRETS_FILE = "./secrets.js"
     let secret = defaultValue
     if (fs.existsSync(SECRETS_FILE)) {
@@ -26,14 +26,23 @@ const alchemyUrlRinkeby = () => {
     return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
 }
 
+// RJA Edit:
+// TODO
+const alchemyUrlEwMainnet = () => {
+    return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
+}
+
+const alchemyUrlEwVolta = () => {
+    return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
+}
+
 module.exports = {
     paths: {
         // contracts: "./contracts",
         // artifacts: "./artifacts"
     },
     solidity: {
-        compilers: [
-            {
+        compilers: [{
                 version: "0.4.23",
                 settings: {
                     optimizer: {
@@ -65,8 +74,8 @@ module.exports = {
     networks: {
         hardhat: {
             accounts: accountsList,
-            gas: 10000000,  // tx gas limit
-            blockGasLimit: 12500000, 
+            gas: 10000000, // tx gas limit
+            blockGasLimit: 12500000,
             gasPrice: 20000000000,
         },
         mainnet: {
@@ -79,8 +88,21 @@ module.exports = {
         },
         rinkeby: {
             url: alchemyUrlRinkeby(),
-            gas: 10000000,  // tx gas limit
+            gas: 10000000, // tx gas limit
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+        },
+        // RJA Edit:
+        // TODO:
+        ewVolta: {
+            url: alchemyUrlEwVolta(),
+            gas: 10000000, // tx gas limit
+            accounts: [getSecret('EWVOLTA_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+        },
+        // TODO:
+        ewMainnet: {
+            url: alchemyUrlEwMainnet(),
+            gas: 10000000, // tx gas limit
+            accounts: [getSecret('EWMAINNET_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
         },
     },
     etherscan: {
