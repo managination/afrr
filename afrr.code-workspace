@@ -1,0 +1,14 @@
+{
+    "folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "packages/lib-ethers"
+		}
+	],
+    "settings": {
+        "solidity.compileUsingRemoteVersion": "v0.6.11+commit.5ef660b1",
+        "typescript.tsdk": "node_modules/typescript/lib"
+    }
+}

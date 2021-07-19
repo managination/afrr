@@ -26,16 +26,6 @@ const alchemyUrlRinkeby = () => {
     return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
 }
 
-// RJA Edit:
-// TODO
-const alchemyUrlEwMainnet = () => {
-    return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
-}
-
-const alchemyUrlEwVolta = () => {
-    return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
-}
-
 module.exports = {
     paths: {
         // contracts: "./contracts",
@@ -92,17 +82,15 @@ module.exports = {
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
         },
         // RJA Edit:
-        // TODO:
         ewVolta: {
-            url: alchemyUrlEwVolta(),
+            url: "https://volta-rpc.energyweb.org/",
             gas: 10000000, // tx gas limit
-            accounts: [getSecret('EWVOLTA_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+            accounts: [getSecret('EWVOLTA_DEPLOYER_PRIVATEKEY', '')]
         },
-        // TODO:
         ewMainnet: {
-            url: alchemyUrlEwMainnet(),
+            url: "https://rpc.energyweb.org/",
             gas: 10000000, // tx gas limit
-            accounts: [getSecret('EWMAINNET_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+            accounts: [getSecret('EWMAINNET_DEPLOYER_PRIVATEKEY', '')]
         },
     },
     etherscan: {

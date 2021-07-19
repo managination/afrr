@@ -1,13 +1,13 @@
 const { mainnetDeploy } = require('./mainnetDeployment.js')
-const configParams = require("./deploymentParams.mainnet.js")
+const configParams = require("./deploymentParams.ewMainnet.js")
 
 async function main() {
-  await mainnetDeploy(configParams)
+    await mainnetDeploy(configParams)
 }
 
 main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch(error => {
+        console.error(error);
+        process.exit(1);
+    });

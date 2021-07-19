@@ -62,6 +62,14 @@ const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => (
   }
 });
 
+// RJA Edit
+const ewNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
+  [name]: {
+    url: `https://${name === "ewVolta" ? "volta-" : ""}rpc.energyweb.org/`,
+    accounts: [deployerAccount]
+  }
+});
+
 // https://docs.chain.link/docs/ethereum-addresses
 // https://docs.tellor.io/tellor/integration/reference-page
 
@@ -80,11 +88,11 @@ const oracleAddresses = {
   },
   // RJA Edit:
   ewVolta: {
-    chainlink: "0x0000000000000000000000000000000000000000",
+    chainlink: "0x0000000000000000000000000000000000000000", // not supported on EWC
     tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
   },
   ewMainnet: {
-    chainlink: "0x0000000000000000000000000000000000000000",
+    chainlink: "0x0000000000000000000000000000000000000000", // not supported on EWC
     tellor: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB" // Playground
   }
 };
@@ -110,7 +118,6 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: accounts.slice(0, numAccounts),
 
-      // TODO: RJA
       gas: 12e6, // tx gas limit
       blockGasLimit: 12e6,
 
@@ -131,8 +138,8 @@ const config: HardhatUserConfig = {
     ...infuraNetwork("kovan"),
     ...infuraNetwork("mainnet"),
     // RJA Edit:
-    ...infuraNetwork("ewVolta"),
-    ...infuraNetwork("ewMainnet")
+    ...ewNetwork("ewVolta"),
+    ...ewNetwork("ewMainnet")
   },
 
   paths: {

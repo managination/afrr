@@ -1453,22 +1453,22 @@ yarn test
 E.g.:
 
 ```
-yarn deploy --network ropsten
+yarn deploy --network ewVolta
 ```
 
 Supported networks are currently: ropsten, kovan, rinkeby, goerli, ewVolta and ewMainnet. The above command will deploy into the default channel (the one that's used by the public dev-frontend). To deploy into the internal channel instead:
 
 ```
-yarn deploy --network ropsten --channel internal
+yarn deploy --network ewVolta --channel internal
 ```
 
 You can optionally specify an explicit gas price too:
 
 ```
-yarn deploy --network ropsten --gas-price 20
+yarn deploy --network ewVolta --gas-price 20
 ```
 
-After a successful deployment, the addresses of the newly deployed contracts will be written to a version-controlled JSON file under `packages/lib/deployments/default`.
+After a successful deployment, the addresses of the newly deployed contracts will be written to a version-controlled JSON file under `packages/lib-ethers/deployments/default`.
 
 To publish a new deployment, you must execute the above command for all of the following combinations:
 
