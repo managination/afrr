@@ -1,5 +1,21 @@
 # Liquity: Decentralized Borrowing Protocol
 
+## EWC NOTES SECTION (IN PROGRESS, DO NOT USE REPO YET)
+
+1. download repo
+2. run: yarn
+3. change deployment private keys/addresses as desired (various files, see lib-ethers package)
+4. deploy tellor contract/playground, get it's address and use it also in config settings
+5. deploy contracts, e.g.
+   yarn deploy --network ewVolta
+   yarn deploy --network ewMainnet
+6. To open in VS Code: from root code afrr.code-workspace (so debug tasks load)
+7. TODO: Validate deployed contracts somehow
+8. TODO: turn off Unipool creation/staking/etc which aren't used?
+9. TODO: turn off LINK (may require contract changes)
+
+## END EWC NOTES SECTION
+
 ![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
 
 Liquity is a decentralized protocol that allows EWT holders to obtain maximum liquidity against
@@ -1211,17 +1227,17 @@ When a liquidation occurs:
 
 - A AFRR reward event occurs, and `G` is updated
 
-## AFRR issuance to liquity providers
+## AFRR issuance to liquidity providers
 
 On deployment a new Uniswap pool will be created for the pair EEUR/EWT and a Staking rewards contract will be deployed. The contract is based on [Unipool by Synthetix](https://github.com/Synthetixio/Unipool/blob/master/contracts/Unipool.sol). More information about their liquidity rewards program can be found in the [original SIP 31](https://sips.synthetix.io/sips/sip-31) and in [their blog](https://blog.synthetix.io/new-uniswap-seth-lp-reward-system/).
 
 Essentially the way it works is:
 
-- Liqudity providers add funds to the Uniswap pool, and get UNIv2 tokens in exchange
-- Liqudity providers stake those UNIv2 tokens into Unipool rewards contract
-- Liqudity providers accrue rewards, proportional to the amount of staked tokens and staking time
-- Liqudity providers can claim their rewards when they want
-- Liqudity providers can unstake UNIv2 tokens to exit the program (i.e., stop earning rewards) when they want
+- Liquidity providers add funds to the Uniswap pool, and get UNIv2 tokens in exchange
+- Liquidity providers stake those UNIv2 tokens into Unipool rewards contract
+- Liquidity providers accrue rewards, proportional to the amount of staked tokens and staking time
+- Liquidity providers can claim their rewards when they want
+- Liquidity providers can unstake UNIv2 tokens to exit the program (i.e., stop earning rewards) when they want
 
 Our implementation is simpler because funds for rewards will only be added once, on deployment of AFRR token (for more technical details about the differences, see PR #271 on our repo).
 
