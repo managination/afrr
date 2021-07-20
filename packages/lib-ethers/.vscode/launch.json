@@ -23,7 +23,7 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/node_modules/.bin/hardhat",
       "runtimeArgs": [],
-      "args": ["deploy", "--network", "ewVolta"],
+      "args": ["deploy", "--verbose", "--network", "ewVolta"],
       "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]

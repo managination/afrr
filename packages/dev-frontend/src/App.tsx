@@ -42,6 +42,7 @@ const EthersWeb3ReactProvider: React.FC = ({ children }) => {
   );
 };
 
+// TODO: RJA - comment out unsupported eth networks
 const UnsupportedMainnetFallback: React.FC = () => (
   <Flex
     sx={{
@@ -78,6 +79,7 @@ const App = () => {
     </Flex>
   );
 
+  // TODO: RJA - comment out unsupported eth networks
   const unsupportedNetworkFallback = (chainId: number) => (
     <Flex
       sx={{
@@ -90,7 +92,7 @@ const App = () => {
     >
       <Heading sx={{ mb: 3 }}>
         <Icon name="exclamation-triangle" /> Liquity is not yet deployed to{" "}
-        {chainId === 1 ? "mainnet" : "this network"}.
+        {chainId === 1 ? "mainnet" : "this network"}. // TODO: RJA
       </Heading>
       Please switch to Ropsten, Rinkeby, Kovan, Görli, ewVolta or ewMainnet.
     </Flex>

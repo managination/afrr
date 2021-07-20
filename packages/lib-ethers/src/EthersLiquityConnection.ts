@@ -10,6 +10,7 @@ import rinkeby from "../deployments/rinkeby.json";
 import ropsten from "../deployments/ropsten.json";
 import mainnet from "../deployments/mainnet.json";
 // TODO: RJA Edit:
+// TODO: Comment out unsupported Eth Networks also
 // import ewVolta from "../deployments/ewVolta.json";
 // import ewMainnet from "../deployments/ewMainnet.json";
 

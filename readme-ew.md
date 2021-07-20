@@ -6,13 +6,18 @@
 2. run: yarn
 3. change deployment private keys/addresses as desired (various files, see lib-ethers package)
 4. deploy tellor contract/playground, get it's address and use it also in config settings
-5. deploy contracts, e.g.
+5. deploy contracts to supported networks (these only!), e.g.
    yarn deploy --network ewVolta
    yarn deploy --network ewMainnet
 6. To open in VS Code: from root code afrr.code-workspace (so debug tasks load)
 7. TODO: Validate deployed contracts somehow
 8. TODO: turn off Unipool creation/staking/etc which aren't used?
 9. TODO: turn off LINK (may require contract changes)
+
+NOTES:
+
+1. To run HardHat, cd packages/lib-ethers then npx hardhat [options]
+2. cd packages/lib-ethers npx hardhat test (it passes, but I'm not sure what it's testing yet...)
 
 ## END EWC NOTES SECTION
 
@@ -643,7 +648,7 @@ Several public and external functions have modifiers such as `requireCallerIsTro
 
 The Hardhat migrations script and deployment helpers in `utils/deploymentHelpers.js` deploy all contracts, and connect all contracts to their dependency contracts, by setting the necessary deployed addresses.
 
-The project is deployed on the Ropsten testnet.
+The project is deployed on the Ropsten testnet. // TODO: RJA
 
 ## Running Tests
 
@@ -1488,15 +1493,10 @@ After a successful deployment, the addresses of the newly deployed contracts wil
 
 To publish a new deployment, you must execute the above command for all of the following combinations:
 
-| Network   | Channel  |
-| --------- | -------- |
-| ropsten   | default  |
-| ropsten   | internal |
-| kovan     | default  |
-| rinkeby   | default  |
-| goerli    | default  |
-| ewVolta   | default  |
-| ewMainnet | default  |
+| Network   | Channel |
+| --------- | ------- |
+| ewVolta   | default |
+| ewMainnet | default |
 
 At some point in the future, we will make this process automatic. Once you're done deploying to all the networks, execute the following command:
 

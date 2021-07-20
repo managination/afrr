@@ -5,8 +5,8 @@ const externalAddrs = {
     // https://docs.tellor.io/tellor/integration/reference-page
     TELLOR_MASTER: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB", // tellor playground
     // https://uniswap.org/docs/v2/smart-contracts/factory/
-    UNISWAP_V2_FACTORY: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", // TODO: ??
-    UNISWAP_V2_ROUTER02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", // TODO: ??
+    UNISWAP_V2_FACTORY: "0x17854c8d5a41d5A89B275386E24B2F38FD0AfbDd", // RJA Edit: Use Carbonswap
+    UNISWAP_V2_ROUTER02: "0x3b932c3f73A9Eb6836Cd31145F2D47561e21DeCB", // RJA Edit: Use Carbonswap
     WETH_ERC20: "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd",
 }
 

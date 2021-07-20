@@ -30,16 +30,17 @@ type LiquityProviderProps = {
 };
 
 const wsParams = (network: string, infuraApiKey: string): [string, string] => [
-  `wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`,
+  `wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // TODO: RJA
   network
 ];
 
+// RJA Edit
 const supportedNetworks = [
-  "homestead",
-  "kovan",
-  "rinkeby",
-  "ropsten",
-  "goerli",
+  //"homestead",
+  //"kovan",
+  //"rinkeby",
+  //"ropsten",
+  //"goerli",
   "ewVolta",
   "ewMainnet"
 ];

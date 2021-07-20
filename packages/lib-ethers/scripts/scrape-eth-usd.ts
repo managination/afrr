@@ -59,7 +59,7 @@ const formatDateTime = (timestamp: number) => {
 };
 
 (async () => {
-  const provider = new AlchemyProvider("mainnet", "LfzNw5K5sLuITGhCxFObHJWMHY_1HW6M");
+  const provider = new AlchemyProvider("mainnet", "LfzNw5K5sLuITGhCxFObHJWMHY_1HW6M"); // TODO: RJA
   const aggregator = new Contract(aggregatorAddress, aggregatorAbi, provider) as Aggregator;
 
   const getRound = (roundId: BigNumberish) =>

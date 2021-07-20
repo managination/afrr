@@ -74,7 +74,7 @@ const ewNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
 // https://docs.tellor.io/tellor/integration/reference-page
 
 const oracleAddresses = {
-  mainnet: {
+  /* mainnet: {
     chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
   },
@@ -85,10 +85,10 @@ const oracleAddresses = {
   kovan: {
     chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
     tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
-  },
+  }, */
   // RJA Edit:
   ewVolta: {
-    chainlink: "0x0000000000000000000000000000000000000000", // not supported on EWC
+    chainlink: "0x0000000000000000000000000000000000000000", // TODO: Make contract that just calls Tellor not supported on EWC
     tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
   },
   ewMainnet: {
@@ -101,11 +101,11 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
 const wethAddresses = {
-  mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
+  //mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  //ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+  //rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+  //goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  //kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
   // RJA Edit:
   ewVolta: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c", // WEWT
   ewMainnet: "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd" // WEWT
@@ -132,11 +132,11 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
 
-    ...infuraNetwork("ropsten"),
-    ...infuraNetwork("rinkeby"),
-    ...infuraNetwork("goerli"),
-    ...infuraNetwork("kovan"),
-    ...infuraNetwork("mainnet"),
+    //...infuraNetwork("ropsten"),
+    //...infuraNetwork("rinkeby"),
+    //...infuraNetwork("goerli"),
+    //...infuraNetwork("kovan"),
+    //...infuraNetwork("mainnet"),
     // RJA Edit:
     ...ewNetwork("ewVolta"),
     ...ewNetwork("ewMainnet")
@@ -220,7 +220,7 @@ task("deploy", "Deploys the contracts to the network")
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
-      useRealPriceFeed ??= env.network.name === "mainnet";
+      useRealPriceFeed ??= ["mainnet", "ewVolta", "ewMainnet"].includes(env.network.name); // RJA
 
       if (useRealPriceFeed && !hasOracles(env.network.name)) {
         throw new Error(`PriceFeed not supported on ${env.network.name}`);
@@ -253,11 +253,10 @@ task("deploy", "Deploys the contracts to the network")
 
           console.log(`Hooking up PriceFeed with oracles ...`);
 
-          const tx = await contracts.priceFeed.setAddresses(
-            oracleAddresses[env.network.name].chainlink,
-            tellorCallerAddress,
-            overrides
-          );
+          const CLAddr = oracleAddresses[env.network.name].chainlink; // RJA
+          console.log("ChainLink Contract Address=", CLAddr); // RJA
+          console.log("Tellor Contract Address=", tellorCallerAddress); // RJA
+          const tx = await contracts.priceFeed.setAddresses(CLAddr, tellorCallerAddress, overrides); // RJA
 
           await tx.wait();
         }

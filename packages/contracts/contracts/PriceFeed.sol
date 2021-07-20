@@ -94,13 +94,14 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         external
         onlyOwner
     {
-        checkContract(_priceAggregatorAddress);
+        checkContract(_priceAggregatorAddress); // TODO: RJA THIS LINE WON"T WORK
         checkContract(_tellorCallerAddress);
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
 
         // Explicitly set initial system status
+        // TODO: RJA THIS ALL EXPECTS LINK IN PLACE AND WORKING AT CONTRACT START, WHICH WE DON'T HAVE:
         status = Status.chainlinkWorking;
 
         // Get an initial price from Chainlink to serve as first reference for lastGoodPrice
@@ -347,13 +348,11 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     * peace of mind when using or returning to Chainlink.
     */
     function _chainlinkIsBroken(ChainlinkResponse memory _currentResponse, ChainlinkResponse memory _prevResponse) internal view returns (bool) {
-        return true; // RJA EDIT
-        // return _badChainlinkResponse(_currentResponse) || _badChainlinkResponse(_prevResponse);
+         return _badChainlinkResponse(_currentResponse) || _badChainlinkResponse(_prevResponse);
     }
 
     function _badChainlinkResponse(ChainlinkResponse memory _response) internal view returns (bool) {
-        return true; // RJA EDIT
-        /* // Check for response call reverted
+        // Check for response call reverted
         if (!_response.success) {return true;}
         // Check for an invalid roundId that is 0
         if (_response.roundId == 0) {return true;}
@@ -362,12 +361,11 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         // Check for non-positive price
         if (_response.answer <= 0) {return true;}
 
-        return false; */
+        return false;
     }
 
     function _chainlinkIsFrozen(ChainlinkResponse memory _response) internal view returns (bool) {
-        return true; // RJA EDIT
-        // return block.timestamp.sub(_response.timestamp) > TIMEOUT;
+        return block.timestamp.sub(_response.timestamp) > TIMEOUT;
     }
 
     function _chainlinkPriceChangeAboveMax(ChainlinkResponse memory _currentResponse, ChainlinkResponse memory _prevResponse) internal pure returns (bool) {
