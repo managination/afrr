@@ -55,14 +55,15 @@ const devChainRichAccount = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eef
 
 const infuraApiKey = "ad9cef41c9c844a7b54d10be24d416e5";
 
-const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
+// RJA - Removed Unsuported Eth Networks
+/* const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
   [name]: {
     url: `https://${name}.infura.io/v3/${infuraApiKey}`,
     accounts: [deployerAccount]
   }
-});
+}); */
 
-// RJA Edit
+// RJA - Added EWC Networks
 const ewNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
   [name]: {
     url: `https://${name === "ewVolta" ? "volta-" : ""}rpc.energyweb.org/`,
@@ -73,6 +74,7 @@ const ewNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
 // https://docs.chain.link/docs/ethereum-addresses
 // https://docs.tellor.io/tellor/integration/reference-page
 
+// RJA - Removed unsupported eth networks
 const oracleAddresses = {
   /* mainnet: {
     chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
@@ -86,7 +88,7 @@ const oracleAddresses = {
     chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
     tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
   }, */
-  // RJA Edit:
+  // RJA - Added EWC Networks
   ewVolta: {
     chainlink: "0x0000000000000000000000000000000000000000", // TODO: Make contract that just calls Tellor not supported on EWC
     tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
@@ -100,13 +102,14 @@ const oracleAddresses = {
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
+// RJA - Removed unsupported eth networks
 const wethAddresses = {
   //mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   //ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   //rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
   //goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
   //kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C",
-  // RJA Edit:
+  // RJA - Added EWC Networks
   ewVolta: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c", // WEWT
   ewMainnet: "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd" // WEWT
 };
@@ -132,12 +135,13 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
 
+    // RJA - Removed unsuported Eth neworks
     //...infuraNetwork("ropsten"),
     //...infuraNetwork("rinkeby"),
     //...infuraNetwork("goerli"),
     //...infuraNetwork("kovan"),
     //...infuraNetwork("mainnet"),
-    // RJA Edit:
+    // RJA - Added EWC Networks
     ...ewNetwork("ewVolta"),
     ...ewNetwork("ewMainnet")
   },
@@ -220,7 +224,7 @@ task("deploy", "Deploys the contracts to the network")
       const overrides = { gasPrice: gasPrice && Decimal.from(gasPrice).div(1000000000).hex };
       const [deployer] = await env.ethers.getSigners();
 
-      useRealPriceFeed ??= ["mainnet", "ewVolta", "ewMainnet"].includes(env.network.name); // RJA
+      useRealPriceFeed ??= ["mainnet", "ewVolta", "ewMainnet"].includes(env.network.name); // RJA - Added EWC Networks, leaving mainnet in for now, but it prob should not be there as that implies Eth mainnet not EWC mainnet
 
       if (useRealPriceFeed && !hasOracles(env.network.name)) {
         throw new Error(`PriceFeed not supported on ${env.network.name}`);

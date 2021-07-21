@@ -33,10 +33,10 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     * 525600 * ln(F) = ln(0.5)
     * F = 0.5 ** (1/525600)
     * F = 0.999998681227695000 
-    * RJA TODO make curve linear (not to benefit first movers, more linear), not a factor, but a # of minutes, e.g. system issues 1 token per minute and gets divied up, 
-    * pay out 1 token per minute for 100 years., 500,000 minutes/year * 200 years = 100,000,000 tokens
+    * RJA Per Micha change distribution curve so system issues 1 token per minute and gets divied up, 
+    * pay out 1 token per minute for 200 years, 500,000 minutes/year * 200 years = 100,000,000 tokens
     */
-    uint constant public ISSUANCE_FACTOR = 999998681227695000;
+    uint constant public ISSUANCE_FACTOR = 1000000000000000000; // RJA Change per Micha
 
     /* 
     * The community LQTY supply cap is the starting balance of the Community Issuance contract.

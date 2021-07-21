@@ -32,8 +32,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     address borrowerOperationsAddress;
     address troveManagerAddress;
 
-    // TODO: RJA WE WILL HAVE TO EDIT THIS CONTRACT!
-    // TODO: (THIS WILL NEED TO BE EWTEUR I BELIEVE)
+    // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE EWTEUR PAIR ID OF EWC TELLOR
     uint constant public ETHUSD_TELLOR_REQ_ID = 1;
 
     // Use to convert a price answer to an 18-digit precision uint
@@ -86,7 +85,6 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     // --- Dependency setters ---
     
-    // TODO: RJA WE NEED TO CHANGE THIS METHOD TO START WITH TELLOR NOT CHAINLINK:
     function setAddresses(
         address _priceAggregatorAddress,
         address _tellorCallerAddress
@@ -94,14 +92,13 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         external
         onlyOwner
     {
-        checkContract(_priceAggregatorAddress); // TODO: RJA THIS LINE WON"T WORK
+        checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
 
         // Explicitly set initial system status
-        // TODO: RJA THIS ALL EXPECTS LINK IN PLACE AND WORKING AT CONTRACT START, WHICH WE DON'T HAVE:
         status = Status.chainlinkWorking;
 
         // Get an initial price from Chainlink to serve as first reference for lastGoodPrice

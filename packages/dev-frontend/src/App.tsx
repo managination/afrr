@@ -42,7 +42,7 @@ const EthersWeb3ReactProvider: React.FC = ({ children }) => {
   );
 };
 
-// TODO: RJA - comment out unsupported eth networks
+// RJA - Removed unsupported eth networks
 const UnsupportedMainnetFallback: React.FC = () => (
   <Flex
     sx={{
@@ -57,9 +57,7 @@ const UnsupportedMainnetFallback: React.FC = () => (
       <Icon name="exclamation-triangle" /> This app is for testing purposes only.
     </Heading>
 
-    <Paragraph sx={{ mb: 3 }}>
-      Please change your network to Ropsten, Rinkeby, Kovan, Görli, ewVolta or ewMainnet
-    </Paragraph>
+    <Paragraph sx={{ mb: 3 }}>Please change your network to ewVolta or ewMainnet</Paragraph>
 
     <Paragraph>
       If you'd like to use the Liquity Protocol on mainnet, please pick a frontend{" "}
@@ -79,7 +77,7 @@ const App = () => {
     </Flex>
   );
 
-  // TODO: RJA - comment out unsupported eth networks
+  // RJA - Removed unsupported eth networks
   const unsupportedNetworkFallback = (chainId: number) => (
     <Flex
       sx={{
@@ -92,9 +90,9 @@ const App = () => {
     >
       <Heading sx={{ mb: 3 }}>
         <Icon name="exclamation-triangle" /> Liquity is not yet deployed to{" "}
-        {chainId === 1 ? "mainnet" : "this network"}. // TODO: RJA
+        {chainId === 1 ? "mainnet" : "this network"}. // TODO: RJA ??
       </Heading>
-      Please switch to Ropsten, Rinkeby, Kovan, Görli, ewVolta or ewMainnet.
+      Please switch to ewVolta or ewMainnet.
     </Flex>
   );
 

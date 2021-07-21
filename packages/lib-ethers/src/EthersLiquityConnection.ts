@@ -4,15 +4,17 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Decimal } from "@liquity/lib-base";
 
 import devOrNull from "../deployments/dev.json";
-import goerli from "../deployments/goerli.json";
-import kovan from "../deployments/kovan.json";
-import rinkeby from "../deployments/rinkeby.json";
-import ropsten from "../deployments/ropsten.json";
-import mainnet from "../deployments/mainnet.json";
-// TODO: RJA Edit:
-// TODO: Comment out unsupported Eth Networks also
-// import ewVolta from "../deployments/ewVolta.json";
-// import ewMainnet from "../deployments/ewMainnet.json";
+
+// RJA - Removed unsupported Eth Networks also
+// import goerli from "../deployments/goerli.json";
+// import kovan from "../deployments/kovan.json";
+// import rinkeby from "../deployments/rinkeby.json";
+// import ropsten from "../deployments/ropsten.json";
+// import mainnet from "../deployments/mainnet.json";
+
+// RJA - Added EWC Networks
+import ewVolta from "../deployments/ewVolta.json";
+import ewMainnet from "../deployments/ewMainnet.json";
 
 import { numberify, panic } from "./_utils";
 import { EthersProvider, EthersSigner } from "./types";
@@ -28,17 +30,17 @@ import { _connectToMulticall, _Multicall } from "./_Multicall";
 
 const dev = devOrNull as _LiquityDeploymentJSON | null;
 
+// RJA - comment out unsupported Eth Networks, add EWC Networks
 const deployments: {
   [chainId: number]: _LiquityDeploymentJSON | undefined;
 } = {
-  [mainnet.chainId]: mainnet,
-  [ropsten.chainId]: ropsten,
-  [rinkeby.chainId]: rinkeby,
-  [goerli.chainId]: goerli,
-  [kovan.chainId]: kovan,
-  // TODO: RJA Edit:
-  // [ewVolta.chainId]: ewVolta,
-  // [ewMainnet.chainId]: ewMainnet,
+  // [mainnet.chainId]: mainnet,
+  // [ropsten.chainId]: ropsten,
+  // [rinkeby.chainId]: rinkeby,
+  // [goerli.chainId]: goerli,
+  // [kovan.chainId]: kovan,
+  [ewVolta.chainId]: ewVolta,
+  [ewMainnet.chainId]: ewMainnet,
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
 };

@@ -30,11 +30,11 @@ type LiquityProviderProps = {
 };
 
 const wsParams = (network: string, infuraApiKey: string): [string, string] => [
-  `wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // TODO: RJA
+  `wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // TODO: RJA ??, no infura on ewc
   network
 ];
 
-// RJA Edit
+// RJA - Removed unsupported eth networks
 const supportedNetworks = [
   //"homestead",
   //"kovan",

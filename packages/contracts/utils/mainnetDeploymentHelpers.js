@@ -339,8 +339,6 @@ class MainnetDeploymentHelper {
     }
 
     // --- Verify on Etherscan ---
-    // TODO: This can't work on EWC/Volta?? RJA
-    // TODO: prob have to write our own validator or do it manually, per Adam
     async verifyContract(name, deploymentState, constructorArguments = []) {
         if (!deploymentState[name] || !deploymentState[name].address) {
             console.error(`  --> No deployment state for contract ${name}!!`)

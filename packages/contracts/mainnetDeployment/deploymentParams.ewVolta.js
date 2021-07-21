@@ -5,8 +5,8 @@ const externalAddrs = {
     // https://docs.tellor.io/tellor/integration/reference-page
     TELLOR_MASTER: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda", // tellor playground
     // https://uniswap.org/docs/v2/smart-contracts/factory/
-    UNISWAP_V2_FACTORY: "0xD44463E5299dC807924Ff94B05aF53b3dF037301", // RJA: Connect to Carbonswap
-    UNISWAP_V2_ROUTER02: "0xbD30A7B53a75dBbA53f4f15af2650bB67A4B3665", // RJA: Connect to Carbonswap
+    UNISWAP_V2_FACTORY: "0xD44463E5299dC807924Ff94B05aF53b3dF037301", // RJA: Using Carbonswap Address here
+    UNISWAP_V2_ROUTER02: "0xbD30A7B53a75dBbA53f4f15af2650bB67A4B3665", // RJA: Using Carbonswap Address here
     WETH_ERC20: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c",
 }
 
@@ -18,8 +18,8 @@ const liquityAddrsTest = {
 }
 
 const liquityAddrs = {
-    GENERAL_SAFE: "0x3c198B7f3bA594804aEeA8894d0a58BCc345b8ce", // TODO
-    LQTY_SAFE: "0xbFdECf1Db5c22d4CD3B0Bb970cF867BEFd2caE27", // TODO
+    GENERAL_SAFE: "0x3c198B7f3bA594804aEeA8894d0a58BCc345b8ce", // TODO ?
+    LQTY_SAFE: "0xbFdECf1Db5c22d4CD3B0Bb970cF867BEFd2caE27", // TODO ?
     DEPLOYER: "0xC49965F4F6f4eBe512f16916eaAEE8A3d822D03b",
 }
 
@@ -41,7 +41,8 @@ const waitFunction = async() => {
 const GAS_PRICE = 1000000000 // 1 Gwei
 const TX_CONFIRMATIONS = 1
 
-const ETHERSCAN_BASE_URL = '' // TODO: RJA We don't have a way to auto-verify contracts on EWC/Volta, this won't work because it's blockscout based not etherscan based: 'https://volta-explorer.energyweb.org/address'
+// RJA We don't have etherscan on ewc/volta, it uses blockscout, which doesn't have a verification API either, so setting this empty turns off auto contract valication by hardhat deploy script
+const ETHERSCAN_BASE_URL = ''
 
 module.exports = {
     externalAddrs,

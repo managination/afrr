@@ -68,7 +68,8 @@ module.exports = {
             blockGasLimit: 12500000,
             gasPrice: 20000000000,
         },
-        mainnet: {
+        // RJA - Removed unsupported Eth Networks
+        /* mainnet: {
             url: alchemyUrl(),
             gasPrice: 150000000000,
             accounts: [
@@ -80,8 +81,8 @@ module.exports = {
             url: alchemyUrlRinkeby(),
             gas: 10000000, // tx gas limit
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
-        },
-        // RJA Edit:
+        }, */
+        // RJA - Added EWC Networks
         ewVolta: {
             url: "https://volta-rpc.energyweb.org/",
             gas: 10000000, // tx gas limit

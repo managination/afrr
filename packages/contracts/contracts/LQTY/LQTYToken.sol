@@ -138,7 +138,7 @@ contract LQTYToken is CheckContract, ILQTYToken {
         uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
         _mint(_bountyAddress, bountyEntitlement);
 
-        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(100); // Allocate 32 million to the algorithmic issuance schedule, RJA changed to 100 MIL Per Micha (see CommunityIssuance.sol distribution curve change also)
+        uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(100); // RJA changed to 100 MIL Per Micha (see CommunityIssuance.sol distribution curve change also)
         _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
 
         uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3);  // Allocate 1.33 million for LP rewards
