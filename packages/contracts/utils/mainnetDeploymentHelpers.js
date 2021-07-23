@@ -49,6 +49,7 @@ class MainnetDeploymentHelper {
             );
         }
 
+        console.log(`Deploying contract ${name}...`)
         const contract = await factory.deploy(...params, { gasPrice: this.configParams.GAS_PRICE })
         await this.deployerWallet.provider.waitForTransaction(contract.deployTransaction.hash, this.configParams.TX_CONFIRMATIONS)
 
@@ -105,6 +106,7 @@ class MainnetDeploymentHelper {
         if (!this.configParams.ETHERSCAN_BASE_URL) {
             console.log('No Etherscan Url defined, skipping verification')
         } else {
+            console.log(`Verifying contracts via etherscan (url=${this.configParams.ETHERSCAN_BASE_URL})`)
             await this.verifyContract('priceFeed', deploymentState)
             await this.verifyContract('sortedTroves', deploymentState)
             await this.verifyContract('troveManager', deploymentState)
@@ -155,16 +157,21 @@ class MainnetDeploymentHelper {
             lpRewardsAddress,
             multisigAddress
         ]
-        const lqtyToken = await this.loadOrDeploy(
-            lqtyTokenFactory,
-            'lqtyToken',
-            deploymentState,
-            lqtyTokenParams
-        )
+        try {
+            const lqtyToken = await this.loadOrDeploy(
+                lqtyTokenFactory,
+                'lqtyToken',
+                deploymentState,
+                lqtyTokenParams
+            )
+        } catch (err) {
+            const y = err;
+        }
 
         if (!this.configParams.ETHERSCAN_BASE_URL) {
             console.log('No Etherscan Url defined, skipping verification')
         } else {
+            console.log("Verifying lqty contracts via etherscan...")
             await this.verifyContract('lqtyStaking', deploymentState)
             await this.verifyContract('lockupContractFactory', deploymentState)
             await this.verifyContract('communityIssuance', deploymentState)

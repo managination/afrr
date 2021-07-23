@@ -18,13 +18,26 @@ const getSecret = (secretKey, defaultValue = '') => {
 
     return secret
 }
-const alchemyUrl = () => {
+
+// RJA - Removing unused Eth Networks
+/* const alchemyUrl = () => {
     return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
 }
 
 const alchemyUrlRinkeby = () => {
     return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
-}
+} */
+
+// task action function receives the Hardhat Runtime Environment as second argument
+task(
+    "blockNumber",
+    "Prints the current block number",
+    async(_, { ethers }) => {
+        await ethers.provider.getBlockNumber().then((blockNumber) => {
+            console.log(`Current block number for ${hre.network.name} network: ${blockNumber}`);
+        });
+    }
+);
 
 module.exports = {
     paths: {

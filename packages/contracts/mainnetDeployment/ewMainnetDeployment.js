@@ -1,5 +1,5 @@
-const { mainnetDeploy } = require('./mainnetDeployment.js')
 const configParams = require("./deploymentParams.ewMainnet.js")
+const { mainnetDeploy } = require('./mainnetDeployment.js')
 
 async function main() {
     await mainnetDeploy(configParams)
