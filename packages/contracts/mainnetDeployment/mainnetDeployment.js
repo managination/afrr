@@ -84,7 +84,6 @@ async function mainnetDeploy(configParams) {
     // Deploy a read-only multi-trove getter
     const multiTroveGetter = await mdh.deployMultiTroveGetterMainnet(liquityCore, deploymentState)
 
-    // TODO RJA
     // Connect Unipool to LQTYToken and the LUSD-WETH pair address, with a 6 week duration
     const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
     await mdh.connectUnipoolMainnet(unipool, LQTYContracts, LUSDWETHPairAddr, LPRewardsDuration)
@@ -168,13 +167,13 @@ async function mainnetDeploy(configParams) {
     console.log(`Current Chainlink price: ${chainlinkPrice}`)
 
     // Check Tellor price directly (through our TellorCaller)
-    let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID
-    console.log(`current Tellor price: ${tellorPriceResponse[1]}`)
-    console.log(`current Tellor timestamp: ${tellorPriceResponse[2]}`)
+    let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID TODO RJA Need to Change ID HERE
+    console.log(`Current Tellor price: ${tellorPriceResponse[1]}`)
+    console.log(`Current Tellor timestamp: ${tellorPriceResponse[2]}`)
 
     // // --- Lockup Contracts ---
-    console.log("LOCKUP CONTRACT CHECKS")
-        // Check lockup contracts exist for each beneficiary with correct unlock time
+    console.log("LOCKUP CONTRACT CHECKS");
+    // Check lockup contracts exist for each beneficiary with correct unlock time
     for (investor of Object.keys(lockupContracts)) {
         const lockupContract = lockupContracts[investor]
             // check LC references correct LQTYToken 
@@ -576,7 +575,7 @@ async function mainnetDeploy(configParams) {
 
     // total LP tokens staked in Unipool
     const totalLPTokensStaked = await unipool.totalSupply()
-    th.logBN("Total LP (LUSD-ETH) tokens staked in unipool", totalLPTokensStaked)
+    th.logBN("Total LP (LUSD-ETH) tokens staked in Unipool", totalLPTokensStaked)
 
     // --- State variables ---
 
@@ -717,6 +716,8 @@ async function mainnetDeploy(configParams) {
     //   // check LC LQTY bal
     //   LC_LQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployedShortTermLC.address)
     //   console.log(`LC LQTY bal after withdrawal: ${LC_LQTYBal}`)
+
+    console.log(`*** SUCCESS: END OF DEPLOY TO ${hre.network.name} NETWORK ***`)
 }
 
 module.exports = {
