@@ -5,20 +5,9 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Current TS File",
       "type": "node",
       "request": "launch",
-      "args": ["${relativeFile}"],
-      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
-      "sourceMaps": true,
-      "cwd": "${workspaceRoot}",
-      "protocol": "inspector",
-      "runtimeExecutable": "/Users/robertanderson/.nvm/versions/node/v15.14.0/bin/ts-node"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Hardhat Deploy",
+      "name": "Hardhat - Deploy lib-ethers",
       "sourceMaps": true,
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/node_modules/.bin/hardhat",

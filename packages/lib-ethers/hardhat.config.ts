@@ -94,7 +94,7 @@ const oracleAddresses = {
     tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
   },
   ewMainnet: {
-    chainlink: "0x0000000000000000000000000000000000000000", // not supported on EWC
+    chainlink: "0x0000000000000000000000000000000000000000", // TODO: Make contract that just calls Tellor not supported on EWC
     tellor: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB" // Playground
   }
 };

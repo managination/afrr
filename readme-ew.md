@@ -6,18 +6,38 @@
 2. run: yarn
 3. change deployment private keys/addresses as desired (various files, see lib-ethers package)
 4. deploy tellor contract/playground, get it's address and use it also in config settings
-5. deploy contracts to supported networks (these only!), e.g.
+5. Deploy contracts to supported networks, e.g.
+   cd packages/contracts
+   npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+   npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
+
+   There is deploy code in Liquity also here, but don't use (this runs deploy.ts in packages/lib-ethers, which APPARENTLY was only for dev until final Liquity release, it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts)
    yarn deploy --network ewVolta
    yarn deploy --network ewMainnet
+
 6. To open in VS Code: from root code afrr.code-workspace (so debug tasks load)
-7. TODO: Validate deployed contracts somehow
-8. TODO: turn off Unipool creation/staking/etc which aren't used?
-9. TODO: turn off LINK (may require contract changes)
+7. TODO: Validate deployed contracts manually (hardhat used etherscan, which we don't have on ewc)
+8. TODO: Write spoof link contract which actually calls tellor
 
 NOTES:
 
 1. To run HardHat, cd packages/lib-ethers then npx hardhat [options]
 2. cd packages/lib-ethers npx hardhat test (it passes, but I'm not sure what it's testing yet...)
+
+REBUILD CONTRACTS:
+
+if you change contract code, rebuild contracts:
+
+cd packages/contracts
+yarn prepare (this recompiles the contracts, and creates packages/contracts/artifacts/contracts files)
+git add .
+git commit -m "compiled contracts"
+git push
+yarn prepare:set-version (this updates packages/contracts/artifacts/version file with git commit version, which should change, since contracts were compiled and pushed)
+
+delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all contracts are rebuilt now with changes)
+run deployment again, e.g.:
+npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
 
 ## END EWC NOTES SECTION
 

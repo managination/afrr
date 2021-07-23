@@ -12,9 +12,14 @@ const factoryAbi = [
   "event PairCreated(address indexed token0, address indexed token1, address pair, uint)"
 ];
 
-const factoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+// RJA
+const ewVoltaFactoryAddress = "0xD44463E5299dC807924Ff94B05aF53b3dF037301";
+const ewMainnetFactoryAddress = "0x17854c8d5a41d5A89B275386E24B2F38FD0AfbDd";
 
-const hasFactory = (chainId: number) => [1, 3, 4, 5, 42].includes(chainId);
+// RJA - Added EWC Chain Ids:
+const hasFactory = (chainId: number) => [1, 3, 4, 5, 42, 246, 73799].includes(chainId);
+const getFactoryAddress = (chainId: number) =>
+  chainId === 73799 ? ewVoltaFactoryAddress : ewMainnetFactoryAddress;
 
 interface UniswapV2Factory
   extends _TypedLiquityContract<
@@ -40,7 +45,7 @@ export const createUniswapV2Pair = async (
   }
 
   const factory = (new _LiquityContract(
-    factoryAddress,
+    getFactoryAddress(chainId), // RJA
     factoryAbi,
     signer
   ) as unknown) as UniswapV2Factory;
