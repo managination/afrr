@@ -69,7 +69,6 @@ async function mainnetDeploy(configParams) {
     const unipool = await mdh.deployUnipoolMainnet(deploymentState)
 
     // Deploy LQTY Contracts
-
     const LQTYContracts = await mdh.deployLQTYContractsMainnet(
         configParams.liquityAddrs.GENERAL_SAFE, // bounty address
         unipool.address, // lp rewards address

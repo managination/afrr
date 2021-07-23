@@ -157,16 +157,12 @@ class MainnetDeploymentHelper {
             lpRewardsAddress,
             multisigAddress
         ]
-        try {
-            const lqtyToken = await this.loadOrDeploy(
-                lqtyTokenFactory,
-                'lqtyToken',
-                deploymentState,
-                lqtyTokenParams
-            )
-        } catch (err) {
-            const y = err;
-        }
+        const lqtyToken = await this.loadOrDeploy(
+            lqtyTokenFactory,
+            'lqtyToken',
+            deploymentState,
+            lqtyTokenParams
+        )
 
         if (!this.configParams.ETHERSCAN_BASE_URL) {
             console.log('No Etherscan Url defined, skipping verification')

@@ -62,5 +62,9 @@
   "communityIssuance": {
     "address": "0x088c2f8a7578B5F535F1C37703b711683cA41D0d",
     "txHash": "0x5a7d80ef221110ba288c6fe032d8b9a09198985d8edc3cd69edf227d9524bf36"
+  },
+  "lqtyToken": {
+    "address": "0xf9Ac85c13f5bfF30Ea47ebB8c10E09bb03217c19",
+    "txHash": "0xccfa3de4356d1feb3875fe52485262c25688abe755d5e930438425cd74cdbaa7"
   }
 }
