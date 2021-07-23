@@ -9,7 +9,7 @@ const toBigNum = ethers.BigNumber.from
 
 async function mainnetDeploy(configParams) {
     const date = new Date()
-    console.log(date.toUTCString())
+    console.log(`Deploying to ${hre.network.name}, Date=${date.toUTCString()}`)
     const deployerWallet = (await ethers.getSigners())[0]
         // const account2Wallet = (await ethers.getSigners())[1]
     const mdh = new MainnetDeploymentHelper(configParams, deployerWallet)

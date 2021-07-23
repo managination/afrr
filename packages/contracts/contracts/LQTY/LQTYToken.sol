@@ -145,8 +145,8 @@ contract LQTYToken is CheckContract, ILQTYToken {
         lpRewardsEntitlement = _lpRewardsEntitlement;
         _mint(_lpRewardsAddress, _lpRewardsEntitlement);
         
-        // Allocate the remainder to the LQTY Multisig: (100 - 2 - 32 - 1.33) million = 64.66 million
-        uint multisigEntitlement = _1_MILLION.mul(1) // RJA: changed to 1 mil per Micha
+        // Allocate the remainder to the LQTY Multisig: (150 - 2 - 100 - 1.33) million = 46.67 million
+        uint multisigEntitlement = _1_MILLION.mul(150) // changed to 150 MIL per Micha
             .sub(bountyEntitlement)
             .sub(depositorsAndFrontEndsEntitlement)
             .sub(_lpRewardsEntitlement);
