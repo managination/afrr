@@ -39,6 +39,20 @@ delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all
 run deployment again, e.g.:
 npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
 
+PRETTIER CONTRACTS:
+
+I installed https://github.com/prettier-solidity/prettier-plugin-solidity but did not run it on Liquity contracts, so git wouldn't go nuts with diff, but
+it can be run on any contract file, e.g.:
+
+cd packages/contracts
+npx prettier --write ./contracts/ChainLinkBypass.sol
+
+USING REMIX/REMIXD:
+
+(typically with web3 injection from MetaMask)
+
+remixd -s /Users/robertanderson/Projects/ew/liqudity/afrr/packages/contracts --remix-ide https://remix.ethereum.org
+
 ## END EWC NOTES SECTION
 
 ![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
