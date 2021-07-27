@@ -30,6 +30,13 @@ contract ChainLinkBypass is
 {
     using SafeMath for uint256;
 
+    // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE EWTEUR PAIR ID OF EWC TELLOR
+    uint256 public constant ETHUSD_TELLOR_REQ_ID = 1;
+
+    uint8 private constant _decimals = 18;
+    string private constant _description = "EWT / EEUR";
+    uint8 private constant _version = 1;
+
     ITellorCaller public tellorCaller; // Wrapper contract that calls the Tellor system
 
     struct TellorResponse {
@@ -39,26 +46,44 @@ contract ChainLinkBypass is
         bool success;
     }
 
-    constructor
-    (
-        address _tellorCallerAddress
-    ) 
-        public 
-    {
+    constructor(address _tellorCallerAddress) public {
         checkContract(_tellorCallerAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
     }
 
     function decimals() external view override returns (uint8) {
-        // TODO
+        return _decimals;
     }
 
     function description() external view override returns (string memory) {
-        // TODO
+        return _description;
     }
 
     function version() external view override returns (uint256) {
-        // TODO
+        return _version;
+    }
+
+    function _getCurrentTellorResponse()
+        internal
+        view
+        returns (TellorResponse memory tellorResponse)
+    {
+        try tellorCaller.getTellorCurrentValue(ETHUSD_TELLOR_REQ_ID) returns (
+            bool ifRetrieve,
+            uint256 value,
+            uint256 _timestampRetrieved
+        ) {
+            // If call to Tellor succeeds, return the response and success = true
+            tellorResponse.ifRetrieve = ifRetrieve;
+            tellorResponse.value = value;
+            tellorResponse.timestamp = _timestampRetrieved;
+            tellorResponse.success = true;
+
+            return (tellorResponse);
+        } catch {
+            // If call to Tellor reverts, return a zero response with success = false
+            return (tellorResponse);
+        }
     }
 
     // getRoundData and latestRoundData should both raise "No data present"
@@ -76,6 +101,10 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
+        TellorResponse memory tellorResponse = _getCurrentTellorResponse();
+
+        // Convert Tellor Oracle response into something that matches ChainLink return format,
+        // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
         // TODO
     }
 
@@ -91,6 +120,10 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
+        TellorResponse memory tellorResponse = _getCurrentTellorResponse();
+
+        // Convert Tellor Oracle response into something that matches ChainLink return format,
+        // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
         // TODO
     }
 }

@@ -1,0 +1,116 @@
+{
+	"compiler": {
+		"version": "0.6.11+commit.5ef660b1"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "description",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getLatestPrice",
+				"outputs": [
+					{
+						"internalType": "int256",
+						"name": "",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "version",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"constructor": "Network: Rinkeby Aggregator: ETH/USD Address: 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
+				"getLatestPrice()": {
+					"notice": "Returns the latest price"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/ChainLinkBypass-ClientExample.sol": "PriceConsumerV3"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/ChainLinkBypass-ClientExample.sol": {
+			"keccak256": "0x9b200055b3f57e525f42ebe06a8fd15f6c68716c85258464cd53b3653f384ea1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://270acb5c3a9582b1ecccd7c60972952c4fe577fd99d329c7d28df9931152d268",
+				"dweb:/ipfs/QmSvsdd7tYGG3ytF2qmoJzfqgPhkzRMF6sSnpsh2ixHvxg"
+			]
+		},
+		"contracts/Dependencies/AggregatorV3Interface.sol": {
+			"keccak256": "0x4d0c8d654be4d28cb200c4e97be9ee9fc31b3659a84b6c6854679d0f74ac1555",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://161e671af4e23a6dd9129d3af09e6906689a1c98a80d5e8f72d09c83ac886d21",
+				"dweb:/ipfs/QmX6BFD1J2iLBREecDEMhg36c39s386bZLt37Tn1QrYCoC"
+			]
+		}
+	},
+	"version": 1
+}
