@@ -105,7 +105,13 @@ contract ChainLinkBypass is
 
         // Convert Tellor Oracle response into something that matches ChainLink return format,
         // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
-        // TODO
+        return (
+            _roundId,
+            int256(tellorResponse.value),
+            tellorResponse.timestamp,
+            tellorResponse.timestamp,
+            _roundId
+        );
     }
 
     function latestRoundData()
@@ -121,9 +127,17 @@ contract ChainLinkBypass is
         )
     {
         TellorResponse memory tellorResponse = _getCurrentTellorResponse();
+        if(tellorResponse.)
 
         // Convert Tellor Oracle response into something that matches ChainLink return format,
         // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
-        // TODO
+        uint80 _roundId = 1; // TO DO??
+        return (
+            _roundId,
+            int256(tellorResponse.value),
+            tellorResponse.timestamp,
+            tellorResponse.timestamp,
+            _roundId
+        );
     }
 }
