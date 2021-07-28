@@ -63,6 +63,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "TELLOR_DIGITS",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "decimals",
 				"outputs": [
 					{
@@ -91,7 +104,7 @@
 				"inputs": [
 					{
 						"internalType": "uint80",
-						"name": "_roundId",
+						"name": "",
 						"type": "uint80"
 					}
 				],
@@ -247,11 +260,11 @@
 	},
 	"sources": {
 		"contracts/ChainLinkBypass.sol": {
-			"keccak256": "0xedc58d36ebae2bfd06caec7de54598e4a1c36faf43a0cd659df83ca4d826b3f0",
+			"keccak256": "0xff6f973bb93710a70ff8674c576d7070f0f1c0fa39da94e52868ac46b5c22941",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://06a292666ec4aecb2090f01a3598e52d1e2673c10f81bb31c9ba17cb619c4a5e",
-				"dweb:/ipfs/QmVvzgbrZsbkuVGiHqFr38koDfd4jF5wG1K7LfmMJQde5J"
+				"bzz-raw://4cc335a17bafab4b6809a90babdba52b19f2d835b565de880064497b85b96d3c",
+				"dweb:/ipfs/QmSHA4dHFvvNhzzMRxUNNq61y2UqFtS4W54C4UrBQgF7jg"
 			]
 		},
 		"contracts/Dependencies/AggregatorV3Interface.sol": {

@@ -34,7 +34,7 @@ contract ChainLinkBypass is
     // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE EWTEUR PAIR ID OF EWC TELLOR
     uint256 public constant ETHUSD_TELLOR_REQ_ID = 1;
 
-    uint8 private constant _decimals = 18;
+    uint8 public constant TELLOR_DIGITS = 6; // per PriceFeed.sol and the Tellor team
     string private constant _description = "EWT / EEUR";
     uint8 private constant _version = 1;
 
@@ -53,7 +53,7 @@ contract ChainLinkBypass is
     }
 
     function decimals() external view override returns (uint8) {
-        return _decimals;
+        return TELLOR_DIGITS;
     }
 
     function description() external view override returns (string memory) {
@@ -109,13 +109,14 @@ contract ChainLinkBypass is
         uint80 _roundId = 1; // TODO: ??
         return (
             _roundId,
-            int256(tellorResponse.value),
+            int256(tellorResponse.value), // note the cast! small risk if tellor value is max positive unit value, not sure how to handle that
             tellorResponse.timestamp,
             tellorResponse.timestamp,
             _roundId
         );
     }
 
+    // TODO: not sure how to handle roundId being passed in, i.e. how to convert it to a Tellor call for a "previous" price
     function getRoundData(
         uint80 /* _roundId */
     )
