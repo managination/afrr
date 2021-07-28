@@ -14,12 +14,13 @@ import "./Dependencies/CheckContract.sol";
  * This contract is a way to spoof Liquity into thinking it's calling ChainLink but actually getting
  * the value from Tellor (which is the only oracle supported on EWC). Since we will set this contract
  * as the Liquity ChainLink contract address, Liquity contracts will still think they are calling both
- * ChainLink and Tellor, and all their Failover loic (which is horribly complicated) will work as is.
- * That's the reason for this contract, to avoid any code/logic mods to Liquity contracts. It should be
- * noted of course that since EWC only supports one oracle (Tellor), if that Oracle is down then
+ * ChainLink and Tellor and all their failover logic (which is quite complicated) will work as is.
+ * That's the reason for this contract, to avoid any code/logic mods to Liquity contracts.
+ *
+ * It should be noted of course that since EWC only supports one oracle (Tellor), if that Oracle is down then
  * there will be no prices available. The Liquity contracts will still attempt to (and think they are)
- * calling the Tellor contract also, but it still won't have a price as the final result. i.e. there
- * is no oracle redundency on EWC, even though the Liquity code expects there to be.
+ * calling the Tellor backup oracle, but it still won't have a price as the final result. i.e. there
+ * is no oracle redundency on EWC even though the Liquity code expects there to be.
  *
  */
 contract ChainLinkBypass is
@@ -86,34 +87,6 @@ contract ChainLinkBypass is
         }
     }
 
-    // getRoundData and latestRoundData should both raise "No data present"
-    // if they do not have data to report, instead of returning unset values
-    // which could be misinterpreted as actual reported values.
-    function getRoundData(uint80 _roundId)
-        external
-        view
-        override
-        returns (
-            uint80 roundId,
-            int256 answer,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        )
-    {
-        TellorResponse memory tellorResponse = _getCurrentTellorResponse();
-
-        // Convert Tellor Oracle response into something that matches ChainLink return format,
-        // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
-        return (
-            _roundId,
-            int256(tellorResponse.value),
-            tellorResponse.timestamp,
-            tellorResponse.timestamp,
-            _roundId
-        );
-    }
-
     function latestRoundData()
         external
         view
@@ -127,11 +100,13 @@ contract ChainLinkBypass is
         )
     {
         TellorResponse memory tellorResponse = _getCurrentTellorResponse();
-        if(tellorResponse.)
+        if (tellorResponse.success) {
+            // TODO: How to handle this? We only have 1 oracle, which cannot fail, or the whole thing (Liquity) may not work
+        }
 
         // Convert Tellor Oracle response into something that matches ChainLink return format,
         // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
-        uint80 _roundId = 1; // TO DO??
+        uint80 _roundId = 1; // TODO: ??
         return (
             _roundId,
             int256(tellorResponse.value),
@@ -139,5 +114,22 @@ contract ChainLinkBypass is
             tellorResponse.timestamp,
             _roundId
         );
+    }
+
+    function getRoundData(
+        uint80 /* _roundId */
+    )
+        external
+        view
+        override
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
+    {
+        return this.latestRoundData();
     }
 }
