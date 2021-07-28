@@ -76,8 +76,12 @@ async function mainnetDeploy(configParams) {
         deploymentState,
     )
 
+    // RJA Deploy our LinkBypass Contract
+    const chainLinkBypass = await mdh.deployChainLinkBypassMainnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
+
+
     // Connect all core contracts up
-    await mdh.connectCoreContractsMainnet(liquityCore, LQTYContracts, configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
+    await mdh.connectCoreContractsMainnet(liquityCore, LQTYContracts, chainLinkBypass.address); // RJA configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
     await mdh.connectLQTYContractsMainnet(LQTYContracts)
     await mdh.connectLQTYContractsToCoreMainnet(LQTYContracts, liquityCore)
 
@@ -157,7 +161,7 @@ async function mainnetDeploy(configParams) {
     // Check chainlink proxy price ---
 
     const chainlinkProxy = new ethers.Contract(
-        configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY,
+        chainLinkBypass.address, // RJA configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY,
         ChainlinkAggregatorV3Interface,
         deployerWallet
     )

@@ -66,5 +66,9 @@
   "lqtyToken": {
     "address": "0x678C5A98D6819FBE37fE7B147f316B0b39384B57",
     "txHash": "0x580f4b6a15d190db7dd9d8145360ddcb5a55730771b349af6f612d9b78b06ef5"
+  },
+  "ChainLinkBypass": {
+    "address": "0x58E1DC6cFE034107d3c3463F862137A8AC6eCb9d",
+    "txHash": "0x72981a386e59cd3937a0369bf32c0a58a3447544c1428050d540393f072e703f"
   }
 }

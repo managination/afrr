@@ -138,6 +138,28 @@ class MainnetDeploymentHelper {
         return coreContracts
     }
 
+    // RJA Helper to deploy our ChainLink bypass contract
+    async deployChainLinkBypassMainnet(tellorMasterAddr, deploymentState) {
+        // Get contract factories
+        const clFactory = await this.getFactory("ChainLinkBypass")
+        const clBypassTokenParams = [
+            tellorMasterAddr
+        ]
+        const clBypass = await this.loadOrDeploy(
+            clFactory,
+            'ChainLinkBypass',
+            deploymentState,
+            clBypassTokenParams
+        )
+        if (!this.configParams.ETHERSCAN_BASE_URL) {
+            console.log('No Etherscan Url defined, skipping verification')
+        } else {
+            console.log(`Verifying contracts via etherscan (url=${this.configParams.ETHERSCAN_BASE_URL})`)
+            await this.verifyContract('clBypass', deploymentState)
+        }
+        return clBypass
+    }
+
     async deployLQTYContractsMainnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
         const lqtyStakingFactory = await this.getFactory("LQTYStaking")
         const lockupContractFactory_Factory = await this.getFactory("LockupContractFactory")
@@ -220,13 +242,15 @@ class MainnetDeploymentHelper {
         // --- Connector methods ---
 
     async isOwnershipRenounced(contract) {
-            const owner = await contract.owner()
-            return owner == ZERO_ADDRESS
-        }
-        // Connect contracts to their dependencies
+        const owner = await contract.owner()
+        return owner == ZERO_ADDRESS
+    }
+
+    // Connect contracts to their dependencies
     async connectCoreContractsMainnet(contracts, LQTYContracts, chainlinkProxyAddress) {
         const gasPrice = this.configParams.GAS_PRICE
-            // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
+
+        // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
         await this.isOwnershipRenounced(contracts.priceFeed) ||
             await this.sendAndWaitForTransaction(contracts.priceFeed.setAddresses(chainlinkProxyAddress, contracts.tellorCaller.address, { gasPrice }))
 
@@ -312,7 +336,8 @@ class MainnetDeploymentHelper {
 
     async connectLQTYContractsMainnet(LQTYContracts) {
         const gasPrice = this.configParams.GAS_PRICE
-            // Set LQTYToken address in LCF
+
+        // Set LQTYToken address in LCF
         await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
             await this.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address, { gasPrice }))
     }

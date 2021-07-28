@@ -1,7 +1,7 @@
 const externalAddrs = {
     // https://data.chain.link/eth-usd
     // CHAINLINK_ETHUSD_PROXY: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    CHAINLINK_ETHUSD_PROXY: "0x0000000000000000000000000000000000000000", // TODO RJA
+    CHAINLINK_ETHUSD_PROXY: "0x0000000000000000000000000000000000000000", // RJA: We will deploy our own ChainLinkBypass contract (which calls Tellor) and connect to that, so no address is needed here
     // https://docs.tellor.io/tellor/integration/reference-page
     TELLOR_MASTER: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB", // tellor playground
     // https://uniswap.org/docs/v2/smart-contracts/factory/
@@ -11,8 +11,8 @@ const externalAddrs = {
 }
 
 const liquityAddrs = {
-    GENERAL_SAFE: "0x3c198B7f3bA594804aEeA8894d0a58BCc345b8ce", // TODO RJA ??
-    LQTY_SAFE: "0xbFdECf1Db5c22d4CD3B0Bb970cF867BEFd2caE27", // TODO RJA ??
+    GENERAL_SAFE: "0x3c198B7f3bA594804aEeA8894d0a58BCc345b8ce", // TODO RJA: GET FROM MICHA
+    LQTY_SAFE: "0xbFdECf1Db5c22d4CD3B0Bb970cF867BEFd2caE27", // TODO RJA: GET FROM MICHA
     DEPLOYER: "0xC49965F4F6f4eBe512f16916eaAEE8A3d822D03b",
 }
 
