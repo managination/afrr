@@ -21,6 +21,13 @@ import "./Dependencies/CheckContract.sol";
  * calling the Tellor backup oracle, but it still won't have a price as the final result. i.e. there
  * is no oracle redundency on EWC even though the Liquity code expects there to be.
  *
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * IMPORTANT NOTE: ON FIRST LIQUITY CONTRACT DEPLOYMENT THEY CALL PREV PRICE ROUNDID, SO THE TELLOR
+ * ORACLE MUST HAVE ALREADY HAD AT LEAST 2 PRICE UPDATES SO TELLOR BLOCK INDEX HEIGHT FOR THE PAIR IS > 1
+ * OR THE PRICEFEED.SOL SETADDRESS CALL WILL FAIL/REVERT. IT WAS ASSUMED THE ORACLES ON THE NETWORK HAVE
+ * BEEN RUNNING A WHILE BEFORE LIQUITY CONTRACTS ARE DEPLOYED.
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *
  */
 contract ChainLinkBypass is
     Ownable,
