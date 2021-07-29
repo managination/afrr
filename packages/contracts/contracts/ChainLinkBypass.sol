@@ -2,7 +2,6 @@
 
 pragma solidity 0.6.11;
 
-import "./Interfaces/ITellorCaller.sol";
 import "./Dependencies/AggregatorV3Interface.sol";
 import "./Dependencies/ITellor.sol";
 import "./Dependencies/SafeMath.sol";
@@ -31,14 +30,14 @@ contract ChainLinkBypass is
 {
     using SafeMath for uint256;
 
-    // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE EWTEUR PAIR ID OF EWC TELLOR
+    // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE DEPLOYED EWTEUR PAIR ID (REQUEST ID) OF EWC TELLOR
     uint256 public constant ETHUSD_TELLOR_REQ_ID = 1;
 
     uint8 public constant TELLOR_DIGITS = 6; // per PriceFeed.sol and the Tellor team
     string private constant _description = "EWT / EEUR";
     uint8 private constant _version = 1;
 
-    ITellorCaller public tellorCaller; // Wrapper contract that calls the Tellor system
+    ITellor public tellor;
 
     struct TellorResponse {
         bool ifRetrieve;
@@ -47,9 +46,9 @@ contract ChainLinkBypass is
         bool success;
     }
 
-    constructor(address _tellorCallerAddress) public {
-        checkContract(_tellorCallerAddress);
-        tellorCaller = ITellorCaller(_tellorCallerAddress);
+    constructor(address _tellorMasterAddress) public {
+        checkContract(_tellorMasterAddress);
+        tellor = ITellor(_tellorMasterAddress);
     }
 
     function decimals() external view override returns (uint8) {
@@ -64,7 +63,35 @@ contract ChainLinkBypass is
         return _version;
     }
 
-    function _getCurrentTellorResponse()
+    /*
+     * getTellorCurrentValue(): identical to getCurrentValue() in UsingTellor.sol
+     *
+     * @dev Allows the user to get the latest value for the requestId specified
+     * @param _requestId is the requestId to look up the value for
+     * @return ifRetrieve bool true if it is able to retrieve a value, the value, and the value's timestamp
+     * @return value the value retrieved
+     * @return _timestampRetrieved the value's timestamp
+     */
+    function getTellorCurrentValue(uint256 _requestId)
+        internal
+        view
+        returns (
+            bool ifRetrieve,
+            uint256 value,
+            uint256 _timestampRetrieved
+        )
+    {
+        uint256 _count = tellor.getNewValueCountbyRequestId(_requestId);
+        uint256 _time = tellor.getTimestampbyRequestIDandIndex(
+            _requestId,
+            _count.sub(1)
+        );
+        uint256 _value = tellor.retrieveData(_requestId, _time);
+        if (_value > 0) return (true, _value, _time);
+        return (false, 0, _time);
+    }
+
+    /* function _getCurrentTellorResponse()
         internal
         view
         returns (TellorResponse memory tellorResponse)
@@ -85,8 +112,9 @@ contract ChainLinkBypass is
             // If call to Tellor reverts, return a zero response with success = false
             return (tellorResponse);
         }
-    }
+    } */
 
+    // get latest Tellor index for the requestId and use that to get data:
     function latestRoundData()
         external
         view
@@ -99,27 +127,14 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
-        TellorResponse memory tellorResponse = _getCurrentTellorResponse();
-        if (tellorResponse.success) {
-            // TODO: How to handle this? We only have 1 oracle, which cannot fail, or the whole thing (Liquity) may not work
-        }
-
-        // Convert Tellor Oracle response into something that matches ChainLink return format,
-        // so Liquity contract can work on it as is, expecting AggregatorV3Interface formatted return data:
-        uint80 _roundId = 1; // TODO: ??
-        return (
-            _roundId,
-            int256(tellorResponse.value), // note the cast! small risk if tellor value is max positive unit value, not sure how to handle that
-            tellorResponse.timestamp,
-            tellorResponse.timestamp,
-            _roundId
-        );
+        uint256 _requestId = ETHUSD_TELLOR_REQ_ID;
+        uint256 _tellorIndex = tellor.getNewValueCountbyRequestId(_requestId);
+        return this.getRoundData(uint80(_tellorIndex));
     }
 
-    // TODO: not sure how to handle roundId being passed in, i.e. how to convert it to a Tellor call for a "previous" price
-    function getRoundData(
-        uint80 /* _roundId */
-    )
+    // Note: Link roundId => Tellor index
+    // Note: setting answeredInRound to match roundid, as PriceFeed.sol doesn't even use it
+    function getRoundData(uint80 _roundId)
         external
         view
         override
@@ -131,6 +146,14 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
-        return this.latestRoundData();
+        uint256 _requestId = ETHUSD_TELLOR_REQ_ID;
+        uint256 _time = tellor.getTimestampbyRequestIDandIndex(
+            _requestId,
+            uint256(_roundId).sub(1)
+        );
+        uint256 _value = tellor.retrieveData(_requestId, _time);
+        if (_value > 0)
+            return (_roundId, int256(_value), _time, _time, _roundId);
+        return (0, 0, _time, _time, 0); // TODO: this is a very bad case, as we do not have a fallback oracle!!
     }
 }

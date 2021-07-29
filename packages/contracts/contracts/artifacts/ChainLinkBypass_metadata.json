@@ -9,7 +9,7 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_tellorCallerAddress",
+						"name": "_tellorMasterAddress",
 						"type": "address"
 					}
 				],
@@ -104,7 +104,7 @@
 				"inputs": [
 					{
 						"internalType": "uint80",
-						"name": "",
+						"name": "_roundId",
 						"type": "uint80"
 					}
 				],
@@ -200,10 +200,10 @@
 			},
 			{
 				"inputs": [],
-				"name": "tellorCaller",
+				"name": "tellor",
 				"outputs": [
 					{
-						"internalType": "contract ITellorCaller",
+						"internalType": "contract ITellor",
 						"name": "",
 						"type": "address"
 					}
@@ -260,11 +260,11 @@
 	},
 	"sources": {
 		"contracts/ChainLinkBypass.sol": {
-			"keccak256": "0xff6f973bb93710a70ff8674c576d7070f0f1c0fa39da94e52868ac46b5c22941",
+			"keccak256": "0x9e0c0e91d2b0ddbb3254cf5f1f3f6a25e41b9d1c556701ccb71dbcf12c7229d2",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4cc335a17bafab4b6809a90babdba52b19f2d835b565de880064497b85b96d3c",
-				"dweb:/ipfs/QmSHA4dHFvvNhzzMRxUNNq61y2UqFtS4W54C4UrBQgF7jg"
+				"bzz-raw://007c8c49a689eadca6ace7b07cdcfdc3a68696c896cf857e9f288921ee5989e7",
+				"dweb:/ipfs/QmYxbz4EPo9yFE49rpDb5UziyoFpaE5xtscCec3NDEcQyT"
 			]
 		},
 		"contracts/Dependencies/AggregatorV3Interface.sol": {
@@ -313,14 +313,6 @@
 			"urls": [
 				"bzz-raw://7b261f6ac077c4ebc81dd3f4c833f866139acd8b908feff72385c32f83c21c2d",
 				"dweb:/ipfs/Qmb91cmmBEFhwUWwVxgxTPmeNxzdiyCdxoVXB2gN3Gvg7e"
-			]
-		},
-		"contracts/Interfaces/ITellorCaller.sol": {
-			"keccak256": "0xda790bd8d4de73788e82f223c0e6986407e0a9277f3a059bce01617008e9f05d",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://6f33bbcbc67ea04e4553064d5ff3e699b3db7a3f8236295a5e6d707c2cd6c7f1",
-				"dweb:/ipfs/QmVzUZpUJc8VnpXvMuKTSRHW9WLpVQYHqV5pTa1V6YGFhv"
 			]
 		}
 	},
