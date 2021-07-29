@@ -28,6 +28,11 @@ import "./Dependencies/CheckContract.sol";
  * BEEN RUNNING A WHILE BEFORE LIQUITY CONTRACTS ARE DEPLOYED.
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *
+ * NOTES:
+ *
+ * 1) THE CHAINLINK ROUND ID IS GREATER WIDTH (uint256) THAN TELLOR INDEX (uint80)...conversion warning!
+ * 2) THE TELLOR ORACLE RETURNS UNSIGNED VALUES, CHAINLINK EXPECTS SIGNED VALUES...conversion warning!
+ *
  */
 contract ChainLinkBypass is
     Ownable,
