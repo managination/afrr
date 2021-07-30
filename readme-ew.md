@@ -24,6 +24,8 @@ NOTES:
 1. To run HardHat, cd packages/lib-ethers then npx hardhat [options]
 2. cd packages/lib-ethers npx hardhat test (it passes, but I'm not sure what it's testing yet...)
 
+Tellor Playground Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+
 REBUILD CONTRACTS:
 
 if you change contract code, rebuild contracts:
@@ -52,6 +54,7 @@ USING REMIX/REMIXD:
 (typically with web3 injection from MetaMask)
 
 remixd -s /Users/robertanderson/Projects/ew/liqudity/afrr/packages/contracts --remix-ide https://remix.ethereum.org
+remixd -s . --remix-ide https://remix.ethereum.org
 
 ## END EWC NOTES SECTION
 

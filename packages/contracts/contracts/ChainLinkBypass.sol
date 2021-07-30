@@ -6,7 +6,6 @@ import "./Dependencies/AggregatorV3Interface.sol";
 import "./Dependencies/ITellor.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/BaseMath.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 
 /*
@@ -30,37 +29,24 @@ import "./Dependencies/CheckContract.sol";
  *
  * NOTES:
  *
- * 1) THE CHAINLINK ROUND ID IS GREATER WIDTH (uint256) THAN TELLOR INDEX (uint80)...conversion warning!
- * 2) THE TELLOR ORACLE RETURNS UNSIGNED VALUES, CHAINLINK EXPECTS SIGNED VALUES...conversion warning!
+ * 1) TELLOR INDEX IS GREATER WIDTH (uint256) THAN CHAINLINK ROUND ID (uint80)...conversion warning!
+ * 2) TELLOR ORACLE RETURNS UNSIGNED VALUES, CHAINLINK EXPECTS SIGNED VALUES...conversion warning!
  *
  */
-contract ChainLinkBypass is
-    Ownable,
-    CheckContract,
-    BaseMath,
-    AggregatorV3Interface
-{
+contract ChainLinkBypass is CheckContract, BaseMath, AggregatorV3Interface {
     using SafeMath for uint256;
 
-    // TODO: RJA WE WILL HAVE TO CHANGE THIS TO THE DEPLOYED EWTEUR PAIR ID (REQUEST ID) OF EWC TELLOR
-    uint256 public constant ETHUSD_TELLOR_REQ_ID = 1;
+    ITellor public tellor;
+    uint256 public tellorRequestId;
 
     uint8 public constant TELLOR_DIGITS = 6; // per PriceFeed.sol and the Tellor team
     string private constant _description = "EWT / EEUR";
     uint8 private constant _version = 1;
 
-    ITellor public tellor;
-
-    struct TellorResponse {
-        bool ifRetrieve;
-        uint256 value;
-        uint256 timestamp;
-        bool success;
-    }
-
-    constructor(address _tellorMasterAddress) public {
+    constructor(address _tellorMasterAddress, uint256 _tellorRequestId) public {
         checkContract(_tellorMasterAddress);
         tellor = ITellor(_tellorMasterAddress);
+        tellorRequestId = _tellorRequestId;
     }
 
     function decimals() external view override returns (uint8) {
@@ -75,57 +61,6 @@ contract ChainLinkBypass is
         return _version;
     }
 
-    /*
-     * getTellorCurrentValue(): identical to getCurrentValue() in UsingTellor.sol
-     *
-     * @dev Allows the user to get the latest value for the requestId specified
-     * @param _requestId is the requestId to look up the value for
-     * @return ifRetrieve bool true if it is able to retrieve a value, the value, and the value's timestamp
-     * @return value the value retrieved
-     * @return _timestampRetrieved the value's timestamp
-     */
-    function getTellorCurrentValue(uint256 _requestId)
-        internal
-        view
-        returns (
-            bool ifRetrieve,
-            uint256 value,
-            uint256 _timestampRetrieved
-        )
-    {
-        uint256 _count = tellor.getNewValueCountbyRequestId(_requestId);
-        uint256 _time = tellor.getTimestampbyRequestIDandIndex(
-            _requestId,
-            _count.sub(1)
-        );
-        uint256 _value = tellor.retrieveData(_requestId, _time);
-        if (_value > 0) return (true, _value, _time);
-        return (false, 0, _time);
-    }
-
-    /* function _getCurrentTellorResponse()
-        internal
-        view
-        returns (TellorResponse memory tellorResponse)
-    {
-        try tellorCaller.getTellorCurrentValue(ETHUSD_TELLOR_REQ_ID) returns (
-            bool ifRetrieve,
-            uint256 value,
-            uint256 _timestampRetrieved
-        ) {
-            // If call to Tellor succeeds, return the response and success = true
-            tellorResponse.ifRetrieve = ifRetrieve;
-            tellorResponse.value = value;
-            tellorResponse.timestamp = _timestampRetrieved;
-            tellorResponse.success = true;
-
-            return (tellorResponse);
-        } catch {
-            // If call to Tellor reverts, return a zero response with success = false
-            return (tellorResponse);
-        }
-    } */
-
     // get latest Tellor index for the requestId and use that to get data:
     function latestRoundData()
         external
@@ -139,7 +74,7 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
-        uint256 _requestId = ETHUSD_TELLOR_REQ_ID;
+        uint256 _requestId = tellorRequestId;
         uint256 _tellorIndex = tellor.getNewValueCountbyRequestId(_requestId);
         return this.getRoundData(uint80(_tellorIndex));
     }
@@ -158,7 +93,7 @@ contract ChainLinkBypass is
             uint80 answeredInRound
         )
     {
-        uint256 _requestId = ETHUSD_TELLOR_REQ_ID;
+        uint256 _requestId = tellorRequestId;
         uint256 _time = tellor.getTimestampbyRequestIDandIndex(
             _requestId,
             uint256(_roundId).sub(1)
