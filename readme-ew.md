@@ -24,7 +24,10 @@ NOTES:
 1. To run HardHat, cd packages/lib-ethers then npx hardhat [options]
 2. cd packages/lib-ethers npx hardhat test (it passes, but I'm not sure what it's testing yet...)
 
-Tellor Playground Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+ssh bitnami@ui.afrr.io
+
+Tellor Playground on Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+Tellor Playground on Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
 
 REBUILD CONTRACTS:
 

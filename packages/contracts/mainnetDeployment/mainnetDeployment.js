@@ -77,7 +77,7 @@ async function mainnetDeploy(configParams) {
     )
 
     // RJA Deploy our LinkBypass Contract
-    const chainLinkBypass = await mdh.deployChainLinkBypassMainnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
+    const chainLinkBypass = await mdh.deployChainLinkBypassMainnet(configParams.externalAddrs.TELLOR_MASTER, configParams.EWT_EEUR_TELLOR_PAIR_ID, deploymentState)
 
 
     // Connect all core contracts up

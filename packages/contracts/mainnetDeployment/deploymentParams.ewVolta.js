@@ -7,7 +7,7 @@ const externalAddrs = {
     // https://uniswap.org/docs/v2/smart-contracts/factory/
     UNISWAP_V2_FACTORY: "0xD44463E5299dC807924Ff94B05aF53b3dF037301", // RJA: Using Carbonswap Address here
     UNISWAP_V2_ROUTER02: "0xbD30A7B53a75dBbA53f4f15af2650bB67A4B3665", // RJA: Using Carbonswap Address here
-    WETH_ERC20: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c",
+    WETH_ERC20: "0xDb8B4264b1777e046267b4Cc123f0C9E029cEB2c"
 }
 
 const liquityAddrs = {
@@ -28,6 +28,7 @@ const waitFunction = async() => {
 
 const GAS_PRICE = 1000000000 // 1 Gwei
 const TX_CONFIRMATIONS = 1
+const EWT_EEUR_TELLOR_PAIR_ID = 1
 
 // RJA We don't have etherscan on ewc/volta, it uses blockscout, which doesn't have a verification API either, so setting this empty turns off auto contract valication by hardhat deploy script
 const ETHERSCAN_BASE_URL = ''
@@ -39,6 +40,7 @@ module.exports = {
     OUTPUT_FILE,
     waitFunction,
     GAS_PRICE,
+    EWT_EEUR_TELLOR_PAIR_ID,
     TX_CONFIRMATIONS,
     ETHERSCAN_BASE_URL,
 };

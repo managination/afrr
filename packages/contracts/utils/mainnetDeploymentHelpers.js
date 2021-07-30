@@ -139,11 +139,12 @@ class MainnetDeploymentHelper {
     }
 
     // RJA Helper to deploy our ChainLink bypass contract
-    async deployChainLinkBypassMainnet(tellorMasterAddr, deploymentState) {
+    async deployChainLinkBypassMainnet(tellorMasterAddr, tellorEwtEeurPairId, deploymentState) {
         // Get contract factories
         const clFactory = await this.getFactory("ChainLinkBypass")
         const clBypassTokenParams = [
-            tellorMasterAddr
+            tellorMasterAddr,
+            tellorEwtEeurPairId
         ]
         const clBypass = await this.loadOrDeploy(
             clFactory,

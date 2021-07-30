@@ -74,8 +74,9 @@ contract ChainLinkBypass is CheckContract, BaseMath, AggregatorV3Interface {
             uint80 answeredInRound
         )
     {
-        uint256 _requestId = tellorRequestId;
-        uint256 _tellorIndex = tellor.getNewValueCountbyRequestId(_requestId);
+        uint256 _tellorIndex = tellor.getNewValueCountbyRequestId(
+            tellorRequestId
+        );
         return this.getRoundData(uint80(_tellorIndex));
     }
 
@@ -93,14 +94,11 @@ contract ChainLinkBypass is CheckContract, BaseMath, AggregatorV3Interface {
             uint80 answeredInRound
         )
     {
-        uint256 _requestId = tellorRequestId;
         uint256 _time = tellor.getTimestampbyRequestIDandIndex(
-            _requestId,
+            tellorRequestId,
             uint256(_roundId).sub(1)
         );
-        uint256 _value = tellor.retrieveData(_requestId, _time);
-        if (_value > 0)
-            return (_roundId, int256(_value), _time, _time, _roundId);
-        return (0, 0, _time, _time, 0); // TODO: this is a very bad case, as we do not have a fallback oracle!!
+        uint256 _value = tellor.retrieveData(tellorRequestId, _time);
+        return (_roundId, int256(_value), _time, _time, _roundId);
     }
 }
