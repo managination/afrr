@@ -9,19 +9,6 @@ module.exports = {
             gas: 9000000,
             network_id: 5777
         },
-        ewVolta: {
-            host: "https://volta-rpc.energyweb.org/",
-            port: 8545,
-            from: "0x6a6401AEb4a3beb93820904E761b0d86364bb39E", // default address to use for any transaction Truffle makes during migrations
-            network_id: 73799,
-        },
-        ewMainnet: {
-            host: "https://rpc.energyweb.org/",
-            port: 8545,
-            from: "0x6a6401AEb4a3beb93820904E761b0d86364bb39E", // default address to use for any transaction Truffle makes during migrations
-            network_id: 246,
-        },
-
         // test: {
         //   port: 7545,
         //   gas: 9000000,
