@@ -48,7 +48,6 @@ async function mainnetDeploy(configParams) {
     let WETHLUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, liquityCore.lusdToken.address)
     assert.equal(LUSDWETHPairAddr, WETHLUSDPairAddr)
 
-
     if (LUSDWETHPairAddr == th.ZERO_ADDRESS) {
         // Deploy Unipool for LUSD-WETH
         console.log("Deploying Unipool for LUSD-WETH...")

@@ -6,18 +6,24 @@
 2. run: yarn
 3. change deployment private keys/addresses as desired (various files, see lib-ethers package)
 4. deploy tellor contract/playground, get it's address and use it also in config settings
-5. Deploy contracts to supported networks, e.g.
-   cd packages/contracts
-   npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
-   npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
 
-   There is deploy code in Liquity also here, but don't use (this runs deploy.ts in packages/lib-ethers, which APPARENTLY was only for dev until final Liquity release, it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts)
-   yarn deploy --network ewVolta
-   yarn deploy --network ewMainnet
+Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the tellor oracle MUST HAVE ALREADY had at LEAST TWO rounds of price updates for EWT/EUR or deploy will fail, as the
+liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy set addresses in pricefeed.sol). Also, the tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
+
+5. Deploy contracts to supported networks, e.g.
+
+cd packages/contracts
+npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
+
+There is deploy code in Liquity also here, but don't use (this runs deploy.ts in packages/lib-ethers, which APPARENTLY was only for dev until final Liquity release, it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts)
+yarn deploy --network ewVolta
+yarn deploy --network ewMainnet
 
 6. To open in VS Code: from root code afrr.code-workspace (so debug tasks load)
 7. TODO: Validate deployed contracts manually (hardhat used etherscan, which we don't have on ewc)
 8. TODO: Write spoof link contract which actually calls tellor
+9. there are a LOT of Liquity code that we aren't using, is old, outdated, etc...I'm not cleaning all that out. Only the instructions given in this readme are accurate for EW deployment.
 
 NOTES:
 
@@ -56,7 +62,6 @@ USING REMIX/REMIXD:
 
 (typically with web3 injection from MetaMask)
 
-remixd -s /Users/robertanderson/Projects/ew/liqudity/afrr/packages/contracts --remix-ide https://remix.ethereum.org
 remixd -s . --remix-ide https://remix.ethereum.org
 
 ## END EWC NOTES SECTION
