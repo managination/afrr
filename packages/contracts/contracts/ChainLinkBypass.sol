@@ -101,4 +101,15 @@ contract ChainLinkBypass is CheckContract, BaseMath, AggregatorV3Interface {
         uint256 _value = tellor.retrieveData(tellorRequestId, _time);
         return (_roundId, int256(_value), _time, _time, _roundId);
     }
+
+    // This method has kind of a weird definition, as Link returns "answers" in int256 format, but that's what the interface spec calls for.
+    // Warning Type Conversion
+    // Also Liquity has TWO DIFFERENT interface specs for AggregatorV3Interface, one which has this method and one which doesn't!
+    // the one we're including doesn't, hence this is not marked override.
+    // Also: it's unclear what this really is: a) the "last" answer retrieved from the oracle regardless of round id, or b) the "latest"
+    // (i.e. most recent answer) available overall (i.e. the latest round id).
+    function latestAnswer() external view returns (uint256) {
+        (, int256 answer, , , ) = this.latestRoundData();
+        return uint256(answer);
+    }
 }

@@ -1,7 +1,7 @@
 const externalAddrs = {
     // https://data.chain.link/eth-usd
     // CHAINLINK_ETHUSD_PROXY: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    CHAINLINK_ETHUSD_PROXY: "0x0000000000000000000000000000000000000000", // RJA: We will deploy our own ChainLinkBypass contract (which calls Tellor) and connect to that, so no address is needed here
+    CHAINLINK_ETHUSD_PROXY: "0x0", // RJA: We will deploy our own ChainLinkBypass contract (which calls Tellor) and connect to that, so no address is needed here
     // https://docs.tellor.io/tellor/integration/reference-page
     TELLOR_MASTER: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda", // tellor playground
     // https://uniswap.org/docs/v2/smart-contracts/factory/
@@ -26,8 +26,8 @@ const waitFunction = async() => {
     return delay(90000) // wait 90s
 }
 
-const GAS_PRICE = 1000000000 // 1 Gwei
-const TX_CONFIRMATIONS = 1
+const GAS_PRICE = 0.0000001 * 10 ** 9 // Gwei
+const TX_CONFIRMATIONS = 3 // TODO NOT SURE WHAT TO SET THIS AT? 1 seems risky...3 seems safer but slow
 const EWT_EEUR_TELLOR_PAIR_ID = 1
 
 // RJA We don't have etherscan on ewc/volta, it uses blockscout, which doesn't have a verification API either, so setting this empty turns off auto contract valication by hardhat deploy script

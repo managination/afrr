@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Hardhat - Deploy ewVolta",
+      "name": "Hardhat - Deploy To ewVolta",
       "sourceMaps": true,
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/node_modules/.bin/hardhat",

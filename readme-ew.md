@@ -9,6 +9,10 @@
 
 Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the tellor oracle MUST HAVE ALREADY had at LEAST TWO rounds of price updates for EWT/EUR or deploy will fail, as the
 liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy set addresses in pricefeed.sol). Also, the tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
+WARNING: Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
+
+there "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
+but i'm finding that isn't cool...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate that on chain before subsequent calls checking ownership will work correctly. Very nasty intermittent deploy bugs otherwise.
 
 5. Deploy contracts to supported networks, e.g.
 

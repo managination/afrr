@@ -553,6 +553,7 @@ async function mainnetDeploy(configParams) {
     console.log(`Trove list size: ${listSize} `)
 
     // Total system debt and coll
+    console.log("Getting total system debt...")
     const entireSystemDebt = await liquityCore.troveManager.getEntireSystemDebt()
     const entireSystemColl = await liquityCore.troveManager.getEntireSystemColl()
     th.logBN("Entire system debt", entireSystemDebt)

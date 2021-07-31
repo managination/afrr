@@ -249,21 +249,26 @@ class MainnetDeploymentHelper {
 
     // Connect contracts to their dependencies
     async connectCoreContractsMainnet(contracts, LQTYContracts, chainlinkProxyAddress) {
+        console.log("Connecting Core Contracts...")
         const gasPrice = this.configParams.GAS_PRICE
+        const gasLimit = 600000;
 
         // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
+        console.log("pricefeed.setAddresses...")
         await this.isOwnershipRenounced(contracts.priceFeed) ||
-            await this.sendAndWaitForTransaction(contracts.priceFeed.setAddresses(chainlinkProxyAddress, contracts.tellorCaller.address, { gasPrice }))
+            await this.sendAndWaitForTransaction(contracts.priceFeed.setAddresses(chainlinkProxyAddress, contracts.tellorCaller.address, { gasPrice, gasLimit }))
 
         // set TroveManager addr in SortedTroves
+        console.log("sortedTroves.setParms...")
         await this.isOwnershipRenounced(contracts.sortedTroves) ||
             await this.sendAndWaitForTransaction(contracts.sortedTroves.setParams(
                 maxBytes32,
                 contracts.troveManager.address,
-                contracts.borrowerOperations.address, { gasPrice }
+                contracts.borrowerOperations.address, { gasPrice, gasLimit }
             ))
 
         // set contracts in the Trove Manager
+        console.log("troveManager.setAddresses...")
         await this.isOwnershipRenounced(contracts.troveManager) ||
             await this.sendAndWaitForTransaction(contracts.troveManager.setAddresses(
                 contracts.borrowerOperations.address,
@@ -276,10 +281,11 @@ class MainnetDeploymentHelper {
                 contracts.lusdToken.address,
                 contracts.sortedTroves.address,
                 LQTYContracts.lqtyToken.address,
-                LQTYContracts.lqtyStaking.address, { gasPrice }
+                LQTYContracts.lqtyStaking.address, { gasPrice, gasLimit }
             ))
 
         // set contracts in BorrowerOperations 
+        console.log("borrowerOperations.setAddresses...")
         await this.isOwnershipRenounced(contracts.borrowerOperations) ||
             await this.sendAndWaitForTransaction(contracts.borrowerOperations.setAddresses(
                 contracts.troveManager.address,
@@ -291,10 +297,11 @@ class MainnetDeploymentHelper {
                 contracts.priceFeed.address,
                 contracts.sortedTroves.address,
                 contracts.lusdToken.address,
-                LQTYContracts.lqtyStaking.address, { gasPrice }
+                LQTYContracts.lqtyStaking.address, { gasPrice, gasLimit }
             ))
 
         // set contracts in the Pools
+        console.log("stabilityPool.setAddresses...")
         await this.isOwnershipRenounced(contracts.stabilityPool) ||
             await this.sendAndWaitForTransaction(contracts.stabilityPool.setAddresses(
                 contracts.borrowerOperations.address,
@@ -303,68 +310,78 @@ class MainnetDeploymentHelper {
                 contracts.lusdToken.address,
                 contracts.sortedTroves.address,
                 contracts.priceFeed.address,
-                LQTYContracts.communityIssuance.address, { gasPrice }
+                LQTYContracts.communityIssuance.address, { gasPrice, gasLimit }
             ))
 
+        console.log("activePool.setAddresses...")
         await this.isOwnershipRenounced(contracts.activePool) ||
             await this.sendAndWaitForTransaction(contracts.activePool.setAddresses(
                 contracts.borrowerOperations.address,
                 contracts.troveManager.address,
                 contracts.stabilityPool.address,
-                contracts.defaultPool.address, { gasPrice }
+                contracts.defaultPool.address, { gasPrice, gasLimit }
             ))
 
+        console.log("defaultPool.setAddresses...")
         await this.isOwnershipRenounced(contracts.defaultPool) ||
             await this.sendAndWaitForTransaction(contracts.defaultPool.setAddresses(
                 contracts.troveManager.address,
-                contracts.activePool.address, { gasPrice }
+                contracts.activePool.address, { gasPrice, gasLimit }
             ))
 
+        console.log("collSurplusPool.setAddresses...")
         await this.isOwnershipRenounced(contracts.collSurplusPool) ||
             await this.sendAndWaitForTransaction(contracts.collSurplusPool.setAddresses(
                 contracts.borrowerOperations.address,
                 contracts.troveManager.address,
-                contracts.activePool.address, { gasPrice }
+                contracts.activePool.address, { gasPrice, gasLimit }
             ))
 
         // set contracts in HintHelpers
+        console.log("hintHelpers.setAddresses...")
         await this.isOwnershipRenounced(contracts.hintHelpers) ||
             await this.sendAndWaitForTransaction(contracts.hintHelpers.setAddresses(
                 contracts.sortedTroves.address,
-                contracts.troveManager.address, { gasPrice }
+                contracts.troveManager.address, { gasPrice, gasLimit }
             ))
     }
 
     async connectLQTYContractsMainnet(LQTYContracts) {
         const gasPrice = this.configParams.GAS_PRICE
-
+        const gasLimit = 300000;
         // Set LQTYToken address in LCF
+        console.log("lockupContractFactory.setLQTYTokenAddress...")
         await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
-            await this.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address, { gasPrice }))
+            await this.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address, { gasPrice, gasLimit }))
     }
 
     async connectLQTYContractsToCoreMainnet(LQTYContracts, coreContracts) {
         const gasPrice = this.configParams.GAS_PRICE
+        const gasLimit = 300000;
+        console.log("qtyStaking.setAddresses...")
         await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
             await this.sendAndWaitForTransaction(LQTYContracts.lqtyStaking.setAddresses(
                 LQTYContracts.lqtyToken.address,
                 coreContracts.lusdToken.address,
                 coreContracts.troveManager.address,
                 coreContracts.borrowerOperations.address,
-                coreContracts.activePool.address, { gasPrice }
+                coreContracts.activePool.address, { gasPrice, gasLimit }
             ))
 
+        console.log("communityIssuance.setAddresses...")
         await this.isOwnershipRenounced(LQTYContracts.communityIssuance) ||
             await this.sendAndWaitForTransaction(LQTYContracts.communityIssuance.setAddresses(
                 LQTYContracts.lqtyToken.address,
-                coreContracts.stabilityPool.address, { gasPrice }
+                coreContracts.stabilityPool.address, { gasPrice, gasLimit }
             ))
     }
 
     async connectUnipoolMainnet(uniPool, LQTYContracts, LUSDWETHPairAddr, duration) {
         const gasPrice = this.configParams.GAS_PRICE
+        const gasLimit = 300000;
+        console.log("uniPool.setParams...")
         await this.isOwnershipRenounced(uniPool) ||
-            await this.sendAndWaitForTransaction(uniPool.setParams(LQTYContracts.lqtyToken.address, LUSDWETHPairAddr, duration, { gasPrice }))
+            await this.sendAndWaitForTransaction(uniPool.setParams(LQTYContracts.lqtyToken.address, LUSDWETHPairAddr, duration, { gasPrice, gasLimit }))
     }
 
     // --- Verify on Etherscan ---

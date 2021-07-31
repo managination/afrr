@@ -114,6 +114,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "latestAnswer",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "latestRoundData",
 				"outputs": [
 					{
@@ -213,11 +226,11 @@
 	},
 	"sources": {
 		"contracts/ChainLinkBypass.sol": {
-			"keccak256": "0x04a942d32c914e0616a872e8283f7baf949c1d920c4c4b7935e1b78b548457e7",
+			"keccak256": "0xd2a8104940a003a9963c1c67743493ed06b6a4312c561e99d7cc8bd51c21d9f6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7eeb8320d2eeb0cf8115f3db0b28a8c8841a11d928317e2e3546bd5f3a16e56f",
-				"dweb:/ipfs/QmbxXPJQKrgTKmSuXsy6Nw46brc2GcETf5o69kD3h1cW9B"
+				"bzz-raw://b720daffdb754788bda65e997806a948f3c1e351a0a835276497faf293f536f2",
+				"dweb:/ipfs/QmNZecXU7SYJ3X2hF2fT2oASHpFChZs1Fx562K7vQMkXHJ"
 			]
 		},
 		"contracts/Dependencies/AggregatorV3Interface.sol": {
