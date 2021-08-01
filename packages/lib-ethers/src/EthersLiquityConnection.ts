@@ -14,7 +14,7 @@ import devOrNull from "../deployments/dev.json";
 
 // RJA - Added EWC Networks
 import ewVolta from "../deployments/ewVolta.json";
-import ewMainnet from "../deployments/ewMainnet.json";
+//import ewMainnet from "../deployments/ewMainnet.json"; // TODO: add in MainNet later
 
 import { numberify, panic } from "./_utils";
 import { EthersProvider, EthersSigner } from "./types";
@@ -40,7 +40,7 @@ const deployments: {
   // [goerli.chainId]: goerli,
   // [kovan.chainId]: kovan,
   [ewVolta.chainId]: ewVolta,
-  [ewMainnet.chainId]: ewMainnet,
+  //[ewMainnet.chainId]: ewMainnet,
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
 };

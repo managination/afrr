@@ -113,3 +113,167 @@ CommunityIssuance state variables:
 Total LQTY issued to depositors / front ends: 0.000000000000000000
 Checking all contracts renounced ownership...
 *** SUCCESS: END OF DEPLOY TO ewVolta NETWORK ***
+
+
+yarn test:
+
+~/Projects/ew/liqudity/afrr  on   symbol-renaming-part-2  yarn test                                                                                                                                                  1 ✘  took 10s   at 07:00:08 AM  
+yarn run v1.22.5
+$ echo **TEST** && run-s test:*
+**TEST**
+$ yarn workspace @liquity/lib-base test
+$ mocha --require ts-node/register
+
+
+  Decimal
+    .from()
+      when passing a string
+        ✓ should throw if it's empty
+        ✓ should throw if it's non-numeric
+        ✓ should convert it if it has no decimal point
+        ✓ should convert it if it has decimal point
+        ✓ should convert it if characteristic is missing
+        ✓ should convert it if mantissa is missing
+        ✓ should truncate if mantissa is too long
+        in scientific notation
+          ✓ should convert it if exponent has no sign
+          ✓ should convert it if exponent has '+' sign
+          ✓ should convert it if exponent has '-' sign
+      when passing a number
+        ✓ should preserve fractional part
+        ✓ should convert it even if it's very small
+        ✓ should convert it even if it's very large
+      when passing a Decimal
+        ✓ should return the same Decimal
+    .toString()
+      when not passing a parameter
+        ✓ should not include '.' for integers
+        ✓ should include '.' for fractions
+        ✓ should trim trailing zeros from fractions
+      when passing a precision parameter
+        ✓ should round to the nearest decimal
+        ✓ should include '.' and decimal zeros for integers if precision is >0
+        ✓ should not include '.' if precision is 0
+    .shorten()
+      ✓ should turn '0.123' into '0.12'
+      ✓ should turn '1.234' into '1.23'
+      ✓ should turn '12.345' into '12.3'
+      ✓ should turn '123.456' into '123'
+      ✓ should turn '1234.567' into '1.23K'
+      ✓ should turn '12345.678' into '12.3K'
+      ✓ should turn '123456.789' into '123K'
+      ✓ should turn '1234567.891' into '1.23M'
+      ✓ should turn '12345678.912' into '12.3M'
+      ✓ should turn '123456789.123' into '123M'
+      ✓ should turn '1234567891.234' into '1.23B'
+      ✓ should turn '12345678912.345' into '12.3B'
+      ✓ should turn '123456789123.456' into '123B'
+      ✓ should turn '1234567891234.567' into '1.23T'
+      ✓ should turn '12345678912345.678' into '12.3T'
+      ✓ should turn '123456789123456.789' into '123T'
+      ✓ should turn '1234567891234567.891' into '1,235T'
+      ✓ should turn '12345678912345678.912' into '12,346T'
+      ✓ should turn '123456789123456789.123' into '123,457T'
+      ✓ should turn '1234567891234567891.234' into '1,234,568T'
+    .mul()
+      ✓ should multiply
+    .div()
+      ✓ should divide
+    .mulDiv()
+      ✓ should multiply then divide
+    .pow()
+      ✓ should be roughly the same as Math.pow() (54ms)
+    .isZero
+      ✓ should be true if Decimal is zero
+      ✓ should be false if Decimal is non-zero
+
+  LQTYStake
+    ✓ applying diff of `b` from `a` to `a` should always yield `b`
+    ✓ applying what changed should preserve zeroing
+
+  StabilityDeposit
+    ✓ applying diff of `b` from `a` to `a` should always yield `b`
+    ✓ applying what changed should preserve zeroing
+
+  Trove
+    ✓ applying undefined diff should yield the same Trove
+    ✓ applying diff of empty from `b` to `a` should yield empty
+    ✓ applying what changed should preserve zeroings
+    ✓ applying diff of `b` from `a` to `a` should yield `b` when borrowing rate is 0
+    ✓ applying diff of `b` from `a` to `a` should roughly yield `b` when borrowing rate is non-0
+    ✓ applying an adjustment should never throw
+    whatChanged()
+      ✓ should not define zeros on adjustment
+      ✓ should recreate a Trove with minimum debt at any borrowing rate
+
+
+  58 passing (217ms)
+
+$ yarn workspace @liquity/lib-ethers test
+$ hardhat test
+
+
+  EthersLiquity
+    ✓ should get the price
+    findHintForCollateralRatio
+      ✓ should pick the closest approx hint
+    Trove
+      ✓ should have no Trove initially
+      ✓ should fail to create an undercollateralized Trove (130ms)
+      ✓ should fail to create a Trove with too little debt
+      ✓ should create a Trove with some borrowing (392ms)
+      ✓ should fail to withdraw all the collateral while the Trove has debt (126ms)
+      ✓ should repay some debt (713ms)
+      ✓ should borrow some more (1361ms)
+      ✓ should deposit more collateral (624ms)
+      ✓ should repay some debt and withdraw some collateral at the same time (639ms)
+      ✓ should borrow more and deposit some collateral at the same time (1369ms)
+      ✓ should close the Trove with some LUSD from another user (1070ms)
+    SendableEthersLiquity
+      ✓ should parse failed transactions without throwing (114ms)
+    Frontend
+      ✓ should have no frontend initially
+      ✓ should register a frontend
+      ✓ should have a frontend now
+      ✓ other user's deposit should be tagged with the frontend's address (740ms)
+    StabilityPool
+      ✓ should make a small stability deposit (415ms)
+      ✓ other user should make a Trove with very low ICR (414ms)
+      ✓ the price should take a dip
+      ✓ should liquidate other user's Trove (1072ms)
+      ✓ should have a depleted stability deposit and some collateral gain
+      ✓ the Trove should have received some liquidation shares
+      ✓ total should equal the Trove
+      ✓ should transfer the gains to the Trove (1133ms)
+      when people overstay
+        ✓ should still be able to withdraw remaining deposit (858ms)
+    Redemption
+      ✓ should fail to redeem during the bootstrap phase (1887ms)
+      ✓ should redeem some LUSD after the bootstrap phase (1730ms)
+      ✓ should claim the collateral surplus after redemption (192ms)
+      ✓ borrowing rate should be maxed out now (1507ms)
+    Redemption (truncation)
+      ✓ should truncate the amount if it would put the last Trove below the min debt (1308ms)
+      ✓ should increase the amount to the next lowest redeemable value (2423ms)
+      ✓ should fail to increase the amount if it's not truncated (866ms)
+    Redemption (gas checks)
+      ✓ should redeem using the maximum iterations and almost all gas (22082ms)
+    Liquidity mining
+      ✓ should obtain some UNI LP tokens (56ms)
+      ✓ should fail to stake UNI LP before approving the spend
+      ✓ should stake UNI LP after approving the spend (400ms)
+      ✓ should have an LQTY reward after some time has passed (4382ms)
+      ✓ should partially unstake (90ms)
+      ✓ should unstake remaining tokens and withdraw remaining LQTY reward (1445ms)
+      ✓ should have no more rewards after the mining period is over (673ms)
+    Gas estimation
+      ✓ should include enough gas for updating lastFeeOperationTime (3367ms)
+      ✓ should include enough gas for one extra traversal (5763ms)
+      ✓ should include enough gas for both when borrowing (4369ms)
+    Gas estimation (LQTY issuance)
+      ✓ should include enough gas for issuing LQTY (16134ms)
+
+
+  46 passing (3m)
+
+  Note: front-end tests failed (as expected)
