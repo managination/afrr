@@ -721,6 +721,10 @@ async function mainnetDeploy(configParams) {
     //   LC_LQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployedShortTermLC.address)
     //   console.log(`LC LQTY bal after withdrawal: ${LC_LQTYBal}`)
 
+    // RJA add check that all contracts renounced ownership:
+    console.log("Checking all contracts renounced ownership...")
+    await mdh.checkAllContractsRenouncedOwnership(liquityCore, LQTYContracts, unipool)
+
     console.log(`*** SUCCESS: END OF DEPLOY TO ${hre.network.name} NETWORK ***`)
 }
 

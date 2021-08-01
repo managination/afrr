@@ -247,6 +247,21 @@ class MainnetDeploymentHelper {
         return owner == ZERO_ADDRESS
     }
 
+    async checkAllContractsRenouncedOwnership(contracts, LQTYContracts, uniPool) {
+        assert(await this.isOwnershipRenounced(contracts.priceFeed), "priceFeed did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.sortedTroves), "sortedTroves did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.troveManager), "troveManager did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.borrowerOperations), "borrowerOperations did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.stabilityPool), "stabilityPool did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.activePool), "activePool did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.defaultPool), "defaultPool did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.collSurplusPool), "collSurplusPool did not renounce ownership");
+        assert(await this.isOwnershipRenounced(contracts.hintHelpers), "hintHelpers did not renounce ownership");
+        assert(await this.isOwnershipRenounced(LQTYContracts.lqtyStaking), "lqtyStaking did not renounce ownership");
+        assert(await this.isOwnershipRenounced(LQTYContracts.communityIssuance), "communityIssuance did not renounce ownership");
+        assert(await this.isOwnershipRenounced(uniPool), "uniPool did not renounce ownership");
+    }
+
     // Connect contracts to their dependencies
     async connectCoreContractsMainnet(contracts, LQTYContracts, chainlinkProxyAddress) {
         console.log("Connecting Core Contracts...")
