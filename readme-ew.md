@@ -62,10 +62,13 @@ yarn prepare (this recompiles the contracts and creates the packages/contracts/a
 
 DEPLOYING CONTRACTS:
 
-To run deployment again, e.g.:
+To run deployment:
 
-1. delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all contracts are now re-deployed with all changes)
-2. npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+
+Each run is incremental, so it can be restarted if error, and it will just add missing contracts. If you want to force re-creation of all contracts,
+delete the file packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json. Doing so will force the deploy to re-create all contracts again from scratch, including
+unipool, unitokens, etc. (i.e. you get a complete new set of contracts for all Liquity).
 
 PRETTIER CONTRACTS:
 
