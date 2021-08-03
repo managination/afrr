@@ -50,18 +50,19 @@ Tellor Playground on Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
 
 REBUILD CONTRACTS:
 
-if you change contract code, rebuild contracts:
+If you change contract code, rebuild contracts:
 
-{edit contracts as needed}
-git commit changes (so version file gets a new value)
 cd packages/contracts
-yarn prepare (this recompiles the contracts, and creates packages/contracts/artifacts/contracts files, and the packages/contracts/artifacts/version file)
+{edit contracts as needed}
+next, commit changes so contract version file gets new value (from the commit):
 git add .
-git commit -m "re-compiled contracts"
+git commit -m "updated contracts whatever info you want goes here..."
 git push
-yarn prepare:set-version (this updates packages/contracts/artifacts/version file with git commit version, which should change, since contracts were compiled and pushed)
+yarn prepare (this recompiles the contracts and creates the packages/contracts/artifacts files, and creates the packages/contracts/artifacts/version file)
 
-run deployment again, e.g.:
+DEPLOYING CONTRACTS:
+
+To run deployment again, e.g.:
 
 1. delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all contracts are now re-deployed with all changes)
 2. npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js

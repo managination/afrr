@@ -20,8 +20,7 @@
             "master"
         ],
         "plugins": [
-            "@semantic-release/commit-analyzer",
-            [
+            "@semantic-release/commit-analyzer", [
                 "@semantic-release/release-notes-generator",
                 {
                     "preset": "angular",
@@ -62,7 +61,7 @@
         "release:delete-dev-deployments": "yarn workspace @liquity/lib-ethers delete-dev-deployments",
         "release:lib-base": "yarn workspace @liquity/lib-base semantic-release",
         "release:lib-ethers": "yarn workspace @liquity/lib-ethers semantic-release",
-        "save-live-version": "echo **START-LIVE** && yarn workspace @liquity/lib-ethers save-live-version",
+        "save-live-version": "echo **SAVE-LIVE-VERSION** && yarn workspace @liquity/lib-ethers save-live-version",
         "start-dev-chain": "echo **START-DEV-CHAIN** && run-s start-dev-chain:*",
         "start-dev-chain:openethereum": "node dev-chain/start.js",
         "start-dev-chain:prepare-providers": "yarn prepare:providers",

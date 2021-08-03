@@ -1,3 +1,6 @@
+// RJA NOTE: this file really doesn't do or check anything any longer for EWC deployments. This is because we don't use the lib-ethers deploy scripts, so there are no "deployment JSON files" to even check version against.
+// So this script basically just runs, see's no files, and outputs that all deployments match. It's a no-op script for EWC really.
+
 import fs from "fs";
 import path from "path";
 import "colors";
