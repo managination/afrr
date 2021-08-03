@@ -24,5 +24,11 @@ const jsonFiles = recursivelyListFilesInDir(contractsDir).filter(([, file]) =>
 fs.removeSync(liveDir);
 fs.mkdirSync(liveDir);
 
+console.log("save-live-version...");
+console.log("artifactsDir=", artifactsDir);
+console.log("liveDir=" + liveDir);
+// console.log("jsonFiles=" + jsonFiles);
+console.log("src=" + path.join(artifactsDir, "version"));
+console.log("dest=" + path.join(liveDir, "version"));
 fs.copyFileSync(path.join(artifactsDir, "version"), path.join(liveDir, "version"));
 jsonFiles.forEach(([dir, file]) => fs.copyFileSync(path.join(dir, file), path.join(liveDir, file)));

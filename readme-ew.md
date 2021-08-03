@@ -1,18 +1,20 @@
 # Liquity: Decentralized Borrowing Protocol
 
-## EWC NOTES SECTION (IN PROGRESS, DO NOT USE REPO YET)
+## EWC SPECIFIC NOTES SECTION
+
+The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
 
 1. download repo
 2. run: yarn
-3. change deployment private keys/addresses as desired (various files, see lib-ethers package)
+3. change deployment private keys/addresses as desired (various files, see contracts package)
 4. deploy tellor contract/playground, get it's address and use it also in config settings
 
-Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the tellor oracle MUST HAVE ALREADY had at LEAST TWO rounds of price updates for EWT/EUR or deploy will fail, as the
-liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy set addresses in pricefeed.sol). Also, the tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
-WARNING: Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
+Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
+Liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy in pricefeed.sol). Also, the Tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
+WARNING: General note, Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
 
-there "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
-but i'm finding that isn't cool...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate that on chain before subsequent calls checking ownership will work correctly. Very nasty intermittent deploy bugs otherwise.
+There "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
+but I'm finding that isn't sufficient...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate on chain before subsequent calls checking ownership will work correctly. I've seen very nasty intermittent deploy bugs otherwise.
 
 5. Deploy contracts to supported networks, e.g.
 
@@ -20,21 +22,28 @@ cd packages/contracts
 npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
 npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
 
-There is deploy code in Liquity also here, but don't use (this runs deploy.ts in packages/lib-ethers, which APPARENTLY was only for dev until final Liquity release, it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts)
+OLD DEPLOY SCRIPTS (DO NOT USE THESE):
+
+There are also deploy code in packages/lib-ethers, but don't use that. It runs deploy.ts in packages/lib-ethers, which APPARENTLY was only used for dev testing until final Liquity release - it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts and doesn't set everything up. These old scripts were run as:
+
 yarn deploy --network ewVolta
 yarn deploy --network ewMainnet
 
-6. To open in VS Code: from root code afrr.code-workspace (so debug tasks load)
+6. To open in VS Code: from root directory run "code afrr.code-workspace" (so debug tasks load)
 7. TODO: Validate deployed contracts manually (hardhat used etherscan, which we don't have on ewc)
-8. TODO: Write spoof link contract which actually calls tellor
-9. there are a LOT of Liquity code that we aren't using, is old, outdated, etc...I'm not cleaning all that out. Only the instructions given in this readme are accurate for EW deployment.
+8. There is a LOT of Liquity code that we aren't using - it is old, outdated, etc...I'm not cleaning all that out. Only the instructions given in this readme are accurate for EW deployment.
 
-NOTES:
+TESTING:
 
-1. To run HardHat, cd packages/lib-ethers then npx hardhat [options]
-2. cd packages/lib-ethers npx hardhat test (it passes, but I'm not sure what it's testing yet...)
+from root dir:
+
+yarn test
+
+CONNECTING TO UI SITE:
 
 ssh bitnami@ui.afrr.io
+
+TETHER PLAYGROUND:
 
 Tellor Playground on Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
 Tellor Playground on Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
@@ -43,16 +52,19 @@ REBUILD CONTRACTS:
 
 if you change contract code, rebuild contracts:
 
+{edit contracts as needed}
+git commit changes (so version file gets a new value)
 cd packages/contracts
-yarn prepare (this recompiles the contracts, and creates packages/contracts/artifacts/contracts files)
+yarn prepare (this recompiles the contracts, and creates packages/contracts/artifacts/contracts files, and the packages/contracts/artifacts/version file)
 git add .
-git commit -m "compiled contracts"
+git commit -m "re-compiled contracts"
 git push
 yarn prepare:set-version (this updates packages/contracts/artifacts/version file with git commit version, which should change, since contracts were compiled and pushed)
 
-delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all contracts are rebuilt now with changes)
 run deployment again, e.g.:
-npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+
+1. delete packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json (so all contracts are now re-deployed with all changes)
+2. npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
 
 PRETTIER CONTRACTS:
 
