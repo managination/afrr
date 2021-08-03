@@ -60,6 +60,12 @@ git commit -m "updated contracts whatever info you want goes here..."
 git push
 yarn prepare (this recompiles the contracts and creates the packages/contracts/artifacts files, and creates the packages/contracts/artifacts/version file)
 
+TESTS:
+
+yarn test
+yarn test-contracts
+yarn coverage
+
 DEPLOYING CONTRACTS:
 
 To run deployment:
