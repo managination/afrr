@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require("path");
 
 const ZERO_ADDRESS = '0x' + '0'.repeat(40)
 const maxBytes32 = '0x' + 'f'.repeat(64)
@@ -21,12 +22,11 @@ class MainnetDeploymentHelper {
     }
 
     saveDeployment(deploymentState) {
-            const deploymentStateJSON = JSON.stringify(deploymentState, null, 2)
-            fs.writeFileSync(this.configParams.OUTPUT_FILE, deploymentStateJSON)
+        const deploymentStateJSON = JSON.stringify(deploymentState, null, 2)
+        fs.writeFileSync(this.configParams.OUTPUT_FILE, deploymentStateJSON)
+    }
 
-        }
-        // --- Deployer methods ---
-
+    // --- Deployer methods ---
     async getFactory(name) {
         const factory = await ethers.getContractFactory(name, this.deployerWallet)
         return factory

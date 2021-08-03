@@ -26,7 +26,7 @@ const waitFunction = async() => {
     return delay(90000) // wait 90s
 }
 
-const GAS_PRICE = 0.0000001 * 10 ** 9 // Gwei
+const GAS_PRICE = 0.01 * 10 ** 9 // Gwei
 const TX_CONFIRMATIONS = 3 // TODO NOT SURE WHAT TO SET THIS AT? 1 seems risky...3 seems safer but slow
 const EWT_EEUR_TELLOR_PAIR_ID = 1
 

@@ -3,8 +3,11 @@ const { UniswapV2Pair } = require("./ABIs/UniswapV2Pair.js")
 const { UniswapV2Router02 } = require("./ABIs/UniswapV2Router02.js")
 const { ChainlinkAggregatorV3Interface } = require("./ABIs/ChainlinkAggregatorV3Interface.js")
 const { TestHelper: th, TimeValues: timeVals } = require("../utils/testHelpers.js")
+const fs = require("fs")
+const path = require("path");
 const { dec } = th
 const MainnetDeploymentHelper = require("../utils/mainnetDeploymentHelpers.js")
+const { ContractFunctionVisibility } = require("hardhat/internal/hardhat-network/stack-traces/model")
 const toBigNum = ethers.BigNumber.from
 
 async function mainnetDeploy(configParams) {
@@ -95,7 +98,7 @@ async function mainnetDeploy(configParams) {
     await mdh.logContractObjects(LQTYContracts)
     console.log(`Unipool address: ${unipool.address}`)
 
-    // let latestBlock = await ethers.provider.getBlockNumber()
+    let latestBlock = await ethers.provider.getBlockNumber()
     let deploymentStartTime = await LQTYContracts.lqtyToken.getDeploymentStartTime()
 
     console.log(`Deployment start time: ${deploymentStartTime}`)
@@ -724,6 +727,53 @@ async function mainnetDeploy(configParams) {
     // RJA add check that all contracts renounced ownership:
     console.log("Checking all contracts renounced ownership...")
     await mdh.checkAllContractsRenouncedOwnership(liquityCore, LQTYContracts, unipool)
+
+    // now write a deployment file which matches the format expected in lib-ethers/deployments/default with the networkname.json
+    const dfs = path.join("..", "lib-ethers", "deployments", "default", hre.network.name + ".json");
+    const version = fs.readFileSync(path.join("..", "contracts", "artifacts", "version")).toString().trim();
+    console.log(`Writing deployment file: ${dfs}...`)
+
+    const lqtyTokenDeploymentTime = await LQTYContracts.lqtyToken.getDeploymentStartTime();
+    const bootstrapPeriod = await liquityCore.troveManager.BOOTSTRAP_PERIOD();
+    const totalStabilityPoolLQTYReward = await LQTYContracts.communityIssuance.LQTYSupplyCap();
+    const liquidityMiningLQTYRewardRate = await unipool.rewardRate();
+
+    const deployment = {
+        chainId: hre.network.config.chainId,
+        version: version,
+        deploymentDate: lqtyTokenDeploymentTime.toNumber() * 1000,
+        bootstrapPeriod: 1209600, // TODO
+        totalStabilityPoolLQTYReward: "32000000", // TODO
+        liquidityMiningLQTYRewardRate: "0.257201646090534979", // TODO
+        _priceFeedIsTestnet: false,
+        _uniTokenIsMock: false,
+        _isDev: false,
+        startBlock: latestBlock,
+        addresses: {
+            activePool: liquityCore.activePool.address,
+            borrowerOperations: liquityCore.borrowerOperations.address,
+            troveManager: liquityCore.troveManager.address,
+            collSurplusPool: liquityCore.collSurplusPool.address,
+            communityIssuance: LQTYContracts.communityIssuance.address,
+            defaultPool: liquityCore.defaultPool.address,
+            hintHelpers: liquityCore.hintHelpers.address,
+            lockupContractFactory: LQTYContracts.lockupContractFactory.address,
+            lqtyStaking: LQTYContracts.lqtyStaking.address,
+            priceFeed: liquityCore.priceFeed.address,
+            sortedTroves: liquityCore.sortedTroves.address,
+            stabilityPool: liquityCore.stabilityPool.address,
+            gasPool: liquityCore.gasPool.address,
+            unipool: unipool.address,
+            lusdToken: liquityCore.lusdToken.address,
+            lqtyToken: LQTYContracts.lqtyToken.address,
+            multiTroveGetter: multiTroveGetter.address,
+            uniToken: LUSDETHPair.address,
+            chainLinkBypass: chainLinkBypass.address,
+            tellorOracleAddress: configParams.externalAddrs.TELLOR_MASTER
+        }
+    };
+    const deploymentJSON = JSON.stringify(deployment, null, 2)
+    fs.writeFileSync(dfs, deploymentJSON)
 
     console.log(`*** SUCCESS: END OF DEPLOY TO ${hre.network.name} NETWORK ***`)
 }

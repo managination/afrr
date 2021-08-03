@@ -26,7 +26,7 @@ const waitFunction = async() => {
     return delay(90000) // wait 90s
 }
 
-const GAS_PRICE = 1 * 10 ** 9 // 1 Gwei
+const GAS_PRICE = 0.01 * 10 ** 9 // 1 Gwei
 const TX_CONFIRMATIONS = 3
 const EWT_EEUR_TELLOR_PAIR_ID = 1
 
