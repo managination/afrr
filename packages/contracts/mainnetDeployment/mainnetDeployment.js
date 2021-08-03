@@ -3,11 +3,13 @@ const { UniswapV2Pair } = require("./ABIs/UniswapV2Pair.js")
 const { UniswapV2Router02 } = require("./ABIs/UniswapV2Router02.js")
 const { ChainlinkAggregatorV3Interface } = require("./ABIs/ChainlinkAggregatorV3Interface.js")
 const { TestHelper: th, TimeValues: timeVals } = require("../utils/testHelpers.js")
+const { Decimal } = require("@liquity/lib-base");
 const fs = require("fs")
 const path = require("path");
 const { dec } = th
 const MainnetDeploymentHelper = require("../utils/mainnetDeploymentHelpers.js")
 const { ContractFunctionVisibility } = require("hardhat/internal/hardhat-network/stack-traces/model")
+const { ethers } = require("hardhat")
 const toBigNum = ethers.BigNumber.from
 
 async function mainnetDeploy(configParams) {
@@ -739,12 +741,16 @@ async function mainnetDeploy(configParams) {
     const liquidityMiningLQTYRewardRate = await unipool.rewardRate();
 
     const deployment = {
-        chainId: hre.network.config.chainId,
+        chainId: (await ethers.provider.getNetwork()).chainId,
         version: version,
         deploymentDate: lqtyTokenDeploymentTime.toNumber() * 1000,
-        bootstrapPeriod: 1209600, // TODO
-        totalStabilityPoolLQTYReward: "32000000", // TODO
-        liquidityMiningLQTYRewardRate: "0.257201646090534979", // TODO
+        bootstrapPeriod: bootstrapPeriod.toNumber(),
+        totalStabilityPoolLQTYReward: `${Decimal.fromBigNumberString(
+      totalStabilityPoolLQTYReward.toHexString()
+    )}`,
+        liquidityMiningLQTYRewardRate: `${Decimal.fromBigNumberString(
+      liquidityMiningLQTYRewardRate.toHexString()
+    )}`,
         _priceFeedIsTestnet: false,
         _uniTokenIsMock: false,
         _isDev: false,

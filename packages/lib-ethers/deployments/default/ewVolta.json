@@ -1,14 +1,14 @@
 {
   "chainId": 73799,
-  "version": "cc8297ecc1e2bf3c9438da29eab38e9f8252caeb",
+  "version": "0dc5f1d5fbb15622294fa13ae4b4ab0c8eacda83",
   "deploymentDate": 1627825525000,
   "bootstrapPeriod": 1209600,
   "totalStabilityPoolLQTYReward": "32000000",
-  "liquidityMiningLQTYRewardRate": "0.257201646090534979",
+  "liquidityMiningLQTYRewardRate": "0.367430922986478542",
   "_priceFeedIsTestnet": false,
   "_uniTokenIsMock": false,
   "_isDev": false,
-  "startBlock": 12910692,
+  "startBlock": 12910952,
   "addresses": {
     "activePool": "0x3b1C328b2dA34d3F909bb502057d213df830c6eE",
     "borrowerOperations": "0xDa049E225102BE0094784aD62145481Fc39198C2",
