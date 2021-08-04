@@ -29,7 +29,7 @@ async function mainnetDeploy(configParams) {
     let deployerETHBalance = await ethers.provider.getBalance(deployerWallet.address)
     console.log(`DeployerETHBalance before: ${deployerETHBalance}`)
 
-    // RJA - This is set to point to Carbonswap instead of Uniswap
+    // This is set to point to Carbonswap instead of Uniswap
     // Get UniswapV2Factory instance at its deployed address
     const uniswapV2Factory = new ethers.Contract(
         configParams.externalAddrs.UNISWAP_V2_FACTORY,
@@ -80,12 +80,12 @@ async function mainnetDeploy(configParams) {
         deploymentState,
     )
 
-    // RJA Deploy our LinkBypass Contract
+    // Deploy our LinkBypass Contract
     const chainLinkBypass = await mdh.deployChainLinkBypassMainnet(configParams.externalAddrs.TELLOR_MASTER, configParams.EWT_EEUR_TELLOR_PAIR_ID, deploymentState)
 
 
     // Connect all core contracts up
-    await mdh.connectCoreContractsMainnet(liquityCore, LQTYContracts, chainLinkBypass.address); // RJA configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
+    await mdh.connectCoreContractsMainnet(liquityCore, LQTYContracts, chainLinkBypass.address); // configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
     await mdh.connectLQTYContractsMainnet(LQTYContracts)
     await mdh.connectLQTYContractsToCoreMainnet(LQTYContracts, liquityCore)
 
@@ -165,7 +165,7 @@ async function mainnetDeploy(configParams) {
     // Check chainlink proxy price ---
 
     const chainlinkProxy = new ethers.Contract(
-        chainLinkBypass.address, // RJA configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY,
+        chainLinkBypass.address, // configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY,
         ChainlinkAggregatorV3Interface,
         deployerWallet
     )
@@ -175,7 +175,7 @@ async function mainnetDeploy(configParams) {
     console.log(`Current Chainlink price: ${chainlinkPrice}`)
 
     // Check Tellor price directly (through our TellorCaller)
-    let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID TODO RJA Need to Change ID HERE
+    let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID TODO Need to Change ID HERE
     console.log(`Current Tellor price: ${tellorPriceResponse[1]}`)
     console.log(`Current Tellor timestamp: ${tellorPriceResponse[2]}`)
 
@@ -726,7 +726,7 @@ async function mainnetDeploy(configParams) {
     //   LC_LQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployedShortTermLC.address)
     //   console.log(`LC LQTY bal after withdrawal: ${LC_LQTYBal}`)
 
-    // RJA add check that all contracts renounced ownership:
+    // add check that all contracts renounced ownership:
     console.log("Checking all contracts renounced ownership...")
     await mdh.checkAllContractsRenouncedOwnership(liquityCore, LQTYContracts, unipool)
 

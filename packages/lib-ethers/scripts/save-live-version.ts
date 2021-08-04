@@ -1,4 +1,4 @@
-// RJA NOTE: This file kind of should be part of the contracts package. That is where the contracts are coming from and being set also, since we don't use the lib-ethers deploy scripts for EWC
+// NOTE: This file kind of should be part of the contracts package. That is where the contracts are coming from and being set also, since we don't use the lib-ethers deploy scripts for EWC
 // but I'm leaving the file here as it was created by Liquity. Just note that check-live-version.ts was looking at the version of the lib-ethers deploy output JSON file, which we don't use any more.
 // but we do still use this script to copy all latest contract artifacts to the lib-ethers/live dir for UI build.
 import fs from "fs-extra";

@@ -19,7 +19,7 @@ const getSecret = (secretKey, defaultValue = '') => {
     return secret
 }
 
-// RJA - Removing unused Eth Networks
+// Removing unused Eth Networks
 /* const alchemyUrl = () => {
     return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
 }
@@ -81,7 +81,7 @@ module.exports = {
             blockGasLimit: 12500000,
             gasPrice: 20000000000,
         },
-        // RJA - Removed unsupported Eth Networks
+        // Removed unsupported Eth Networks
         /* mainnet: {
             url: alchemyUrl(),
             gasPrice: 150000000000,
@@ -95,7 +95,7 @@ module.exports = {
             gas: 10000000, // tx gas limit
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
         }, */
-        // RJA - Added EWC Networks
+        // Added EWC Networks
         ewVolta: {
             url: "https://volta-rpc.energyweb.org/",
             gas: 10000000, // tx gas limit

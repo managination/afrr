@@ -42,7 +42,7 @@ const EthersWeb3ReactProvider: React.FC = ({ children }) => {
   );
 };
 
-// RJA - Removed unsupported eth networks
+// Removed unsupported eth networks
 const UnsupportedMainnetFallback: React.FC = () => (
   <Flex
     sx={{
@@ -77,7 +77,7 @@ const App = () => {
     </Flex>
   );
 
-  // RJA - Removed unsupported eth networks
+  // Removed unsupported eth networks
   const unsupportedNetworkFallback = (chainId: number) => (
     <Flex
       sx={{

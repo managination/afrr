@@ -34,7 +34,7 @@ const wsParams = (network: string, infuraApiKey: string): [string, string] => [
   network
 ];
 
-// RJA - Removed unsupported eth networks
+// Removed unsupported eth networks
 const supportedNetworks = [
   //"homestead",
   //"kovan",

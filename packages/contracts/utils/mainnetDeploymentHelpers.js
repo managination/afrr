@@ -138,7 +138,7 @@ class MainnetDeploymentHelper {
         return coreContracts
     }
 
-    // RJA Helper to deploy our ChainLink bypass contract
+    // Helper to deploy our ChainLink bypass contract
     async deployChainLinkBypassMainnet(tellorMasterAddr, tellorEwtEeurPairId, deploymentState) {
         // Get contract factories
         const clFactory = await this.getFactory("ChainLinkBypass")
