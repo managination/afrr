@@ -4,10 +4,28 @@
       "path": "."
     },
     {
+      "path": "packages/contracts"
+    },
+    {
+      "path": "packages/dev-frontend"
+    },
+    {
       "path": "packages/lib-ethers"
     },
     {
-      "path": "packages/contracts"
+      "path": "packages/lib-base"
+    },
+    {
+      "path": "packages/lib-react"
+    },
+    {
+      "path": "packages/lib-subgraph"
+    },
+    {
+      "path": "packages/providers"
+    },
+    {
+      "path": "packages/subgraph"
     }
   ],
   "settings": {
