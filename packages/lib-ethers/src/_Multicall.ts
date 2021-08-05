@@ -22,12 +22,15 @@ const multicallAbi = [
   }
 ];
 
+// added ewc and volta addresses
 const multicallAddress = {
   1: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
   3: "0x53c43764255c17bd724f74c4ef150724ac50a3ed",
   4: "0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821",
   5: "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
-  42: "0x2cc8688c5f75e365aaeeb4ea8d6a480405a48d2a"
+  42: "0x2cc8688c5f75e365aaeeb4ea8d6a480405a48d2a",
+  73799: "0x17e567A5FfAAAC3427E7AcE0d75a6FCf216ef47A",
+  246: "0xf1763b38eE1730D66ec5Df64fF6C71FA0fa88d18"
 };
 
 const hasMulticall = (chainId: number): chainId is keyof typeof multicallAddress =>
@@ -42,9 +45,9 @@ export const _connectToMulticall = (
   chainId: number
 ): _Multicall | undefined =>
   hasMulticall(chainId)
-    ? ((new Contract(
+    ? (new Contract(
         multicallAddress[chainId],
         multicallAbi,
         signerOrProvider
-      ) as unknown) as _Multicall)
+      ) as unknown as _Multicall)
     : undefined;

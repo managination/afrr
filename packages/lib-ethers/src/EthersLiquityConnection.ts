@@ -14,7 +14,7 @@ import devOrNull from "../deployments/dev.json";
 
 // Added EWC Networks
 import ewVolta from "../deployments/ewVolta.json";
-import ewMainnet from "../deployments/ewMainnet.json";
+//import ewMainnet from "../deployments/ewMainnet.json"; // TODO
 
 import { numberify, panic } from "./_utils";
 import { EthersProvider, EthersSigner } from "./types";
@@ -40,7 +40,7 @@ const deployments: {
   // [goerli.chainId]: goerli,
   // [kovan.chainId]: kovan,
   [ewVolta.chainId]: ewVolta,
-  [ewMainnet.chainId]: ewMainnet,
+  //[ewMainnet.chainId]: ewMainnet, // TODO
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
 };
@@ -128,6 +128,19 @@ const connectionFrom = (
     throw new Error(`Invalid useStore value ${optionalParams.useStore}`);
   }
 
+  console.log("**CONNECTIONFROM BRANDED**");
+  const x = branded({
+    provider,
+    signer,
+    _contracts,
+    _multicall,
+    deploymentDate: new Date(deploymentDate),
+    totalStabilityPoolLQTYReward: Decimal.from(totalStabilityPoolLQTYReward),
+    liquidityMiningLQTYRewardRate: Decimal.from(liquidityMiningLQTYRewardRate),
+    ...deployment,
+    ...optionalParams
+  });
+  console.log(x);
   return branded({
     provider,
     signer,
@@ -318,7 +331,12 @@ export function _connectByChainId(
   const deployment: _LiquityDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
 
-  return connectionFrom(
+  console.log("**DEPLOYMENT BEING USED**", deployment);
+  console.log("**CONNECT TO CONTRACTS**");
+  const y = _connectToContracts(signer ?? provider, deployment);
+  console.log(y);
+  console.log("**CONNECTION FROM**");
+  const x = connectionFrom(
     provider,
     signer,
     _connectToContracts(signer ?? provider, deployment),
@@ -326,6 +344,8 @@ export function _connectByChainId(
     deployment,
     optionalParams
   );
+  console.log(x);
+  return x;
 }
 
 /** @internal */

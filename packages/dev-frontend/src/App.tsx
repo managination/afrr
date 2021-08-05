@@ -69,6 +69,15 @@ const UnsupportedMainnetFallback: React.FC = () => (
   </Flex>
 );
 
+const netName = (chainId: number): string => {
+  const netNames: { [key: number]: string } = {
+    1: "mainnet",
+    73799: "ewVolta",
+    246: "ewMainnet"
+  };
+  return netNames[chainId] ?? "unknown network";
+};
+
 const App = () => {
   const loader = (
     <Flex sx={{ alignItems: "center", justifyContent: "center", height: "100vh" }}>
@@ -89,8 +98,7 @@ const App = () => {
       }}
     >
       <Heading sx={{ mb: 3 }}>
-        <Icon name="exclamation-triangle" /> Liquity is not yet deployed to{" "}
-        {chainId === 1 ? "mainnet" : "this network"}. // TODO: RJA ??
+        <Icon name="exclamation-triangle" /> EWC Liquity is not deployed to {netName(chainId)}.
       </Heading>
       Please switch to ewVolta or ewMainnet.
     </Flex>

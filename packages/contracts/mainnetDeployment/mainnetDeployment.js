@@ -773,9 +773,7 @@ async function mainnetDeploy(configParams) {
             lusdToken: liquityCore.lusdToken.address,
             lqtyToken: LQTYContracts.lqtyToken.address,
             multiTroveGetter: multiTroveGetter.address,
-            uniToken: LUSDETHPair.address,
-            chainLinkBypass: chainLinkBypass.address,
-            tellorOracleAddress: configParams.externalAddrs.TELLOR_MASTER
+            uniToken: LUSDETHPair.address
         }
     };
     const deploymentJSON = JSON.stringify(deployment, null, 2)

@@ -98,12 +98,12 @@ module.exports = {
         // Added EWC Networks
         ewVolta: {
             url: "https://volta-rpc.energyweb.org/",
-            gas: 10000000, // tx gas limit
+            gas: 30000000, // tx gas limit
             accounts: [getSecret('EWVOLTA_DEPLOYER_PRIVATEKEY', '')]
         },
         ewMainnet: {
             url: "https://rpc.energyweb.org/",
-            gas: 10000000, // tx gas limit
+            gas: 30000000, // tx gas limit
             accounts: [getSecret('EWMAINNET_DEPLOYER_PRIVATEKEY', '')]
         },
     },
