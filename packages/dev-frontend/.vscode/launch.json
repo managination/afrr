@@ -54,21 +54,18 @@
       "outFiles": ["${workspaceRoot}/dist/**/*.js"]
     },
     {
-      "name": "Liquity UI Node",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceRoot}/node_modules/.bin/react-scripts",
-      "args": ["start", "--inspect", "--inspect-brk"],
-      "protocol": "inspector",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    },
-    {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome",
       "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
+        "webpack:///./*": "${workspaceRoot}/*",
+        "webpack:///*": "*"
+      },
+      "preLaunchTask": "Echo vars"
     }
   ]
 }

@@ -9,6 +9,10 @@ import { Icon } from "../components/Icon";
 const uniLink = (lusdAddress: string) =>
   `https://app.uniswap.org/#/swap?inputCurrency=${lusdAddress}&outputCurrency=ETH`;
 
+// TODO:
+const csLink = (lusdAddress: string) =>
+  `https://carbonswap.exchange/#/swap?inputCurrency=${lusdAddress}&outputCurrency=EWT`;
+
 export const RedemptionPage: React.FC = () => {
   const {
     liquity: {
@@ -27,9 +31,9 @@ export const RedemptionPage: React.FC = () => {
                 emerge.
               </Paragraph>
               <Paragraph sx={{ mt: 2 }}>
-                Most of the time you will get a better rate for converting LUSD to ETH on{" "}
-                <Link href={uniLink(addresses["lusdToken"])} target="_blank">
-                  Uniswap <Icon name="external-link-alt" size="xs" />
+                Most of the time you will get a better rate for converting EEUR to EWT on{" "}
+                <Link href={csLink(addresses["lusdToken"])} target="_blank">
+                  Carbonswap <Icon name="external-link-alt" size="xs" />
                 </Link>{" "}
                 or other exchanges.
               </Paragraph>

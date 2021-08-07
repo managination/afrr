@@ -191,7 +191,7 @@ export const Opening: React.FC = () => {
 
         {description ?? (
           <ActionDescription>
-            Start by entering the amount of ETH you'd like to deposit as collateral.
+            Start by entering the amount of EWT you'd like to deposit as collateral.
           </ActionDescription>
         )}
 

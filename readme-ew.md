@@ -2,6 +2,12 @@
 
 ## EWC SPECIFIC NOTES SECTION
 
+TODO:
+
+- IS EWT/EUR what we price in tellor? (not EWT/USD, correct)
+- aren't we really dealing with WEWT???
+- CS on Volta? or CS supports Volta (so MM works?)
+
 The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
 
 1. download repo

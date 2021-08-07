@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Echo vars",
+      "command": "echo",
+      "args": [
+        "${env:USERNAME}",
+        "workspaceFolder = ${workspaceFolder}",
+        "workspaceRoot = ${workspaceRoot}"
+      ],
+      "type": "shell"
+    }
+  ]
+}

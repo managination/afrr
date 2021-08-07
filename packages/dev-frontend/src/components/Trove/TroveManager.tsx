@@ -31,8 +31,10 @@ type TroveManagerAction =
   | { type: "startChange" | "finishChange" | "revert" | "addMinimumDebt" | "removeMinimumDebt" }
   | { type: "setCollateral" | "setDebt"; newValue: Decimalish };
 
-const reduceWith = (action: TroveManagerAction) => (state: TroveManagerState): TroveManagerState =>
-  reduce(state, action);
+const reduceWith =
+  (action: TroveManagerAction) =>
+  (state: TroveManagerState): TroveManagerState =>
+    reduce(state, action);
 
 const addMinimumDebt = reduceWith({ type: "addMinimumDebt" });
 const removeMinimumDebt = reduceWith({ type: "removeMinimumDebt" });
@@ -217,7 +219,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       {description ??
         (openingNewTrove ? (
           <ActionDescription>
-            Start by entering the amount of ETH you'd like to deposit as collateral.
+            Start by entering the amount of EWT you'd like to deposit as collateral.
           </ActionDescription>
         ) : (
           <ActionDescription>
