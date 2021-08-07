@@ -41,8 +41,8 @@ const supportedNetworks = [
   //"rinkeby",
   //"ropsten",
   //"goerli",
-  "ewVolta",
-  "ewMainnet"
+  "ewMainnet", // TODO
+  "ewVolta"
 ];
 
 export const LiquityProvider: React.FC<LiquityProviderProps> = ({
