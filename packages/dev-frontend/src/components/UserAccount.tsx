@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, Flex, Box, Heading } from "theme-ui";
-
-import { LiquityStoreState } from "@liquity/lib-base";
+import { Decimal, LiquityStoreState } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
 
 import { COIN, GT } from "../strings";
@@ -52,7 +51,8 @@ export const UserAccount: React.FC = () => {
           [
             ["EWT", accountBalance],
             [COIN, lusdBalance],
-            [GT, lqtyBalance]
+            [GT, lqtyBalance],
+            ["SUSU", Decimal.ONE]
           ] as const
         ).map(([currency, balance], i) => (
           <Flex key={i} sx={{ ml: 3, flexDirection: "column" }}>

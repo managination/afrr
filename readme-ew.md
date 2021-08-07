@@ -49,6 +49,8 @@ yarn test
 CONNECTING TO UI SITE:
 
 ssh bitnami@ui.afrr.io
+hosted site dir: /opt/bitnami/nginx/html/
+repo site built at: packages/dev-frontend/build
 
 TETHER PLAYGROUND:
 
@@ -103,6 +105,11 @@ Liquity uses Multicall contract. I've deployed it to Volta:
 
 https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
 0x7d741E28Db631668F98cC5F0682df3A1F3eC2E84
+
+REBUILDING UI:
+yarn rebuild from root of repo
+
+hosted site dir: /opt/bitnami/nginx/html/
 
 ## END EWC NOTES SECTION
 

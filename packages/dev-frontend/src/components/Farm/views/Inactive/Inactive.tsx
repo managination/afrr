@@ -6,6 +6,8 @@ import { InfoMessage } from "../../../InfoMessage";
 import { useFarmView } from "../../context/FarmViewContext";
 import { RemainingLQTY } from "../RemainingLQTY";
 import { Yield } from "../Yield";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 // const uniLink = (lusdAddress: string) => `https://app.uniswap.org/#/add/ETH/${lusdAddress}`;
 const csLink = (lusdAddress: string, isVolta = true) => {
@@ -16,7 +18,7 @@ const csLink = (lusdAddress: string, isVolta = true) => {
 
 export const Inactive: React.FC = () => {
   const { dispatchEvent } = useFarmView();
-
+  const { chainId } = useWeb3React<Web3Provider>();
   const {
     liquity: {
       connection: { addresses }
@@ -41,7 +43,11 @@ export const Inactive: React.FC = () => {
 
           <Paragraph sx={{ mt: 2 }}>
             You can obtain LP tokens by adding liquidity to the{" "}
-            <a target="_blank" href={csLink(addresses["lusdToken"])} rel="nofollow">
+            <a
+              target="_blank"
+              href={csLink(addresses["lusdToken"], chainId === 73799)}
+              rel="noreferrer"
+            >
               EWT/EEUR pool on Carbonswap. <Icon name="external-link-alt" size="xs" />
             </a>
           </Paragraph>
