@@ -22,7 +22,7 @@ export const NoDeposit: React.FC = props => {
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no EEUR in the Stability Pool.">
-          You can earn ETH and AFRR rewards by depositing EEUR.
+          You can earn EWT and AFRR rewards by depositing EEUR.
         </InfoMessage>
 
         <Flex variant="layout.actions">

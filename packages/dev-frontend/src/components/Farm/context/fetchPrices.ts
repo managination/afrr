@@ -42,7 +42,7 @@ export async function fetchPrices(lqtyTokenAddress: string, uniTokenAddress: str
   });
 
   if (!response.ok) {
-    return Promise.reject("Network error connecting to Uniswap subgraph");
+    return Promise.reject("Network error connecting to Carbonswap subgraph");
   }
 
   const { data, errors }: UniswapResponse = await response.json();

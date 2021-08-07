@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Heading, Link, Box, Text } from "theme-ui";
+import { Card, Heading, Box, Text } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
 import { Decimal, Percent, LiquityStoreState } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
@@ -20,7 +20,7 @@ const Balances: React.FC = () => {
   return (
     <Box sx={{ mb: 3 }}>
       <Heading>My Account Balances</Heading>
-      <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
+      <Statistic name="EWT"> {accountBalance.prettify(4)}</Statistic>
       <Statistic name={COIN}> {lusdBalance.prettify()}</Statistic>
       <Statistic name={GT}>{lqtyBalance.prettify()}</Statistic>
     </Box>
@@ -29,7 +29,11 @@ const Balances: React.FC = () => {
 
 const GitHubCommit: React.FC<{ children?: string }> = ({ children }) =>
   children?.match(/[0-9a-f]{40}/) ? (
-    <a target="_blank" href={`https://github.com/energywebfoundation/afrr/commit/${children}`}>
+    <a
+      target="_blank"
+      href={`https://github.com/energywebfoundation/afrr/commit/${children}`}
+      rel="noreferrer"
+    >
       {children.substr(0, 7)}
     </a>
   ) : (

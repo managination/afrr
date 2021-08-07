@@ -7,6 +7,7 @@ TODO:
 - IS EWT/EUR what we price in tellor? (not EWT/USD, correct)
 - aren't we really dealing with WEWT???
 - CS on Volta? or CS supports Volta (so MM works?)
+- Liquity is set now to only allow 1800 EEUR min trove borrow (I SET TO 100 FOR NOW!! TODO RJA)
 
 The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
 

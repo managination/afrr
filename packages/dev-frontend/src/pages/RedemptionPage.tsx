@@ -6,12 +6,14 @@ import { InfoMessage } from "../components/InfoMessage";
 import { useLiquity } from "../hooks/LiquityContext";
 import { Icon } from "../components/Icon";
 
-const uniLink = (lusdAddress: string) =>
-  `https://app.uniswap.org/#/swap?inputCurrency=${lusdAddress}&outputCurrency=ETH`;
+// const uniLink = (lusdAddress: string) =>
+//  `https://app.uniswap.org/#/swap?inputCurrency=${lusdAddress}&outputCurrency=ETH`;
 
-// TODO:
-const csLink = (lusdAddress: string) =>
-  `https://carbonswap.exchange/#/swap?inputCurrency=${lusdAddress}&outputCurrency=EWT`;
+const csLink = (lusdAddress: string, isVolta = true) => {
+  return `https://${
+    isVolta ? "999test." : ""
+  }carbonswap.exchange/#/swap?inputCurrency=${lusdAddress}&outputCurrency=EWT`;
+};
 
 export const RedemptionPage: React.FC = () => {
   const {

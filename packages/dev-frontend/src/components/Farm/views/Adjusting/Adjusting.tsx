@@ -30,12 +30,8 @@ const transactionId = /farm-/;
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useFarmView();
-  const {
-    liquidityMiningStake,
-    liquidityMiningLQTYReward,
-    uniTokenBalance,
-    totalStakedUniTokens
-  } = useLiquitySelector(selector);
+  const { liquidityMiningStake, liquidityMiningLQTYReward, uniTokenBalance, totalStakedUniTokens } =
+    useLiquitySelector(selector);
   const [amount, setAmount] = useState<Decimal>(liquidityMiningStake);
   const editingState = useState<string>();
 
@@ -64,7 +60,7 @@ export const Adjusting: React.FC = () => {
   return (
     <Card>
       <Heading>
-        Uniswap Liquidity Farm
+        Carbonswap Liquidity Farm
         {isDirty && !isTransactionPending && (
           <Button
             variant="titleIcon"
