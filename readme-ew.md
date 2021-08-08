@@ -108,6 +108,7 @@ https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
 
 REBUILDING UI:
 yarn rebuild from root of repo
+yarn workspace @liquity/dev-frontend build:set-version
 
 hosted site dir: /opt/bitnami/nginx/html/
 
