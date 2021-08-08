@@ -50,7 +50,12 @@ CONNECTING TO UI SITE:
 
 ssh bitnami@ui.afrr.io
 hosted site dir: /opt/bitnami/nginx/html/
-repo site built at: packages/dev-frontend/build
+
+UI builds in repo at: packages/dev-frontend/build
+
+Deploy UI build from repo:
+
+scp -r packages/dev-frontend/build bitnami@ui.afrr.io:/opt/bitnami/nginx/html/aa
 
 TETHER PLAYGROUND:
 
