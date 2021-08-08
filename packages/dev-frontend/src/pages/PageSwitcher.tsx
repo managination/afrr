@@ -21,6 +21,7 @@ export const PageSwitcher: React.FC = () => {
 
   const frontend = useLiquitySelector(selectFrontend);
   const unregistered = frontendTag !== AddressZero && frontend.status === "unregistered";
+  console.log("frontendTag=" + frontendTag);
 
   const [registering, setRegistering] = useState(false);
 
@@ -30,6 +31,8 @@ export const PageSwitcher: React.FC = () => {
     }
   }, [unregistered]);
 
+  // return <Dashboard />;
+  // TODO
   if (registering || unregistered) {
     if (frontend.status === "registered") {
       return <FrontendRegistrationSuccess onDismiss={() => setRegistering(false)} />;

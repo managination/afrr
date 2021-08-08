@@ -90,11 +90,11 @@ const oracleAddresses = {
   }, */
   // Added EWC Networks
   ewVolta: {
-    chainlink: "0x0", // EWC will use ChainLinkBypass contract instead of this
+    chainlink: "0x0000000000000000000000000000000000000000", // EWC will use ChainLinkBypass contract instead of this
     tellor: "0x855cCA512c81bfc217EDF8e56ab11211c997fFda" // Playground
   },
   ewMainnet: {
-    chainlink: "0x0", // EWC will use ChainLinkBypass contract instead of this
+    chainlink: "0x0000000000000000000000000000000000000000", // EWC will use ChainLinkBypass contract instead of this
     tellor: "0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB" // Playground
   }
 };

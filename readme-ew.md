@@ -55,7 +55,7 @@ UI builds in repo at: packages/dev-frontend/build
 
 Deploy UI build from repo:
 
-scp -r packages/dev-frontend/build bitnami@ui.afrr.io:/opt/bitnami/nginx/html/aa
+scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
 
 TETHER PLAYGROUND:
 
