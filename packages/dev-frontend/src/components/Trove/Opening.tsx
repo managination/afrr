@@ -207,11 +207,12 @@ export const Opening: React.FC = () => {
           <Button variant="cancel" onClick={handleCancelPressed}>
             Cancel
           </Button>
-
           {gasEstimationState.type === "inProgress" ? (
             <Button disabled>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
+          ) : gasEstimationState.type === "error" ? (
+            <Button disabled>Gas Estimation Error</Button>
           ) : stableTroveChange ? (
             <TroveAction
               transactionId={TRANSACTION_ID}

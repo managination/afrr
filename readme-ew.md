@@ -8,6 +8,19 @@ TODO:
 - aren't we really dealing with WEWT???
 - CS on Volta? or CS supports Volta (so MM works?)
 - Liquity is set now to only allow 1800 EEUR min trove borrow (I SET TO 100 FOR NOW!! TODO RJA)
+- Confirm button sticking on open trove <----!!!!!!
+
+config.json is deleted by each UI build
+
+Your custom built frontend can be configured by putting a file named `config.json` inside the same directory as `index.html` built in the previous step. The format of this file is:
+
+```
+{
+  "frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
+  "infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
+}
+
+BEGIN NOTES
 
 The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
 
@@ -761,28 +774,36 @@ There are some special tests that are using Brownie framework.
 To test, install brownie with:
 
 ```
+
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
 
 pipx install eth-brownie
+
 ```
 
 and add numpy with:
 
 ```
+
 pipx inject eth-brownie numpy
+
 ```
 
 Add OpenZeppelin package:
 
 ```
+
 brownie pm install OpenZeppelin/openzeppelin-contracts@3.3.0
+
 ```
 
 Run, from `packages/contracts/`:
 
 ```
+
 brownie test -s
+
 ```
 
 ### OpenEthereum
@@ -790,35 +811,44 @@ brownie test -s
 Add the local node as a `live` network at `~/.brownie/network-config.yaml`:
 
 ```
-(...)
-      - name: Local Openethereum
-        chainid: 17
-        id: openethereum
-        host: http://localhost:8545
+
+(...) - name: Local Openethereum
+chainid: 17
+id: openethereum
+host: http://localhost:8545
+
 ```
 
 Make sure state is cleaned up first:
 
 ```
-rm -Rf build/deployments/*
+
+rm -Rf build/deployments/\*
+
 ```
 
 Start Openthereum node from this repo’s root with:
 
 ```
+
 yarn start-dev-chain:openethereum
+
 ```
 
 Then, again from `packages/contracts/`, run it with:
 
 ```
+
 brownie test -s --network openethereum
+
 ```
 
 To stop the Openethereum node, you can do it with:
 
 ```
+
 yarn stop-dev-chain
+
 ```
 
 ## System Quantities - Units and Representation
@@ -991,62 +1021,66 @@ Hints allow cheaper Trove operations for the user, at the expense of a slightly 
 #### Opening a trove
 
 ```
-  const toWei = web3.utils.toWei
-  const toBN = web3.utils.toBN
 
-  const EEURAmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 EEUR
-  const EWTColl = toBN(toWei('5')) // borrower wants to lock 5 EWT collateral
+const toWei = web3.utils.toWei
+const toBN = web3.utils.toBN
 
-  // Call deployed TroveManager contract to read the liquidation reserve and latest borrowing fee
-  const liquidationReserve = await troveManager.EEUR_GAS_COMPENSATION()
-  const expectedFee = await troveManager.getBorrowingFeeWithDecay(EEURAmount)
+const EEURAmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 EEUR
+const EWTColl = toBN(toWei('5')) // borrower wants to lock 5 EWT collateral
 
-  // Total debt of the new trove = EEUR amount drawn, plus fee, plus the liquidation reserve
-  const expectedDebt = EEURAmount.add(expectedFee).add(liquidationReserve)
+// Call deployed TroveManager contract to read the liquidation reserve and latest borrowing fee
+const liquidationReserve = await troveManager.EEUR_GAS_COMPENSATION()
+const expectedFee = await troveManager.getBorrowingFeeWithDecay(EEURAmount)
 
-  // Get the nominal NICR of the new trove
-  const _1e20 = toBN(toWei('100'))
-  let NICR = EWTColl.mul(_1e20).div(expectedDebt)
+// Total debt of the new trove = EEUR amount drawn, plus fee, plus the liquidation reserve
+const expectedDebt = EEURAmount.add(expectedFee).add(liquidationReserve)
 
-  // Get an approximate address hint from the deployed HintHelper contract. Use (15 * number of troves) trials
-  // to get an approx. hint that is close to the right position.
-  let numTroves = await sortedTroves.getSize()
-  let numTrials = numTroves.mul(toBN('15'))
-  let { 0: approxHint } = await hintHelpers.getApproxHint(NICR, numTrials, 42)  // random seed of 42
+// Get the nominal NICR of the new trove
+const \_1e20 = toBN(toWei('100'))
+let NICR = EWTColl.mul(\_1e20).div(expectedDebt)
 
-  // Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
-  let { 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint)
+// Get an approximate address hint from the deployed HintHelper contract. Use (15 \* number of troves) trials
+// to get an approx. hint that is close to the right position.
+let numTroves = await sortedTroves.getSize()
+let numTrials = numTroves.mul(toBN('15'))
+let { 0: approxHint } = await hintHelpers.getApproxHint(NICR, numTrials, 42) // random seed of 42
 
-  // Finally, call openTrove with the exact upperHint and lowerHint
-  const maxFee = '5'.concat('0'.repeat(16)) // Slippage protection: 5%
-  await borrowerOperations.openTrove(maxFee, EEURAmount, upperHint, lowerHint, { value: EWTColl })
+// Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
+let { 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint)
+
+// Finally, call openTrove with the exact upperHint and lowerHint
+const maxFee = '5'.concat('0'.repeat(16)) // Slippage protection: 5%
+await borrowerOperations.openTrove(maxFee, EEURAmount, upperHint, lowerHint, { value: EWTColl })
+
 ```
 
 #### Adjusting a Trove
 
 ```
-  const collIncrease = toBN(toWei('1'))  // borrower wants to add 1 EWT
-  const EEURRepayment = toBN(toWei('230')) // borrower wants to repay 230 EEUR
 
-  // Get trove's current debt and coll
-  const {0: debt, 1: coll} = await troveManager.getEntireDebtAndColl(borrower)
+const collIncrease = toBN(toWei('1')) // borrower wants to add 1 EWT
+const EEURRepayment = toBN(toWei('230')) // borrower wants to repay 230 EEUR
 
-  const newDebt = debt.sub(EEURRepayment)
-  const newColl = coll.add(collIncrease)
+// Get trove's current debt and coll
+const {0: debt, 1: coll} = await troveManager.getEntireDebtAndColl(borrower)
 
-  NICR = newColl.mul(_1e20).div(newDebt)
+const newDebt = debt.sub(EEURRepayment)
+const newColl = coll.add(collIncrease)
 
-  // Get an approximate address hint from the deployed HintHelper contract. Use (15 * number of troves) trials
-  // to get an approx. hint that is close to the right position.
-  numTroves = await sortedTroves.getSize()
-  numTrials = numTroves.mul(toBN('15'))
-  ({0: approxHint} = await hintHelpers.getApproxHint(NICR, numTrials, 42))
+NICR = newColl.mul(\_1e20).div(newDebt)
 
-  // Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
-  ({ 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint))
+// Get an approximate address hint from the deployed HintHelper contract. Use (15 \* number of troves) trials
+// to get an approx. hint that is close to the right position.
+numTroves = await sortedTroves.getSize()
+numTrials = numTroves.mul(toBN('15'))
+({0: approxHint} = await hintHelpers.getApproxHint(NICR, numTrials, 42))
 
-  // Call adjustTrove with the exact upperHint and lowerHint
-  await borrowerOperations.adjustTrove(maxFee, 0, EEURRepayment, false, upperHint, lowerHint, {value: collIncrease})
+// Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
+({ 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint))
+
+// Call adjustTrove with the exact upperHint and lowerHint
+await borrowerOperations.adjustTrove(maxFee, 0, EEURRepayment, false, upperHint, lowerHint, {value: collIncrease})
+
 ```
 
 ### Hints for `redeemCollateral`
@@ -1081,32 +1115,36 @@ If not, the redemption sequence doesn’t perform the final partial redemption, 
 #### Example Redemption with hints
 
 ```
- // Get the redemptions hints from the deployed HintHelpers contract
-  const redemptionhint = await hintHelpers.getRedemptionHints(EEURAmount, price, 50)
 
-  const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedEEURAmount } = redemptionhint
+// Get the redemptions hints from the deployed HintHelpers contract
+const redemptionhint = await hintHelpers.getRedemptionHints(EEURAmount, price, 50)
 
-  // Get the approximate partial redemption hint
-  const { hintAddress: approxPartialRedemptionHint } = await contracts.hintHelpers.getApproxHint(partialRedemptionNewICR, numTrials, 42)
+const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedEEURAmount } = redemptionhint
 
-  /* Use the approximate partial redemption hint to get the exact partial redemption hint from the
-  * deployed SortedTroves contract
-  */
+// Get the approximate partial redemption hint
+const { hintAddress: approxPartialRedemptionHint } = await contracts.hintHelpers.getApproxHint(partialRedemptionNewICR, numTrials, 42)
+
+/\* Use the approximate partial redemption hint to get the exact partial redemption hint from the
+
+- deployed SortedTroves contract
+  \*/
   const exactPartialRedemptionHint = (await sortedTroves.findInsertPosition(partialRedemptionNewICR,
-    approxPartialRedemptionHint,
-    approxPartialRedemptionHint))
+  approxPartialRedemptionHint,
+  approxPartialRedemptionHint))
 
-  /* Finally, perform the on-chain redemption, passing the truncated EEUR amount, the correct hints, and the expected
-  * ICR of the final partially redeemed trove in the sequence.
-  */
+/\* Finally, perform the on-chain redemption, passing the truncated EEUR amount, the correct hints, and the expected
+
+- ICR of the final partially redeemed trove in the sequence.
+  \*/
   await troveManager.redeemCollateral(truncatedEEURAmount,
-    firstRedemptionHint,
-    exactPartialRedemptionHint[0],
-    exactPartialRedemptionHint[1],
-    partialRedemptionNewICR,
-    0, maxFee,
-    { from: redeemer },
+  firstRedemptionHint,
+  exactPartialRedemptionHint[0],
+  exactPartialRedemptionHint[1],
+  partialRedemptionNewICR,
+  0, maxFee,
+  { from: redeemer },
   )
+
 ```
 
 ## Gas compensation
@@ -1442,7 +1480,9 @@ When a Trove is opened, its stake is calculated based on its collateral, and sna
 A Trove’s stake is given by:
 
 ```
-stake = _coll.mul(totalStakesSnapshot).div(totalCollateralSnapshot)
+
+stake = \_coll.mul(totalStakesSnapshot).div(totalCollateralSnapshot)
+
 ```
 
 It then earns redistribution rewards based on this corrected stake. A newly opened Trove’s stake will be less than its raw collateral, if the system contains active Troves with pending redistribution rewards when it was made.
@@ -1552,9 +1592,11 @@ Note: you can skip the manual installation of node-gyp itself (`npm install -g n
 ### Clone & Install
 
 ```
+
 git clone https://github.com/liquity/dev.git liquity
 cd liquity
 yarn
+
 ```
 
 ### Top-level scripts
@@ -1564,7 +1606,9 @@ There are a number of scripts in the top-level package.json file to ease develop
 #### Run all tests
 
 ```
+
 yarn test
+
 ```
 
 #### Deploy contracts to a testnet
@@ -1572,19 +1616,25 @@ yarn test
 E.g.:
 
 ```
+
 yarn deploy --network ewVolta
+
 ```
 
 Supported networks are currently: ropsten, kovan, rinkeby, goerli, ewVolta and ewMainnet. The above command will deploy into the default channel (the one that's used by the public dev-frontend). To deploy into the internal channel instead:
 
 ```
+
 yarn deploy --network ewVolta --channel internal
+
 ```
 
 You can optionally specify an explicit gas price too:
 
 ```
+
 yarn deploy --network ewVolta --gas-price 20
+
 ```
 
 After a successful deployment, the addresses of the newly deployed contracts will be written to a version-controlled JSON file under `packages/lib-ethers/deployments/default`.
@@ -1599,7 +1649,9 @@ To publish a new deployment, you must execute the above command for all of the f
 At some point in the future, we will make this process automatic. Once you're done deploying to all the networks, execute the following command:
 
 ```
+
 yarn save-live-version
+
 ```
 
 This copies the contract artifacts to a version controlled area (`packages/lib/live`) then checks that you really did deploy to all the networks. Next you need to commit and push all changed files. The repo's GitHub workflow will then build a new Docker image of the frontend interfacing with the new addresses.
@@ -1607,28 +1659,34 @@ This copies the contract artifacts to a version controlled area (`packages/lib/l
 #### Start a local blockchain and deploy the contracts
 
 ```
+
 yarn start-dev-chain
+
 ```
 
 Starts an openethereum node in a Docker container, running the [private development chain](https://openethereum.github.io/wiki/Private-development-chain), then deploys the contracts to this chain.
 
 You may want to use this before starting the dev-frontend in development mode. To use the newly deployed contracts, switch MetaMask to the built-in "Localhost 8545" network.
 
-> Q: How can I get Ether on the local blockchain?  
-> A: Import this private key into MetaMask:  
-> `0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7`  
+> Q: How can I get Ether on the local blockchain?
+> A: Import this private key into MetaMask:
+> `0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7`
 > This account has all the Ether you'll ever need.
 
 Once you no longer need the local node, stop it with:
 
 ```
+
 yarn stop-dev-chain
+
 ```
 
 #### Start dev-frontend in development mode
 
 ```
+
 yarn start-dev-frontend
+
 ```
 
 This will start dev-frontend in development mode on http://localhost:3000. The app will automatically be reloaded if you change a source file under `packages/dev-frontend`.
@@ -1642,7 +1700,9 @@ To stop the dev-frontend running in this mode, bring up the terminal in which yo
 This will automatically start the local blockchain, so you need to make sure that's not already running before you run the following command.
 
 ```
+
 yarn start-demo
+
 ```
 
 This spawns a modified version of dev-frontend that ignores MetaMask, and directly uses the local blockchain node. Every time the page is reloaded (at http://localhost:3000), a new random account is created with a balance of 100 EWT. Additionally, transactions are automatically signed, so you no longer need to accept wallet confirmations. This lets you play around with Liquity more freely.
@@ -1650,7 +1710,9 @@ This spawns a modified version of dev-frontend that ignores MetaMask, and direct
 When you no longer need the demo mode, press Ctrl+C in the terminal then run:
 
 ```
+
 yarn stop-demo
+
 ```
 
 #### Build dev-frontend for production
@@ -1658,13 +1720,17 @@ yarn stop-demo
 In a freshly cloned & installed monorepo, or if you have only modified code inside the dev-frontend package:
 
 ```
+
 yarn build
+
 ```
 
 If you have changed something in one or more packages apart from dev-frontend, it's best to use:
 
 ```
+
 yarn rebuild
+
 ```
 
 This combines the top-level `prepare` and `build` scripts.
@@ -1676,10 +1742,12 @@ You'll find the output in `packages/dev-frontend/build`.
 Your custom built frontend can be configured by putting a file named `config.json` inside the same directory as `index.html` built in the previous step. The format of this file is:
 
 ```
+
 {
-  "frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
-  "infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
+"frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
+"infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
 }
+
 ```
 
 ## Running a frontend with Docker
@@ -1693,8 +1761,10 @@ You will need to have [Docker](https://docs.docker.com/get-docker/) installed.
 ### Running with `docker`
 
 ```
+
 docker pull liquity/dev-frontend
 docker run --name liquity -d --rm -p 3000:80 liquity/dev-frontend
+
 ```
 
 This will start serving your frontend using HTTP on port 3000. If everything went well, you should be able to open http://localhost:3000/ in your browser. To use a different port, just replace 3000 with your desired port number.
@@ -1702,7 +1772,9 @@ This will start serving your frontend using HTTP on port 3000. If everything wen
 To stop the service:
 
 ```
+
 docker kill liquity
+
 ```
 
 ### Configuring a public frontend
@@ -1724,10 +1796,12 @@ The kickback rate is the portion of AFRR you pass on to users of your frontend. 
 It is highly recommended that you do this while running a frontend locally, before you start hosting it publicly:
 
 ```
+
 docker run --name liquity -d --rm -p 3000:80 \
-  -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
-  -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
-  liquity/dev-frontend
+ -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
+ -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
+ liquity/dev-frontend
+
 ```
 
 Remember to replace the environment variables in the above example. After executing this command, open http://localhost:3000/ in a browser with MetaMask installed, then switch MetaMask to the account whose address you specified as FRONTEND_TAG to begin setting the kickback rate.
@@ -1751,16 +1825,20 @@ A frontend doesn't require any database or server-side computation, so the easie
 To obtain the files you need to upload, you need to extract them from a frontend Docker container. If you were following the guide for setting a kickback rate and haven't stopped the container yet, then you already have one! Otherwise, you can create it with a command like this (remember to use your own `FRONTEND_TAG` and `INFURA_API_KEY`):
 
 ```
+
 docker run --name liquity -d --rm \
-  -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
-  -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
-  liquity/dev-frontend
+ -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
+ -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
+ liquity/dev-frontend
+
 ```
 
 While the container is running, use `docker cp` to extract the frontend's files to a folder of your choosing. For example to extract them to a new folder named "devui" inside the current folder, run:
 
 ```
+
 docker cp liquity:/usr/share/nginx/html ./devui
+
 ```
 
 Upload the contents of this folder to your chosen hosting service (or serve them using your own infrastructure), and you're set!
@@ -1790,3 +1868,4 @@ THE LIQUITY PROTOCOL SOFTWARE HAS BEEN PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
 There are no official frontend operators, and the use of any frontend is made by users at their own risk. To assess the trustworthiness of a frontend operator lies in the sole responsibility of the users and must be made carefully.
 
 User is solely responsible for complying with applicable law when interacting (in particular, when using EWT, EEUR, AFRR or other Token) with the Liquity Protocol Software whatsoever.
+```

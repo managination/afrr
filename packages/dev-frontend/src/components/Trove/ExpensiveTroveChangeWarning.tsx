@@ -7,7 +7,7 @@ import { useLiquity } from "../../hooks/LiquityContext";
 import { Warning } from "../Warning";
 
 export type GasEstimationState =
-  | { type: "idle" | "inProgress" }
+  | { type: "idle" | "inProgress" | "error" }
   | { type: "complete"; populatedTx: PopulatedEthersLiquityTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
@@ -34,22 +34,27 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
       let cancelled = false;
 
       const timeoutId = setTimeout(async () => {
-        const populatedTx = await (troveChange.type === "creation"
-          ? liquity.populate.openTrove(troveChange.params, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            })
-          : liquity.populate.adjustTrove(troveChange.params, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            }));
+        try {
+          const populatedTx = await (troveChange.type === "creation"
+            ? liquity.populate.openTrove(troveChange.params, {
+                maxBorrowingRate,
+                borrowingFeeDecayToleranceMinutes
+              })
+            : liquity.populate.adjustTrove(troveChange.params, {
+                maxBorrowingRate,
+                borrowingFeeDecayToleranceMinutes
+              }));
 
-        if (!cancelled) {
-          setGasEstimationState({ type: "complete", populatedTx });
-          console.log(
-            "Estimated TX cost: " +
-              Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
-          );
+          if (!cancelled) {
+            setGasEstimationState({ type: "complete", populatedTx });
+            console.log(
+              "Estimated TX cost: " +
+                Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
+            );
+          }
+        } catch (error) {
+          setGasEstimationState({ type: "error" });
+          console.log("Gas Estimation Error: " + error.message);
         }
       }, 333);
 
