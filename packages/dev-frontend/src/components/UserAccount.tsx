@@ -18,13 +18,14 @@ const select = ({ accountBalance, lusdBalance, lqtyBalance }: LiquityStoreState)
   lqtyBalance
 });
 
+const netNames: { [key: number]: string } = {
+  1: "Eth Mainnet",
+  73799: "Volta",
+  246: "EWC Mainnet"
+};
+
 const netName = (chainId: number): string => {
-  const netNames: { [key: number]: string } = {
-    1: "Eth Mainnet",
-    73799: "Volta",
-    246: "EWC Mainnet"
-  };
-  return netNames[chainId] ?? "unknown network";
+  return netNames[chainId] || "unknown network";
 };
 
 const loadSusuBalance = async (
@@ -45,12 +46,11 @@ const loadSusuBalance = async (
   ];
 
   // This can be an address or an ENS name
-  const address =
+  const susuAddress =
     chainId === 73799
       ? "0xDC5b69374207a18e75F7cdCf5176CA63911e690d"
       : "0x9cd9caecdc816c3e7123a4f130a91a684d01f4dc";
-  //const bal = await provider.getBalance(account); // can use this line to get ewt to test logic is working if no susu in wallet used for dev
-  const erc20 = new ethers.Contract(address, abi, provider);
+  const erc20 = new ethers.Contract(susuAddress, abi, provider);
   const bal = await erc20.balanceOf(account);
   return Decimal.fromBigNumberString(bal.toString());
 };
@@ -60,7 +60,7 @@ export const UserAccount: React.FC = () => {
   const { accountBalance, lusdBalance, lqtyBalance } = useLiquitySelector(select);
   const { chainId } = useWeb3React<Web3Provider>();
 
-  const [susuBalance, setSusuBalance] = useState<Decimal>(Decimal.ZERO);
+  const [susuBalance, setSusuBalance] = useState(Decimal.ZERO);
   useEffect(() => {
     async function getTheBalance() {
       const bal = await loadSusuBalance(account, chainId, provider);
