@@ -40,10 +40,22 @@
       "outFiles": ["contracts/**/*.js"],
       "preLaunchTask": "Echo vars"
     },
+
     {
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome - Dev Frontend",
+      "url": "http://localhost:3000",
+      "cwd": "${workspaceFolder}/projects/dev-frontend/src",
+      "webRoot": "${workspaceFolder}/packages/dev-frontend/build",
+      "sourceMaps": true,
+      "preLaunchTask": "Echo vars",
+      "trace": "verbose"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome - Dev Frontend (OLD)",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}",
       "localRoot": "${workspaceFolder}/projects/dev-frontend",
@@ -65,17 +77,6 @@
         "${workspaceFolder}/dist/**/*.js"
       ],
       "preLaunchTask": "Echo vars"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "my-app",
-      "url": "http://localhost:3000",
-      "cwd": "${workspaceFolder}/projects/dev-frontend/src",
-      "webRoot": "${workspaceFolder}/packages/dev-frontend/build",
-      "sourceMaps": true,
-      "preLaunchTask": "Echo vars",
-      "trace": "verbose"
     }
   ]
 }

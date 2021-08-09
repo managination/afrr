@@ -4,21 +4,8 @@
 
 TODO:
 
-- IS EWT/EUR what we price in tellor? (not EWT/USD, correct)
-- aren't we really dealing with WEWT???
-- CS on Volta? or CS supports Volta (so MM works?)
-- Liquity is set now to only allow 1800 EEUR min trove borrow (I SET TO 100 FOR NOW!! TODO RJA)
-- Confirm button sticking on open trove <----!!!!!!
-
-config.json is deleted by each UI build
-
-Your custom built frontend can be configured by putting a file named `config.json` inside the same directory as `index.html` built in the previous step. The format of this file is:
-
-```
-{
-  "frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
-  "infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
-}
+- Liquity is set to only allow 1800 EEUR min troves
+- "registration" of front-end check is turned off
 
 BEGIN NOTES
 
@@ -1868,4 +1855,7 @@ THE LIQUITY PROTOCOL SOFTWARE HAS BEEN PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
 There are no official frontend operators, and the use of any frontend is made by users at their own risk. To assess the trustworthiness of a frontend operator lies in the sole responsibility of the users and must be made carefully.
 
 User is solely responsible for complying with applicable law when interacting (in particular, when using EWT, EEUR, AFRR or other Token) with the Liquity Protocol Software whatsoever.
+
+```
+
 ```
