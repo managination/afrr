@@ -6,6 +6,7 @@ TODO:
 
 - Liquity is set to only allow 1800 EEUR min troves
 - "registration" of front-end check is turned off
+- some tests are broken now (community issuance in particular)
 
 BEGIN NOTES
 
