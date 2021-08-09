@@ -35,15 +35,26 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
 
       const timeoutId = setTimeout(async () => {
         try {
+          const overrides: any = {
+            gasLimit: 1000000
+          };
           const populatedTx = await (troveChange.type === "creation"
-            ? liquity.populate.openTrove(troveChange.params, {
-                maxBorrowingRate,
-                borrowingFeeDecayToleranceMinutes
-              })
-            : liquity.populate.adjustTrove(troveChange.params, {
-                maxBorrowingRate,
-                borrowingFeeDecayToleranceMinutes
-              }));
+            ? liquity.populate.openTrove(
+                troveChange.params,
+                {
+                  maxBorrowingRate,
+                  borrowingFeeDecayToleranceMinutes
+                },
+                overrides
+              )
+            : liquity.populate.adjustTrove(
+                troveChange.params,
+                {
+                  maxBorrowingRate,
+                  borrowingFeeDecayToleranceMinutes
+                },
+                overrides
+              ));
 
           if (!cancelled) {
             setGasEstimationState({ type: "complete", populatedTx });
@@ -54,9 +65,9 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
           }
         } catch (error) {
           setGasEstimationState({ type: "error" });
-          console.log("Gas Estimation Error: " + error.message);
+          console.log("Gas Estimation Error: " + JSON.stringify(error));
         }
-      }, 333);
+      }, 10 * 1000);
 
       return () => {
         clearTimeout(timeoutId);

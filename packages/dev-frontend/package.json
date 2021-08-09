@@ -48,6 +48,7 @@
         "build": "run-s build:*",
         "build:set-version": "node scripts/set-version.js",
         "build:react": "react-scripts build",
+        "build:copy-config": "cp ./config.json ./build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
