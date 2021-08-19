@@ -7,6 +7,11 @@ TODO:
 - Liquity is set to only allow 1800 EEUR min troves
 - "registration" of front-end check is turned off
 - some tests are broken now (community issuance in particular)
+- get Tellor guys going?
+- if we deploy with tellor current, we'd have to redeploy liquity in total again to switch to tellor X
+- something needs to call tellor or request price periodically or Liquity will think it's frozen
+- at end of deploy don't relinquish ownership but set owner to multisig address
+- add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
 
 BEGIN NOTES
 
@@ -58,10 +63,16 @@ Deploy UI build from repo:
 
 scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
 
-TETHER PLAYGROUND:
+TELLOR PLAYGROUND:
 
-Tellor Playground on Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
-Tellor Playground on Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
+Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
+
+TELLOR MESOSPHERE:
+
+Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580
+used 2, 60, 25 (it is crypto after all 🤣)
+Mainnet: TBD
 
 REBUILD CONTRACTS:
 
