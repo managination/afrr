@@ -284,7 +284,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/PriceFeed.sol": "PriceFeed"
+			"packages/contracts/contracts/PriceFeed.sol": "PriceFeed"
 		},
 		"evmVersion": "istanbul",
 		"libraries": {},
@@ -298,7 +298,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts/Dependencies/AggregatorV3Interface.sol": {
+		"packages/contracts/contracts/Dependencies/AggregatorV3Interface.sol": {
 			"keccak256": "0x4d0c8d654be4d28cb200c4e97be9ee9fc31b3659a84b6c6854679d0f74ac1555",
 			"license": "MIT",
 			"urls": [
@@ -306,7 +306,7 @@
 				"dweb:/ipfs/QmX6BFD1J2iLBREecDEMhg36c39s386bZLt37Tn1QrYCoC"
 			]
 		},
-		"contracts/Dependencies/BaseMath.sol": {
+		"packages/contracts/contracts/Dependencies/BaseMath.sol": {
 			"keccak256": "0x7e1369ca5cb09e818e345a2def19a261401f79c985a6030b55b7311dd6f53be4",
 			"license": "MIT",
 			"urls": [
@@ -314,7 +314,7 @@
 				"dweb:/ipfs/QmbePtvXNQD1KVURtNd1EKEVVGse8MJrW5EUQzuGgP8iiW"
 			]
 		},
-		"contracts/Dependencies/CheckContract.sol": {
+		"packages/contracts/contracts/Dependencies/CheckContract.sol": {
 			"keccak256": "0x3f48bd50ad146a5c01c6c6adc89e4a3871de4497b31c609bfce9cdc280274305",
 			"license": "MIT",
 			"urls": [
@@ -322,7 +322,7 @@
 				"dweb:/ipfs/QmcoxPfiKP4LhCTwcAX8RiHG6w6hHQnt46UtCBphNMg4iW"
 			]
 		},
-		"contracts/Dependencies/LiquityMath.sol": {
+		"packages/contracts/contracts/Dependencies/LiquityMath.sol": {
 			"keccak256": "0x7a95ed70d8937e0896c054b433ad0dfc87a9cfd028cae1694098e9d5d68127cd",
 			"license": "MIT",
 			"urls": [
@@ -330,7 +330,7 @@
 				"dweb:/ipfs/QmRbtN1Vr9ysLxM3hSSPrqnbmDW4v77Mt1dEbf6tuDoo9g"
 			]
 		},
-		"contracts/Dependencies/Ownable.sol": {
+		"packages/contracts/contracts/Dependencies/Ownable.sol": {
 			"keccak256": "0x33ebd980403ab2462257b6b0352dd42d6d4ae86ce9de8c8fa7b8b5a84c585f1b",
 			"license": "MIT",
 			"urls": [
@@ -338,7 +338,7 @@
 				"dweb:/ipfs/QmYsmA6SdwwHSguo2SHDWP9wAxkvb1NPr7Yevw9vGhwCaV"
 			]
 		},
-		"contracts/Dependencies/SafeMath.sol": {
+		"packages/contracts/contracts/Dependencies/SafeMath.sol": {
 			"keccak256": "0x666b890992a066cc791f36c2975cd595d9761a014c654c385ed36ffaf658f3fd",
 			"license": "MIT",
 			"urls": [
@@ -346,7 +346,7 @@
 				"dweb:/ipfs/Qmb91cmmBEFhwUWwVxgxTPmeNxzdiyCdxoVXB2gN3Gvg7e"
 			]
 		},
-		"contracts/Dependencies/console.sol": {
+		"packages/contracts/contracts/Dependencies/console.sol": {
 			"keccak256": "0x6fa1de4ffe22b8f58b0b64d65db11dd5037be9b9db47b365a72adb489e217000",
 			"license": "MIT",
 			"urls": [
@@ -354,7 +354,7 @@
 				"dweb:/ipfs/QmQdVMf7Rh4uMFKkmoCitnA5cxUAg47KnH8LYxx7AT4AVw"
 			]
 		},
-		"contracts/Interfaces/IPriceFeed.sol": {
+		"packages/contracts/contracts/Interfaces/IPriceFeed.sol": {
 			"keccak256": "0x8831c3e2112e1c395d372b6fb591a4548f5a1ed8df63aa38ccbc817cccb4dc3d",
 			"license": "MIT",
 			"urls": [
@@ -362,7 +362,7 @@
 				"dweb:/ipfs/QmW9Sfvm6AYHCK4NUBMzu85NAne111haHYtyRATpqSC64Z"
 			]
 		},
-		"contracts/Interfaces/ITellorCaller.sol": {
+		"packages/contracts/contracts/Interfaces/ITellorCaller.sol": {
 			"keccak256": "0xda790bd8d4de73788e82f223c0e6986407e0a9277f3a059bce01617008e9f05d",
 			"license": "MIT",
 			"urls": [
@@ -370,12 +370,12 @@
 				"dweb:/ipfs/QmVzUZpUJc8VnpXvMuKTSRHW9WLpVQYHqV5pTa1V6YGFhv"
 			]
 		},
-		"contracts/PriceFeed.sol": {
-			"keccak256": "0xf4bb4ae45c7be1726766d1615e89d2a0503692b6dfbbaba0e563286c854d4b3e",
+		"packages/contracts/contracts/PriceFeed.sol": {
+			"keccak256": "0x9e1078216be41201b8ca19feace02dc8a9d2379d519deaa1e5a573833e03bc00",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9270324afd5bc7fd70474984d88584a7552d61af949ceb7ed4bb4d001bab2e66",
-				"dweb:/ipfs/QmZbXNrHwtxXLjLZhMqZcjX7ZCiCk88SoLHNoBz44t39fo"
+				"bzz-raw://540d2d1024ce5b7c0809dac43534e3396fbb1b2941df424ce4822f309b855a0a",
+				"dweb:/ipfs/QmXtF363o5WsN4AqmjCpaMHbkYFT5ukAhNbiskWkDDPsNQ"
 			]
 		}
 	},

@@ -22,6 +22,8 @@ The readme is from Liquity, with symbol names changed here for readability. Howe
 3. change deployment private keys/addresses as desired (various files, see contracts package)
 4. deploy tellor contract/playground, get it's address and use it also in config settings
 
+Tellor Playground: https://github.com/tellor-io/TellorPlayground
+
 Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
 Liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy in pricefeed.sol). Also, the Tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
 WARNING: General note, Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
