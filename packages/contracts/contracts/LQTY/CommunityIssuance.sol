@@ -75,7 +75,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     function issueLQTY() external override returns (uint) {
         _requireCallerIsStabilityPool();
 
-        uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE);
+        uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE).mul(DECIMAL_PRECISION);
         uint issuance = latestTotalLQTYIssued.sub(totalLQTYIssued);
 
         totalLQTYIssued = latestTotalLQTYIssued;
