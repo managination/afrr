@@ -74,12 +74,8 @@ contract CommunityIssuance is
     function issueLQTY() external override returns (uint256) {
         _requireCallerIsStabilityPool();
 
-        uint256 latestTotalLQTYIssued = block
-            .timestamp
-            .sub(deploymentTime)
-            .div(SECONDS_IN_ONE_MINUTE)
-            .mul(DECIMAL_PRECISION);
-        uint256 issuance = latestTotalLQTYIssued.sub(totalLQTYIssued);
+        uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE).mul(DECIMAL_PRECISION);
+        uint issuance = latestTotalLQTYIssued.sub(totalLQTYIssued);
 
         totalLQTYIssued = latestTotalLQTYIssued;
         emit TotalLQTYIssuedUpdated(latestTotalLQTYIssued);
