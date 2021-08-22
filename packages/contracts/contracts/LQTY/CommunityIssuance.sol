@@ -10,36 +10,40 @@ import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 
-
-contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
-    using SafeMath for uint;
+contract CommunityIssuance is
+    ICommunityIssuance,
+    Ownable,
+    CheckContract,
+    BaseMath
+{
+    using SafeMath for uint256;
 
     // --- Data ---
 
-    string constant public NAME = "CommunityIssuance";
+    string public constant NAME = "CommunityIssuance";
 
-    uint constant public SECONDS_IN_ONE_MINUTE = 60;
+    uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
 
     /*
-    * The community LQTY supply cap is the starting balance of the Community Issuance contract.
-    * It should be minted to this contract by LQTYToken, when the token is deployed.
-    *
-    * Set to 32M (slightly less than 1/3) of total LQTY supply.
-    */
-    uint constant public LQTYSupplyCap = 32e24; // 32 million
+     * The community LQTY supply cap is the starting balance of the Community Issuance contract.
+     * It should be minted to this contract by LQTYToken, when the token is deployed.
+     *
+     * Set to 32M (slightly less than 1/3) of total LQTY supply.
+     */
+    uint256 public constant LQTYSupplyCap = 32e24; // 32 million
 
     ILQTYToken public lqtyToken;
 
     address public stabilityPoolAddress;
 
-    uint public totalLQTYIssued;
-    uint public immutable deploymentTime;
+    uint256 public totalLQTYIssued;
+    uint256 public immutable deploymentTime;
 
     // --- Events ---
 
     event LQTYTokenAddressSet(address _lqtyTokenAddress);
     event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
+    event TotalLQTYIssuedUpdated(uint256 _totalLQTYIssued);
 
     // --- Functions ---
 
@@ -47,15 +51,10 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         deploymentTime = block.timestamp;
     }
 
-    function setAddresses
-    (
+    function setAddresses(
         address _lqtyTokenAddress,
         address _stabilityPoolAddress
-    )
-        external
-        onlyOwner
-        override
-    {
+    ) external override onlyOwner {
         checkContract(_lqtyTokenAddress);
         checkContract(_stabilityPoolAddress);
 
@@ -63,7 +62,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         stabilityPoolAddress = _stabilityPoolAddress;
 
         // When LQTYToken deployed, it should have transferred CommunityIssuance's LQTY entitlement
-        uint LQTYBalance = lqtyToken.balanceOf(address(this));
+        uint256 LQTYBalance = lqtyToken.balanceOf(address(this));
         assert(LQTYBalance >= LQTYSupplyCap);
 
         emit LQTYTokenAddressSet(_lqtyTokenAddress);
@@ -72,7 +71,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         _renounceOwnership();
     }
 
-    function issueLQTY() external override returns (uint) {
+    function issueLQTY() external override returns (uint256) {
         _requireCallerIsStabilityPool();
 
         uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE).mul(DECIMAL_PRECISION);
@@ -84,7 +83,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         return issuance;
     }
 
-    function sendLQTY(address _account, uint _LQTYamount) external override {
+    function sendLQTY(address _account, uint256 _LQTYamount) external override {
         _requireCallerIsStabilityPool();
 
         lqtyToken.transfer(_account, _LQTYamount);
@@ -93,6 +92,9 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     // --- 'require' functions ---
 
     function _requireCallerIsStabilityPool() internal view {
-        require(msg.sender == stabilityPoolAddress, "CommunityIssuance: caller is not SP");
+        require(
+            msg.sender == stabilityPoolAddress,
+            "CommunityIssuance: caller is not SP"
+        );
     }
 }

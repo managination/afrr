@@ -1,7 +1,139 @@
 # Liquity: Decentralized Borrowing Protocol
 
-![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
+## EWC SPECIFIC NOTES SECTION
 
+TODO:
+
+- Liquity is set to only allow 1800 EEUR min troves
+- "registration" of front-end check is turned off
+- some tests are broken now (community issuance in particular)
+- get Tellor guys going?
+- if we deploy with tellor current, we'd have to redeploy liquity in total again to switch to tellor X
+- something needs to call tellor or request price periodically or Liquity will think it's frozen
+- at end of deploy don't relinquish ownership but set owner to multisig address
+- add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
+
+BEGIN NOTES
+
+The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
+
+1. download repo
+2. run: yarn
+3. change deployment private keys/addresses as desired (various files, see contracts package)
+4. deploy tellor contract/playground, get it's address and use it also in config settings
+
+Tellor Playground: https://github.com/tellor-io/TellorPlayground
+
+Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
+Liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy in pricefeed.sol). Also, the Tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
+WARNING: General note, Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
+
+There "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
+but I'm finding that isn't sufficient...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate on chain before subsequent calls checking ownership will work correctly. I've seen very nasty intermittent deploy bugs otherwise.
+
+5. Deploy contracts to supported networks, e.g.
+
+cd packages/contracts
+npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
+
+OLD DEPLOY SCRIPTS (DO NOT USE THESE):
+
+There are also deploy code in packages/lib-ethers, but don't use that. It runs deploy.ts in packages/lib-ethers, which APPARENTLY was only used for dev testing until final Liquity release - it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts and doesn't set everything up. These old scripts were run as:
+
+yarn deploy --network ewVolta
+yarn deploy --network ewMainnet
+
+6. To open in VS Code: from root directory run "code afrr.code-workspace" (so debug tasks load)
+7. TODO: Validate deployed contracts manually (hardhat used etherscan, which we don't have on ewc)
+8. There is a LOT of Liquity code that we aren't using - it is old, outdated, etc...I'm not cleaning all that out. Only the instructions given in this readme are accurate for EW deployment.
+
+TESTING:
+
+from root dir:
+
+yarn test
+
+CONNECTING TO UI SITE:
+
+ssh bitnami@ui.afrr.io
+hosted site dir: /opt/bitnami/nginx/html/
+
+UI builds in repo at: packages/dev-frontend/build
+
+Deploy UI build from repo:
+
+scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
+
+TELLOR PLAYGROUND:
+
+Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
+
+TELLOR MESOSPHERE:
+
+Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580
+used 2, 60, 25 (it is crypto after all 🤣)
+Mainnet: TBD
+
+REBUILD CONTRACTS:
+
+If you change contract code, rebuild contracts:
+
+cd packages/contracts
+{edit contracts as needed}
+next, commit changes so contract version file gets new value (from the commit):
+git add .
+git commit -m "updated contracts whatever info you want goes here..."
+git push
+yarn prepare (this recompiles the contracts and creates the packages/contracts/artifacts files, and creates the packages/contracts/artifacts/version file)
+
+TESTS:
+
+yarn test
+yarn test-contracts
+yarn coverage
+
+DEPLOYING CONTRACTS:
+
+To run deployment:
+
+npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
+
+Each run is incremental, so it can be restarted if error, and it will just add missing contracts. If you want to force re-creation of all contracts,
+delete the file packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json. Doing so will force the deploy to re-create all contracts again from scratch, including
+unipool, unitokens, etc. (i.e. you get a complete new set of contracts for all Liquity).
+
+PRETTIER CONTRACTS:
+
+I installed https://github.com/prettier-solidity/prettier-plugin-solidity but did not run it on Liquity contracts, so git wouldn't go nuts with diff, but
+it can be run on any contract file, e.g.:
+
+cd packages/contracts
+npx prettier --write ./contracts/ChainLinkBypass.sol
+
+USING REMIX/REMIXD:
+
+(typically with web3 injection from MetaMask)
+
+remixd -s . --remix-ide https://remix.ethereum.org
+
+MULTICALL:
+
+Liquity uses Multicall contract. I've deployed it to Volta:
+
+https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
+0x7d741E28Db631668F98cC5F0682df3A1F3eC2E84
+
+REBUILDING UI:
+yarn rebuild from root of repo
+yarn workspace @liquity/dev-frontend build:set-version
+
+hosted site dir: /opt/bitnami/nginx/html/
+
+## END EWC NOTES SECTION
+
+![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
 
 Liquity is a decentralized protocol that allows EWT holders to obtain maximum liquidity against
 their collateral without paying interest. After locking up EWT as collateral in a smart contract and
@@ -76,7 +208,7 @@ Visit [liquity.org](https://www.liquity.org) to find out more and join the discu
   - [TroveManager Functions - `TroveManager.sol`](#trovemanager-functions---trovemanagersol)
   - [Hint Helper Functions - `HintHelpers.sol`](#hint-helper-functions---hinthelperssol)
   - [Stability Pool Functions - `StabilityPool.sol`](#stability-pool-functions---stabilitypoolsol)
-  - [AFRR Staking Functions  `AFRRStaking.sol`](#afrr-staking-functions--afrrstakingsol)
+  - [AFRR Staking Functions `AFRRStaking.sol`](#afrr-staking-functions--afrrstakingsol)
   - [Lockup Contract Factory `LockupContractFactory.sol`](#lockup-contract-factory-lockupcontractfactorysol)
   - [Lockup contract - `LockupContract.sol`](#lockup-contract---lockupcontractsol)
   - [EEUR token `EEURToken.sol` and AFRR token `AFRRToken.sol`](#eeur-token-eeurtokensol-and-afrr-token-afrrtokensol)
@@ -136,7 +268,6 @@ Visit [liquity.org](https://www.liquity.org) to find out more and join the discu
     - [Example 1: using static website hosting](#example-1-using-static-website-hosting)
     - [Example 2: wrapping the frontend container in HTTPS](#example-2-wrapping-the-dev-ui-container-in-https)
 
-
 ## Liquity Overview
 
 Liquity is a collateralized debt platform. Users can lock up EWT, and issue stablecoin tokens (EEUR) to their own EWT address, and subsequently transfer those tokens to any other EWT address. The individual collateralized debt positions are called Troves.
@@ -157,7 +288,7 @@ The Liquity system regularly updates the EWT:EUR price via a decentralized data 
 
 ## Liquidation and the Stability Pool
 
-Liquity utilizes a two-step liquidation mechanism in the following order of priority: 
+Liquity utilizes a two-step liquidation mechanism in the following order of priority:
 
 1. Offset under-collateralized Troves against the Stability Pool containing EEUR tokens
 
@@ -179,28 +310,29 @@ Currently, mass liquidations performed via the above functions cost 60-65k gas p
 
 ### Liquidation Logic
 
-The precise behavior of liquidations depends on the ICR of the Trove being liquidated and global system conditions:  the total collateralization ratio (TCR) of the system, the size of the Stability Pool, etc.  
+The precise behavior of liquidations depends on the ICR of the Trove being liquidated and global system conditions: the total collateralization ratio (TCR) of the system, the size of the Stability Pool, etc.
 
-Here is the liquidation logic for a single Trove in Normal Mode and Recovery Mode.  `SP.EEUR` represents the EEUR in the Stability Pool.
+Here is the liquidation logic for a single Trove in Normal Mode and Recovery Mode. `SP.EEUR` represents the EEUR in the Stability Pool.
 
 #### Liquidations in Normal Mode: TCR >= 150%
 
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Condition                      | Liquidation behavior                                                                                                                                                                                                                                                                                                |
-|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ICR < MCR & SP.EEUR >= trove.debt | EEUR in the StabilityPool equal to the Trove's debt is offset with the Trove's debt. The Trove's EWT collateral is shared between depositors.                                                                                                                                                                       |
-| ICR < MCR & SP.EEUR < trove.debt | The total StabilityPool EEUR is offset with an equal amount of debt from the Trove.  A fraction of the Trove's collateral (equal to the ratio of its offset debt to its entire debt) is shared between depositors. The remaining debt and collateral (minus EWT gas compensation) is redistributed to active Troves |
-| ICR < MCR & SP.EEUR = 0          | Redistribute all debt and collateral (minus EWT gas compensation) to active Troves.                                                                                                                                                                                                                                 |
-| ICR  >= MCR                      | Do nothing.                                                                                                                                                                                                                                                                                                         |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Condition | Liquidation behavior                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ICR < MCR & SP.EEUR >= trove.debt                                                                                                                                                                                                                                                                                                                                                 | EEUR in the StabilityPool equal to the Trove's debt is offset with the Trove's debt. The Trove's EWT collateral is shared between depositors.                                                                                                                                                                      |
+| ICR < MCR & SP.EEUR < trove.debt                                                                                                                                                                                                                                                                                                                                                  | The total StabilityPool EEUR is offset with an equal amount of debt from the Trove. A fraction of the Trove's collateral (equal to the ratio of its offset debt to its entire debt) is shared between depositors. The remaining debt and collateral (minus EWT gas compensation) is redistributed to active Troves |
+| ICR < MCR & SP.EEUR = 0                                                                                                                                                                                                                                                                                                                                                           | Redistribute all debt and collateral (minus EWT gas compensation) to active Troves.                                                                                                                                                                                                                                |
+| ICR >= MCR                                                                                                                                                                                                                                                                                                                                                                        | Do nothing.                                                                                                                                                                                                                                                                                                        |
+
 #### Liquidations in Recovery Mode: TCR < 150%
 
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Condition                                | Liquidation behavior                                                                                                                                                                                                                                                                                                                                                                                         |
-|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ICR <=100%                               | Redistribute all debt and collateral (minus EWT gas compensation) to active Troves.                                                                                                                                                                                                                                                                                                                          |
-| 100% < ICR < MCR & SP.EEUR > trove.debt  | EEUR in the StabilityPool equal to the Trove's debt is offset with the Trove's debt. The Trove's EWT collateral (minus EWT gas compensation) is shared between depsitors.                                                                                                                                                                                                                                    |
-| 100% < ICR < MCR & SP.EEUR < trove.debt  | The total StabilityPool EEUR is offset with an equal amount of debt from the Trove.  A fraction of the Trove's collateral (equal to the ratio of its offset debt to its entire debt) is shared between depositors. The remaining debt and collateral (minus EWT gas compensation) is redistributed to active troves                                                                                          |
-| MCR <= ICR < TCR & SP.EEUR >= trove.debt  |  The Pool EEUR is offset with an equal amount of debt from the Trove. A fraction of EWT collateral with dollar value equal to `1.1 * debt` is shared between depositors. Nothing is redistributed to other active Troves. Since it's ICR was > 1.1, the Trove has a collateral remainder, which is sent to the `CollSurplusPool` and is claimable by the borrower. The Trove is closed. |
-| MCR <= ICR < TCR & SP.EEUR  < trove.debt | Do nothing.                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ICR >= TCR                               | Do nothing.                                                                                                                                                                                                                                                                                                                                                                                                  |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Condition | Liquidation behavior                                                                                                                                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ICR <=100%                                                                                                                                                                                                                                                                                                                                                                        | Redistribute all debt and collateral (minus EWT gas compensation) to active Troves.                                                                                                                                                                                                                                                                                                    |
+| 100% < ICR < MCR & SP.EEUR > trove.debt                                                                                                                                                                                                                                                                                                                                           | EEUR in the StabilityPool equal to the Trove's debt is offset with the Trove's debt. The Trove's EWT collateral (minus EWT gas compensation) is shared between depsitors.                                                                                                                                                                                                              |
+| 100% < ICR < MCR & SP.EEUR < trove.debt                                                                                                                                                                                                                                                                                                                                           | The total StabilityPool EEUR is offset with an equal amount of debt from the Trove. A fraction of the Trove's collateral (equal to the ratio of its offset debt to its entire debt) is shared between depositors. The remaining debt and collateral (minus EWT gas compensation) is redistributed to active troves                                                                     |
+| MCR <= ICR < TCR & SP.EEUR >= trove.debt                                                                                                                                                                                                                                                                                                                                          | The Pool EEUR is offset with an equal amount of debt from the Trove. A fraction of EWT collateral with dollar value equal to `1.1 * debt` is shared between depositors. Nothing is redistributed to other active Troves. Since it's ICR was > 1.1, the Trove has a collateral remainder, which is sent to the `CollSurplusPool` and is claimable by the borrower. The Trove is closed. |
+| MCR <= ICR < TCR & SP.EEUR < trove.debt                                                                                                                                                                                                                                                                                                                                           | Do nothing.                                                                                                                                                                                                                                                                                                                                                                            |
+| ICR >= TCR                                                                                                                                                                                                                                                                                                                                                                        | Do nothing.                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## Gains From Liquidations
 
@@ -238,7 +370,7 @@ This collateral surplus is sent to the `CollSurplusPool`, and the borrower can r
 
 ### Redemptions create a price floor
 
-Economically, the redemption mechanism creates a hard price floor for EEUR, ensuring that the market price stays at or near to $1 EUR. 
+Economically, the redemption mechanism creates a hard price floor for EEUR, ensuring that the market price stays at or near to $1 EUR.
 
 ## Recovery Mode
 
@@ -267,7 +399,7 @@ Economically, Recovery Mode is designed to encourage collateral top-ups and debt
 - `packages/contracts/test/` - JS test suite for the system. Tests run in Mocha/Chai
 - `packages/contracts/tests/` - Python test suite for the system. Tests run in Brownie
 - `packages/contracts/gasTest/` - Non-assertive tests that return gas costs for Liquity operations under various scenarios
-- `packages/contracts/fuzzTests/` - Echidna tests, and naive "random operation" tests 
+- `packages/contracts/fuzzTests/` - Echidna tests, and naive "random operation" tests
 - `packages/contracts/migrations/` - contains Hardhat script for deploying the smart contracts to the blockchain
 - `packages/contracts/utils/` - external Hardhat and node scripts - deployment helpers, gas calculators, etc
 - `packages/contracts/mathProofs/` - core mathematical proofs of Liquity properties, and a derivation of the scalable Stability Pool staking formula
@@ -280,7 +412,7 @@ As of 18/01/2021, the current working branch is `main`. `master` is out of date.
 
 ## AFRR Token Architecture
 
-The Liquity system incorporates a secondary token, AFRR. This token entitles the holder to a share of the system revenue generated by redemption fees and  issuance fees.
+The Liquity system incorporates a secondary token, AFRR. This token entitles the holder to a share of the system revenue generated by redemption fees and issuance fees.
 
 To earn a share of system fees, the AFRR holder must stake their AFRR in a staking contract.
 
@@ -313,39 +445,47 @@ A `LockupContractFactory` is used to deploy `LockupContracts` in the first year.
 ### Launch sequence and vesting process
 
 #### Deploy AFRR Contracts
+
 1. Liquity admin deploys `LockupContractFactory`
 2. Liquity admin deploys `CommunityIssuance`
-3. Liquity admin deploys `AFRRStaking` 
+3. Liquity admin deploys `AFRRStaking`
 4. Liquity admin creates a Pool in Uniswap for EEUR/EWT and deploys `Unipool` (LP rewards contract), which knows the address of the Pool
 5. Liquity admin deploys `AFRRToken`, which upon deployment:
+
 - Stores the `CommunityIssuance` and `LockupContractFactory` addresses
 - Mints AFRR tokens to `CommunityIssuance`, the Liquity admin address, the `Unipool` LP rewards address, and the bug bounty address
+
 6. Liquity admin sets `AFRRToken` address in `LockupContractFactory`, `CommunityIssuance`, `AFRRStaking`, and `Unipool`
 
 #### Deploy and fund Lockup Contracts
+
 7. Liquity admin tells `LockupContractFactory` to deploy a `LockupContract` for each beneficiary, with an `unlockTime` set to exactly one year after system deployment
 8. Liquity admin transfers AFRR to each `LockupContract`, according to their entitlement
 
 #### Deploy Liquity Core
+
 9. Liquity admin deploys the Liquity core system
 10. Liquity admin connects Liquity core system internally (with setters)
 11. Liquity admin connects `AFRRStaking` to Liquity core contracts and `AFRRToken`
-13. Liquity admin connects `CommunityIssuance` to Liquity core contracts and `AFRRToken`
+12. Liquity admin connects `CommunityIssuance` to Liquity core contracts and `AFRRToken`
 
 #### During one year lockup period
+
 - Liquity admin periodically transfers newly vested tokens to team & partners’ `LockupContracts`, as per their vesting schedules
 - Liquity admin may only transfer AFRR to `LockupContracts`
 - Anyone may deploy new `LockupContracts` via the Factory, setting any `unlockTime` that is >= 1 year from system deployment
 
 #### Upon end of one year lockup period
+
 - All beneficiaries may withdraw their entire entitlements
 - Liquity admin address restriction on AFRR transfers is automatically lifted, and Liquity admin may now transfer AFRR to any address
 - Anyone may deploy new `LockupContracts` via the Factory, setting any `unlockTime` in the future
 
 #### Post-lockup period
+
 - Liquity admin periodically transfers newly vested tokens to team & partners, directly to their individual addresses, or to a fresh lockup contract if required.
 
-_NOTE: In the final architecture, a multi-sig contract will be used to move AFRR Tokens, rather than the single Liquity admin EOA. It will be deployed at the start of the sequence, and have its address recorded in  `AFRRToken` in step 4, and receive AFRR tokens. It will be used to move AFRR in step 7, and during & after the lockup period. The Liquity admin EOA will only be used for deployment of contracts in steps 1-4 and 9._
+_NOTE: In the final architecture, a multi-sig contract will be used to move AFRR Tokens, rather than the single Liquity admin EOA. It will be deployed at the start of the sequence, and have its address recorded in `AFRRToken` in step 4, and receive AFRR tokens. It will be used to move AFRR in step 7, and during & after the lockup period. The Liquity admin EOA will only be used for deployment of contracts in steps 1-4 and 9._
 
 _The current code does not utilize a multi-sig. It implements the launch architecture outlined above._
 
@@ -407,7 +547,7 @@ The fallback logic distinguishes 3 different failure modes for Chainlink and 2 f
 
 There is also a return condition `bothOraclesLiveAndUnbrokenAndSimilarPrice` which is a function returning true if both oracles are live and not broken, and the percentual difference between the two reported prices is below 5%.
 
-The current `PriceFeed.sol` contract has an external `fetchPrice()` function that is called by core Liquity functions which require a current EWT:EUR price.  `fetchPrice()` calls each oracle's proxy, asserts on the responses, and converts returned prices to 18 digits.
+The current `PriceFeed.sol` contract has an external `fetchPrice()` function that is called by core Liquity functions which require a current EWT:EUR price. `fetchPrice()` calls each oracle's proxy, asserts on the responses, and converts returned prices to 18 digits.
 
 ### PriceFeed Logic
 
@@ -415,8 +555,7 @@ The PriceFeed contract fetches the current price and previous price from Chainli
 
 **Initial PriceFeed state:** `chainlinkWorking`. The initial system state that is maintained as long as Chainlink is working properly, i.e. neither broken nor frozen nor exceeding the maximum price change threshold between two consecutive rounds. PriceFeed then obeys the logic found in this table:
 
-  https://docs.google.com/spreadsheets/d/18fdtTUoqgmsK3Mb6LBO-6na0oK-Y9LWBqnPCJRp5Hsg/edit?usp=sharing
-
+https://docs.google.com/spreadsheets/d/18fdtTUoqgmsK3Mb6LBO-6na0oK-Y9LWBqnPCJRp5Hsg/edit?usp=sharing
 
 ### Testnet PriceFeed and PriceFeed tests
 
@@ -434,21 +573,19 @@ The PriceFeed logic is complex, and although we would prefer simplicity, it does
 
 We believe the benefit of the fallback logic is worth the complexity, given that our system is entirely immutable - if we had no fallback logic and Chainlink were to be hacked or permanently fail, Liquity would become permanently unusable anyway.
 
+**Chainlink Decimals**: the `PriceFeed` checks for and uses the latest `decimals` value reported by the Chainlink aggregator in order to calculate the Chainlink price at 18-digit precision, as needed by Liquity. `PriceFeed` does not assume a value for decimals and can handle the case where Chainlink change their decimal value.
 
-
-**Chainlink Decimals**: the `PriceFeed` checks for and uses the latest `decimals` value reported by the Chainlink aggregator in order to calculate the Chainlink price at 18-digit precision, as needed by Liquity.  `PriceFeed` does not assume a value for decimals and can handle the case where Chainlink change their decimal value. 
-
-However, the check `chainlinkIsBroken` uses both the current response from the latest round and the response previous round. Since `decimals` is not attached to round data, Liquity has no way of knowing whether decimals has changed between the current round and the previous round, so we assume it is the same. Liquity assumes the current return value of decimals() applies to both current round `i` and previous round `i-1`. 
+However, the check `chainlinkIsBroken` uses both the current response from the latest round and the response previous round. Since `decimals` is not attached to round data, Liquity has no way of knowing whether decimals has changed between the current round and the previous round, so we assume it is the same. Liquity assumes the current return value of decimals() applies to both current round `i` and previous round `i-1`.
 
 This means that a decimal change that coincides with a Liquity price fetch could cause Liquity to assert that the Chainlink price has deviated too much, and fall back to Tellor. There is nothing we can do about this. We hope/expect Chainlink to never change their `decimals()` return value (currently 8), and if a hack/technical error causes Chainlink's decimals to change, Liquity may fall back to Tellor.
 
-To summarize the Chainlink decimals issue: 
+To summarize the Chainlink decimals issue:
+
 - Liquity can handle the case where Chainlink decimals changes across _two consecutive rounds `i` and `i-1` which are not used in the same Liquity price fetch_
 - If Liquity fetches the price at round `i`, it will not know if Chainlink decimals changed across round `i-1` to round `i`, and the consequent price scaling distortion may cause Liquity to fall back to Tellor
 - Liquity will always calculate the correct current price at 18-digit precision assuming the current return value of `decimals()` is correct (i.e. is the value used by the nodes).
 
-**Tellor Decimals**: Tellor uses 6 decimal precision for their EWTEUR price as determined by a social consensus of Tellor miners/data providers, and shown on Tellor's price feed page. Their decimals value is not offered in their on-chain contracts.  We rely on the continued social consensus around 6 decimals for their EWTEUR price feed. Tellor have informed us that if there was demand for an EWTEUR price at different precision, they would simply create a new `requestId`, and make no attempt to alter the social consensus around the precision of the current EWTEUR `requestId` (1) used by Liquity.
-
+**Tellor Decimals**: Tellor uses 6 decimal precision for their EWTEUR price as determined by a social consensus of Tellor miners/data providers, and shown on Tellor's price feed page. Their decimals value is not offered in their on-chain contracts. We rely on the continued social consensus around 6 decimals for their EWTEUR price feed. Tellor have informed us that if there was demand for an EWTEUR price at different precision, they would simply create a new `requestId`, and make no attempt to alter the social consensus around the precision of the current EWTEUR `requestId` (1) used by Liquity.
 
 ### Keeping a sorted list of Troves ordered by ICR
 
@@ -456,7 +593,7 @@ Liquity relies on a particular data structure: a sorted doubly-linked list of Tr
 
 This ordered list is critical for gas-efficient redemption sequences and for the `liquidateTroves` sequence, both of which target Troves in ascending order of ICR.
 
-The sorted doubly-linked list is found in `SortedTroves.sol`. 
+The sorted doubly-linked list is found in `SortedTroves.sol`.
 
 Nodes map to active Troves in the system - the ID property is the address of a trove owner. The list accepts positional hints for efficient O(1) insertion - please see the [hints](#supplying-hints-to-cdp-operations) section for more details.
 
@@ -492,43 +629,43 @@ Likewise, the StabilityPool holds the total accumulated EWT gains from liquidati
 **Borrower Operations**
 
 | Function                     | EWT quantity                        | Path                                       |
-|------------------------------|-------------------------------------|--------------------------------------------|
+| ---------------------------- | ----------------------------------- | ------------------------------------------ |
 | openTrove                    | msg.value                           | msg.sender->BorrowerOperations->ActivePool |
 | addColl                      | msg.value                           | msg.sender->BorrowerOperations->ActivePool |
-| withdrawColl                 | _collWithdrawal parameter           | ActivePool->msg.sender                     |
+| withdrawColl                 | \_collWithdrawal parameter          | ActivePool->msg.sender                     |
 | adjustTrove: adding EWT      | msg.value                           | msg.sender->BorrowerOperations->ActivePool |
-| adjustTrove: withdrawing EWT | _collWithdrawal parameter           | ActivePool->msg.sender                     |
+| adjustTrove: withdrawing EWT | \_collWithdrawal parameter          | ActivePool->msg.sender                     |
 | closeTrove                   | All remaining                       | ActivePool->msg.sender                     |
 | claimCollateral              | CollSurplusPool.balance[msg.sender] | CollSurplusPool->msg.sender                |
 
 **Trove Manager**
 
-| Function                                | EWT quantity                           | Path                          |
-|-----------------------------------------|----------------------------------------|-------------------------------|
-| liquidate (offset)                      | collateral to be offset                | ActivePool->StabilityPool     |
-| liquidate (redistribution)              | collateral to be redistributed         | ActivePool->DefaultPool       |
-| liquidateTroves (offset)                | collateral to be offset                | ActivePool->StabilityPool     |
-| liquidateTroves (redistribution)        | collateral to be redistributed         | ActivePool->DefaultPool       |
-| batchLiquidateTroves (offset)           | collateral to be offset                | ActivePool->StabilityPool     |
-| batchLiquidateTroves (redistribution).  | collateral to be redistributed         | ActivePool->DefaultPool       |
-| redeemCollateral                        | collateral to be swapped with redeemer | ActivePool->msg.sender        |
-| redeemCollateral                        | redemption fee                         | ActivePool->AFRRStaking       |
-| redeemCollateral                        | trove's collateral surplus             | ActivePool->CollSurplusPool |
+| Function                               | EWT quantity                           | Path                        |
+| -------------------------------------- | -------------------------------------- | --------------------------- |
+| liquidate (offset)                     | collateral to be offset                | ActivePool->StabilityPool   |
+| liquidate (redistribution)             | collateral to be redistributed         | ActivePool->DefaultPool     |
+| liquidateTroves (offset)               | collateral to be offset                | ActivePool->StabilityPool   |
+| liquidateTroves (redistribution)       | collateral to be redistributed         | ActivePool->DefaultPool     |
+| batchLiquidateTroves (offset)          | collateral to be offset                | ActivePool->StabilityPool   |
+| batchLiquidateTroves (redistribution). | collateral to be redistributed         | ActivePool->DefaultPool     |
+| redeemCollateral                       | collateral to be swapped with redeemer | ActivePool->msg.sender      |
+| redeemCollateral                       | redemption fee                         | ActivePool->AFRRStaking     |
+| redeemCollateral                       | trove's collateral surplus             | ActivePool->CollSurplusPool |
 
 **Stability Pool**
 
 | Function               | EWT quantity                     | Path                                              |
-|------------------------|----------------------------------|---------------------------------------------------|
+| ---------------------- | -------------------------------- | ------------------------------------------------- |
 | provideToSP            | depositor's accumulated EWT gain | StabilityPool -> msg.sender                       |
 | withdrawFromSP         | depositor's accumulated EWT gain | StabilityPool -> msg.sender                       |
 | withdrawEWTGainToTrove | depositor's accumulated EWT gain | StabilityPool -> BorrowerOperations -> ActivePool |
 
 **AFRR Staking**
 
-| Function    | EWT quantity                                   | Path                     |
-|-------------|------------------------------------------------|--------------------------|
-| stake       | staker's accumulated EWT gain from system fees | AFRRStaking ->msg.sender |
-| unstake     | staker's accumulated EWT gain from system fees | AFRRStaking ->msg.sender |
+| Function | EWT quantity                                   | Path                     |
+| -------- | ---------------------------------------------- | ------------------------ |
+| stake    | staker's accumulated EWT gain from system fees | AFRRStaking ->msg.sender |
+| unstake  | staker's accumulated EWT gain from system fees | AFRRStaking ->msg.sender |
 
 ### Flow of EEUR tokens in Liquity
 
@@ -544,65 +681,64 @@ The only time EEUR is transferred to/from a Liquity contract, is when a user dep
 
 **Borrower Operations**
 
-| Function                      | EEUR Quantity | ERC20 Operation                      |
-|-------------------------------|---------------|--------------------------------------|
-| openTrove                     | Drawn EEUR    | EEUR._mint(msg.sender, _EEURAmount)  |
-|                               | Issuance fee  | EEUR._mint(AFRRStaking,  EEURFee)    |
-| withdrawEEUR                  | Drawn EEUR    | EEUR._mint(msg.sender, _EEURAmount)  |
-|                               | Issuance fee  | EEUR._mint(AFRRStaking,  EEURFee)    |
-| repayEEUR                     | Repaid EEUR   | EEUR._burn(msg.sender, _EEURAmount)  |
-| adjustTrove: withdrawing EEUR | Drawn EEUR    | EEUR._mint(msg.sender, _EEURAmount)  |
-|                               | Issuance fee  | EEUR._mint(AFRRStaking,  EEURFee)    |
-| adjustTrove: repaying EEUR    | Repaid EEUR   | EEUR._burn(msg.sender, _EEURAmount)  |
-| closeTrove                    | Repaid EEUR   | EEUR._burn(msg.sender, _EEURAmount) |
+| Function                      | EEUR Quantity | ERC20 Operation                       |
+| ----------------------------- | ------------- | ------------------------------------- |
+| openTrove                     | Drawn EEUR    | EEUR.\_mint(msg.sender, \_EEURAmount) |
+|                               | Issuance fee  | EEUR.\_mint(AFRRStaking, EEURFee)     |
+| withdrawEEUR                  | Drawn EEUR    | EEUR.\_mint(msg.sender, \_EEURAmount) |
+|                               | Issuance fee  | EEUR.\_mint(AFRRStaking, EEURFee)     |
+| repayEEUR                     | Repaid EEUR   | EEUR.\_burn(msg.sender, \_EEURAmount) |
+| adjustTrove: withdrawing EEUR | Drawn EEUR    | EEUR.\_mint(msg.sender, \_EEURAmount) |
+|                               | Issuance fee  | EEUR.\_mint(AFRRStaking, EEURFee)     |
+| adjustTrove: repaying EEUR    | Repaid EEUR   | EEUR.\_burn(msg.sender, \_EEURAmount) |
+| closeTrove                    | Repaid EEUR   | EEUR.\_burn(msg.sender, \_EEURAmount) |
 
 **Trove Manager**
 
-| Function                 | EEUR Quantity            | ERC20 Operation                                  |
-|--------------------------|--------------------------|--------------------------------------------------|
-| liquidate (offset)       | EEUR to offset with debt | EEUR._burn(stabilityPoolAddress, _debtToOffset); |
-| liquidateTroves (offset)   | EEUR to offset with debt | EEUR._burn(stabilityPoolAddress, _debtToOffset); |
-| batchLiquidateTroves (offset) | EEUR to offset with debt | EEUR._burn(stabilityPoolAddress, _debtToOffset); |
-| redeemCollateral         | EEUR to redeem           | EEUR._burn(msg.sender, _EEUR)                    |
+| Function                      | EEUR Quantity            | ERC20 Operation                                    |
+| ----------------------------- | ------------------------ | -------------------------------------------------- |
+| liquidate (offset)            | EEUR to offset with debt | EEUR.\_burn(stabilityPoolAddress, \_debtToOffset); |
+| liquidateTroves (offset)      | EEUR to offset with debt | EEUR.\_burn(stabilityPoolAddress, \_debtToOffset); |
+| batchLiquidateTroves (offset) | EEUR to offset with debt | EEUR.\_burn(stabilityPoolAddress, \_debtToOffset); |
+| redeemCollateral              | EEUR to redeem           | EEUR.\_burn(msg.sender, \_EEUR)                    |
 
 **Stability Pool**
 
-| Function       | EEUR Quantity    | ERC20 Operation                                             |
-|----------------|------------------|-------------------------------------------------------------|
-| provideToSP    | deposit / top-up | EEUR._transfer(msg.sender, stabilityPoolAddress, _amount);  |
-| withdrawFromSP | withdrawal       | EEUR._transfer(stabilityPoolAddress, msg.sender, _amount);  |
+| Function       | EEUR Quantity    | ERC20 Operation                                              |
+| -------------- | ---------------- | ------------------------------------------------------------ |
+| provideToSP    | deposit / top-up | EEUR.\_transfer(msg.sender, stabilityPoolAddress, \_amount); |
+| withdrawFromSP | withdrawal       | EEUR.\_transfer(stabilityPoolAddress, msg.sender, \_amount); |
 
 **AFRR Staking**
 
-| Function | EEUR Quantity                                   | ERC20 Operation                                           |
-|----------|-------------------------------------------------|-----------------------------------------------------------|
-| stake    | staker's accumulated EEUR gain from system fees | EEUR._transfer(AFRRStakingAddress, msg.sender, EEURGain); |
-| unstake  | staker's accumulated EEUR gain from system fees | EEUR._transfer(AFRRStakingAddress, msg.sender, EEURGain); |
+| Function | EEUR Quantity                                   | ERC20 Operation                                            |
+| -------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| stake    | staker's accumulated EEUR gain from system fees | EEUR.\_transfer(AFRRStakingAddress, msg.sender, EEURGain); |
+| unstake  | staker's accumulated EEUR gain from system fees | EEUR.\_transfer(AFRRStakingAddress, msg.sender, EEURGain); |
 
 ### Flow of AFRR Tokens in Liquity
 
 ![Flow of AFRR](images/AFRR_flows.svg)
 
-Stability Providers and Frontend Operators receive AFRR gains according to their share of the total EEUR deposits, and the AFRR community issuance schedule.  Once obtained, AFRR can be staked and unstaked with the `AFRRStaking` contract.
+Stability Providers and Frontend Operators receive AFRR gains according to their share of the total EEUR deposits, and the AFRR community issuance schedule. Once obtained, AFRR can be staked and unstaked with the `AFRRStaking` contract.
 
 **Stability Pool**
 
 | Function               | AFRR Quantity       | ERC20 Operation                                                       |
-|------------------------|---------------------|-----------------------------------------------------------------------|
-| provideToSP            | depositor AFRR gain | AFRR._transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
-|                        | front end AFRR gain | AFRR._transfer(stabilityPoolAddress, _frontEnd, frontEndAFRRGain);   |
-| withdrawFromSP         | depositor AFRR gain | AFRR._transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
-|                        | front end AFRR gain | AFRR._transfer(stabilityPoolAddress, _frontEnd, frontEndAFRRGain);   |
-| withdrawEWTGainToTrove | depositor AFRR gain | AFRR._transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
-|                        | front end AFRR gain | AFRR._transfer(stabilityPoolAddress, _frontEnd, frontEndAFRRGain);   |
+| ---------------------- | ------------------- | --------------------------------------------------------------------- |
+| provideToSP            | depositor AFRR gain | AFRR.\_transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
+|                        | front end AFRR gain | AFRR.\_transfer(stabilityPoolAddress, \_frontEnd, frontEndAFRRGain);  |
+| withdrawFromSP         | depositor AFRR gain | AFRR.\_transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
+|                        | front end AFRR gain | AFRR.\_transfer(stabilityPoolAddress, \_frontEnd, frontEndAFRRGain);  |
+| withdrawEWTGainToTrove | depositor AFRR gain | AFRR.\_transfer(stabilityPoolAddress, msg.sender, depositorAFRRGain); |
+|                        | front end AFRR gain | AFRR.\_transfer(stabilityPoolAddress, \_frontEnd, frontEndAFRRGain);  |
 
 **AFRR Staking Contract**
 
-| Function | AFRR Quantity                  | ERC20 Operation                                           |
-|----------|--------------------------------|-----------------------------------------------------------|
-| stake    | staker's AFRR deposit / top-up | AFRR._transfer(msg.sender, AFRRStakingAddress, _amount); |
-| unstake  | staker's AFRR withdrawal       | AFRR._transfer(AFRRStakingAddress, msg.sender, _amount); |
-
+| Function | AFRR Quantity                  | ERC20 Operation                                            |
+| -------- | ------------------------------ | ---------------------------------------------------------- |
+| stake    | staker's AFRR deposit / top-up | AFRR.\_transfer(msg.sender, AFRRStakingAddress, \_amount); |
+| unstake  | staker's AFRR withdrawal       | AFRR.\_transfer(AFRRStakingAddress, msg.sender, \_amount); |
 
 ## Expected User Behaviors
 
@@ -616,7 +752,7 @@ AFRR token holders may stake their AFRR, to earn a share of the system fee reven
 
 ## Contract Ownership and Function Permissions
 
-All the core smart contracts inherit from the OpenZeppelin `Ownable.sol` contract template. As such all contracts have a single owning address, which is the deploying address. The contract's ownership is renounced either upon deployment, or immediately after its address setter has been called, connecting it to the rest of the core Liquity system. 
+All the core smart contracts inherit from the OpenZeppelin `Ownable.sol` contract template. As such all contracts have a single owning address, which is the deploying address. The contract's ownership is renounced either upon deployment, or immediately after its address setter has been called, connecting it to the rest of the core Liquity system.
 
 Several public and external functions have modifiers such as `requireCallerIsTroveManager`, `requireCallerIsActivePool`, etc - ensuring they can only be called by the respective permitted contract.
 
@@ -633,60 +769,87 @@ Run all tests with `npx hardhat test`, or run a specific test with `npx hardhat 
 Tests are run against the Hardhat EVM.
 
 ### Brownie Tests
+
 There are some special tests that are using Brownie framework.
 
 To test, install brownie with:
+
 ```
+
 python3 -m pip install --user pipx
 python3 -m pipx ensurepath
 
 pipx install eth-brownie
+
 ```
 
 and add numpy with:
+
 ```
+
 pipx inject eth-brownie numpy
+
 ```
 
 Add OpenZeppelin package:
+
 ```
+
 brownie pm install OpenZeppelin/openzeppelin-contracts@3.3.0
+
 ```
 
 Run, from `packages/contracts/`:
+
 ```
+
 brownie test -s
+
 ```
 
 ### OpenEthereum
 
 Add the local node as a `live` network at `~/.brownie/network-config.yaml`:
+
 ```
-(...)
-      - name: Local Openethereum
-        chainid: 17
-        id: openethereum
-        host: http://localhost:8545
+
+(...) - name: Local Openethereum
+chainid: 17
+id: openethereum
+host: http://localhost:8545
+
 ```
 
 Make sure state is cleaned up first:
+
 ```
-rm -Rf build/deployments/*
+
+rm -Rf build/deployments/\*
+
 ```
 
 Start Openthereum node from this repo’s root with:
+
 ```
+
 yarn start-dev-chain:openethereum
+
 ```
 
 Then, again from `packages/contracts/`, run it with:
+
 ```
+
 brownie test -s --network openethereum
+
 ```
 
 To stop the Openethereum node, you can do it with:
+
 ```
+
 yarn stop-dev-chain
+
 ```
 
 ## System Quantities - Units and Representation
@@ -715,11 +878,11 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 ### Borrower (Trove) Operations - `BorrowerOperations.sol`
 
-`openTrove(uint _maxFeePercentage, uint _EEURAmount, address _upperHint, address _lowerHint)`: payable function that creates a Trove for the caller with the requested debt, and the EWT received as collateral. Successful execution is conditional mainly on the resulting collateralization ratio which must exceed the minimum (110% in Normal Mode, 150% in Recovery Mode). In addition to the requested debt, extra debt is issued to pay the issuance fee, and cover the gas compensation. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when a redemption transaction is processed first, driving up the issuance fee. 
+`openTrove(uint _maxFeePercentage, uint _EEURAmount, address _upperHint, address _lowerHint)`: payable function that creates a Trove for the caller with the requested debt, and the EWT received as collateral. Successful execution is conditional mainly on the resulting collateralization ratio which must exceed the minimum (110% in Normal Mode, 150% in Recovery Mode). In addition to the requested debt, extra debt is issued to pay the issuance fee, and cover the gas compensation. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when a redemption transaction is processed first, driving up the issuance fee.
 
 `addColl(address _upperHint, address _lowerHint))`: payable function that adds the received EWT to the caller's active Trove.
 
-`withdrawColl(uint _amount, address _upperHint, address _lowerHint)`: withdraws `_amount` of collateral from the caller’s Trove. Executes only if the user has an active Trove, the withdrawal would not pull the user’s Trove below the minimum collateralization ratio, and the resulting total collateralization ratio of the system is above 150%. 
+`withdrawColl(uint _amount, address _upperHint, address _lowerHint)`: withdraws `_amount` of collateral from the caller’s Trove. Executes only if the user has an active Trove, the withdrawal would not pull the user’s Trove below the minimum collateralization ratio, and the resulting total collateralization ratio of the system is above 150%.
 
 `function withdrawEEUR(uint _maxFeePercentage, uint _EEURAmount, address _upperHint, address _lowerHint)`: issues `_amount` of EEUR from the caller’s Trove to the caller. Executes only if the Trove's collateralization ratio would remain above the minimum, and the resulting total collateralization ratio is above 150%. The borrower has to provide a `_maxFeePercentage` that he/she is willing to accept in case of a fee slippage, i.e. when a redemption transaction is processed first, driving up the issuance fee.
 
@@ -733,7 +896,7 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 ### TroveManager Functions - `TroveManager.sol`
 
-`liquidate(address _borrower)`: callable by anyone, attempts to liquidate the Trove of `_user`. Executes successfully if `_user`’s Trove meets the conditions for liquidation (e.g. in Normal Mode, it liquidates if the Trove's ICR < the system MCR).  
+`liquidate(address _borrower)`: callable by anyone, attempts to liquidate the Trove of `_user`. Executes successfully if `_user`’s Trove meets the conditions for liquidation (e.g. in Normal Mode, it liquidates if the Trove's ICR < the system MCR).
 
 `liquidateTroves(uint n)`: callable by anyone, checks for under-collateralized Troves below MCR and liquidates up to `n`, starting from the Trove with the lowest collateralization ratio; subject to gas constraints and the actual number of under-collateralized Troves. The gas costs of `liquidateTroves(uint n)` mainly depend on the number of Troves that are liquidated, and whether the Troves are offset against the Stability Pool or redistributed. For n=1, the gas costs per liquidated Trove are roughly between 215K-400K, for n=5 between 80K-115K, for n=10 between 70K-82K, and for n=50 between 60K-65K.
 
@@ -751,11 +914,11 @@ All data structures with the ‘public’ visibility specifier are ‘gettable�
 
 `getEntireDebtAndColl(address _borrower)`: returns a Trove’s entire debt and collateral, which respectively include any pending debt rewards and EWT rewards from prior redistributions.
 
-`getEntireSystemColl()`:  Returns the systemic entire collateral allocated to Troves, i.e. the sum of the EWT in the Active Pool and the Default Pool.
+`getEntireSystemColl()`: Returns the systemic entire collateral allocated to Troves, i.e. the sum of the EWT in the Active Pool and the Default Pool.
 
 `getEntireSystemDebt()` Returns the systemic entire debt assigned to Troves, i.e. the sum of the EEURDebt in the Active Pool and the Default Pool.
 
-`getTCR()`: returns the total collateralization ratio (TCR) of the system.  The TCR is based on the the entire system debt and collateral (including pending rewards).
+`getTCR()`: returns the total collateralization ratio (TCR) of the system. The TCR is based on the the entire system debt and collateral (including pending rewards).
 
 `checkRecoveryMode()`: reveals whether or not the system is in Recovery Mode (i.e. whether the Total Collateralization Ratio (TCR) is below the Critical Collateralization Ratio (CCR)).
 
@@ -791,11 +954,11 @@ The number of Troves to consider for redemption can be capped by passing a non-z
 
 `getCompoundedFrontEndStake(address _frontEnd)`: returns the remaining front end stake for a given front end
 
-### AFRR Staking Functions  `AFRRStaking.sol`
+### AFRR Staking Functions `AFRRStaking.sol`
 
- `stake(uint _AFRRamount)`: sends `_AFRRAmount` from the caller to the staking contract, and increases their stake. If the caller already has a non-zero stake, it pays out their accumulated EWT and EEUR gains from staking.
+`stake(uint _AFRRamount)`: sends `_AFRRAmount` from the caller to the staking contract, and increases their stake. If the caller already has a non-zero stake, it pays out their accumulated EWT and EEUR gains from staking.
 
- `unstake(uint _AFRRamount)`: reduces the caller’s stake by `_AFRRamount`, up to a maximum of their entire stake. It pays out their accumulated EWT and EEUR gains from staking.
+`unstake(uint _AFRRamount)`: reduces the caller’s stake by `_AFRRamount`, up to a maximum of their entire stake. It pays out their accumulated EWT and EEUR gains from staking.
 
 ### Lockup Contract Factory `LockupContractFactory.sol`
 
@@ -829,7 +992,7 @@ A hint is the address of a Trove with a position in the sorted list close to the
 
 All Trove operations take two ‘hint’ arguments: a `_lowerHint` referring to the `nextId` and an `_upperHint` referring to the `prevId` of the two adjacent nodes in the linked list that are (or would become) the neighbors of the given Trove. Taking both direct neighbors as hints has the advantage of being much more resilient to situations where a neighbor gets moved or removed before the caller's transaction is processed: the transaction would only fail if both neighboring Troves are affected during the pendency of the transaction.
 
-The better the ‘hint’ is, the shorter the list traversal, and the cheaper the gas cost of the function call. `SortedList::findInsertPosition(uint256 _NICR, address _prevId, address _nextId)` that is called by the Trove operation firsts check if `prevId` is still existant and valid (larger NICR than the provided `_NICR`) and then descends the list starting from `prevId`. If the check fails, the function further checks if `nextId` is still existant and valid (smaller NICR than the provided `_NICR`) and then ascends list starting from `nextId`. 
+The better the ‘hint’ is, the shorter the list traversal, and the cheaper the gas cost of the function call. `SortedList::findInsertPosition(uint256 _NICR, address _prevId, address _nextId)` that is called by the Trove operation firsts check if `prevId` is still existant and valid (larger NICR than the provided `_NICR`) and then descends the list starting from `prevId`. If the check fails, the function further checks if `nextId` is still existant and valid (smaller NICR than the provided `_NICR`) and then ascends list starting from `nextId`.
 
 The `HintHelpers::getApproxHint(...)` function can be used to generate a useful hint pointing to a Trove relatively close to the target position, which can then be passed as an argument to the desired Trove operation or to `SortedTroves::findInsertPosition(...)` to get its two direct neighbors as ‘exact‘ hints (based on the current state of the system).
 
@@ -847,7 +1010,7 @@ Gas cost will be worst case `O(n)`, where n is the size of the `SortedTroves` li
 1. User performs Trove operation in their browser
 2. The front end computes a new collateralization ratio locally, based on the change in collateral and/or debt.
 3. Call `HintHelpers::getApproxHint(...)`, passing it the computed nominal collateralization ratio. Returns an address close to the correct insert position
-4. Call `SortedTroves::findInsertPosition(uint256 _NICR, address _prevId, address _nextId)`, passing it the same approximate hint via both `_prevId` and `_nextId` and the new nominal collateralization ratio via `_NICR`. 
+4. Call `SortedTroves::findInsertPosition(uint256 _NICR, address _prevId, address _nextId)`, passing it the same approximate hint via both `_prevId` and `_nextId` and the new nominal collateralization ratio via `_NICR`.
 5. Pass the ‘exact‘ hint in the form of the two direct neighbors, i.e. `_nextId` as `_lowerHint` and `_prevId` as `_upperHint`, to the Trove operation function call. (Note that the hint may become slightly inexact due to pending transactions that are processed first, though this is gracefully handled by the system that can ascend or descend the list as needed to find the right position.)
 
 Gas cost of steps 2-4 will be free, and step 5 will be `O(1)`.
@@ -857,71 +1020,78 @@ Hints allow cheaper Trove operations for the user, at the expense of a slightly 
 ### Example Borrower Operations with Hints
 
 #### Opening a trove
+
 ```
-  const toWei = web3.utils.toWei
-  const toBN = web3.utils.toBN
 
-  const EEURAmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 EEUR
-  const EWTColl = toBN(toWei('5')) // borrower wants to lock 5 EWT collateral
+const toWei = web3.utils.toWei
+const toBN = web3.utils.toBN
 
-  // Call deployed TroveManager contract to read the liquidation reserve and latest borrowing fee
-  const liquidationReserve = await troveManager.EEUR_GAS_COMPENSATION()
-  const expectedFee = await troveManager.getBorrowingFeeWithDecay(EEURAmount)
-  
-  // Total debt of the new trove = EEUR amount drawn, plus fee, plus the liquidation reserve
-  const expectedDebt = EEURAmount.add(expectedFee).add(liquidationReserve)
+const EEURAmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 EEUR
+const EWTColl = toBN(toWei('5')) // borrower wants to lock 5 EWT collateral
 
-  // Get the nominal NICR of the new trove
-  const _1e20 = toBN(toWei('100'))
-  let NICR = EWTColl.mul(_1e20).div(expectedDebt)
+// Call deployed TroveManager contract to read the liquidation reserve and latest borrowing fee
+const liquidationReserve = await troveManager.EEUR_GAS_COMPENSATION()
+const expectedFee = await troveManager.getBorrowingFeeWithDecay(EEURAmount)
 
-  // Get an approximate address hint from the deployed HintHelper contract. Use (15 * number of troves) trials 
-  // to get an approx. hint that is close to the right position.
-  let numTroves = await sortedTroves.getSize()
-  let numTrials = numTroves.mul(toBN('15'))
-  let { 0: approxHint } = await hintHelpers.getApproxHint(NICR, numTrials, 42)  // random seed of 42
+// Total debt of the new trove = EEUR amount drawn, plus fee, plus the liquidation reserve
+const expectedDebt = EEURAmount.add(expectedFee).add(liquidationReserve)
 
-  // Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
-  let { 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint)
+// Get the nominal NICR of the new trove
+const \_1e20 = toBN(toWei('100'))
+let NICR = EWTColl.mul(\_1e20).div(expectedDebt)
 
-  // Finally, call openTrove with the exact upperHint and lowerHint
-  const maxFee = '5'.concat('0'.repeat(16)) // Slippage protection: 5%
-  await borrowerOperations.openTrove(maxFee, EEURAmount, upperHint, lowerHint, { value: EWTColl })
+// Get an approximate address hint from the deployed HintHelper contract. Use (15 \* number of troves) trials
+// to get an approx. hint that is close to the right position.
+let numTroves = await sortedTroves.getSize()
+let numTrials = numTroves.mul(toBN('15'))
+let { 0: approxHint } = await hintHelpers.getApproxHint(NICR, numTrials, 42) // random seed of 42
+
+// Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
+let { 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint)
+
+// Finally, call openTrove with the exact upperHint and lowerHint
+const maxFee = '5'.concat('0'.repeat(16)) // Slippage protection: 5%
+await borrowerOperations.openTrove(maxFee, EEURAmount, upperHint, lowerHint, { value: EWTColl })
+
 ```
 
 #### Adjusting a Trove
+
 ```
-  const collIncrease = toBN(toWei('1'))  // borrower wants to add 1 EWT
-  const EEURRepayment = toBN(toWei('230')) // borrower wants to repay 230 EEUR
 
-  // Get trove's current debt and coll
-  const {0: debt, 1: coll} = await troveManager.getEntireDebtAndColl(borrower)
-  
-  const newDebt = debt.sub(EEURRepayment)
-  const newColl = coll.add(collIncrease)
+const collIncrease = toBN(toWei('1')) // borrower wants to add 1 EWT
+const EEURRepayment = toBN(toWei('230')) // borrower wants to repay 230 EEUR
 
-  NICR = newColl.mul(_1e20).div(newDebt)
+// Get trove's current debt and coll
+const {0: debt, 1: coll} = await troveManager.getEntireDebtAndColl(borrower)
 
-  // Get an approximate address hint from the deployed HintHelper contract. Use (15 * number of troves) trials 
-  // to get an approx. hint that is close to the right position.
-  numTroves = await sortedTroves.getSize()
-  numTrials = numTroves.mul(toBN('15'))
-  ({0: approxHint} = await hintHelpers.getApproxHint(NICR, numTrials, 42))
+const newDebt = debt.sub(EEURRepayment)
+const newColl = coll.add(collIncrease)
 
-  // Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
-  ({ 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint))
+NICR = newColl.mul(\_1e20).div(newDebt)
 
-  // Call adjustTrove with the exact upperHint and lowerHint
-  await borrowerOperations.adjustTrove(maxFee, 0, EEURRepayment, false, upperHint, lowerHint, {value: collIncrease})
+// Get an approximate address hint from the deployed HintHelper contract. Use (15 \* number of troves) trials
+// to get an approx. hint that is close to the right position.
+numTroves = await sortedTroves.getSize()
+numTrials = numTroves.mul(toBN('15'))
+({0: approxHint} = await hintHelpers.getApproxHint(NICR, numTrials, 42))
+
+// Use the approximate hint to get the exact upper and lower hints from the deployed SortedTroves contract
+({ 0: upperHint, 1: lowerHint } = await sortedTroves.findInsertPosition(NICR, approxHint, approxHint))
+
+// Call adjustTrove with the exact upperHint and lowerHint
+await borrowerOperations.adjustTrove(maxFee, 0, EEURRepayment, false, upperHint, lowerHint, {value: collIncrease})
+
 ```
 
 ### Hints for `redeemCollateral`
 
 `TroveManager::redeemCollateral` as a special case requires additional hints:
+
 - `_firstRedemptionHint` hints at the position of the first Trove that will be redeemed from,
 - `_lowerPartialRedemptionHint` hints at the `nextId` neighbor of the last redeemed Trove upon reinsertion, if it's partially redeemed,
 - `_upperPartialRedemptionHint` hints at the `prevId` neighbor of the last redeemed Trove upon reinsertion, if it's partially redeemed,
-- `_partialRedemptionHintNICR` ensures that the transaction won't run out of gas if neither `_lowerPartialRedemptionHint` nor `_upperPartialRedemptionHint` are  valid anymore.
+- `_partialRedemptionHintNICR` ensures that the transaction won't run out of gas if neither `_lowerPartialRedemptionHint` nor `_upperPartialRedemptionHint` are valid anymore.
 
 `redeemCollateral` will only redeem from Troves that have an ICR >= MCR. In other words, if there are Troves at the bottom of the SortedTroves list that are below the minimum collateralization ratio (which can happen after an EWT:EUR price drop), they will be skipped. To make this more gas-efficient, the position of the first redeemable Trove should be passed as `_firstRedemptionHint`.
 
@@ -929,7 +1099,7 @@ Hints allow cheaper Trove operations for the user, at the expense of a slightly 
 
 The first redemption hint is the address of the trove from which to start the redemption sequence - i.e the address of the first trove in the system with ICR >= 110%.
 
-If when the transaction is confirmed the address is in fact not valid - the system will start from the lowest ICR trove in the system, and step upwards until it finds the first trove with ICR >= 110% to redeem from. In this case, since the number of troves below 110% will be limited due to ongoing liquidations, there's a good chance that the redemption transaction still succeed. 
+If when the transaction is confirmed the address is in fact not valid - the system will start from the lowest ICR trove in the system, and step upwards until it finds the first trove with ICR >= 110% to redeem from. In this case, since the number of troves below 110% will be limited due to ongoing liquidations, there's a good chance that the redemption transaction still succeed.
 
 #### Partial redemption hints
 
@@ -944,33 +1114,38 @@ To mitigate this, another hint needs to be provided: `_partialRedemptionHintNICR
 If not, the redemption sequence doesn’t perform the final partial redemption, and terminates early. This ensures that the transaction doesn’t revert, and most of the requested EEUR redemption can be fulfilled.
 
 #### Example Redemption with hints
+
 ```
- // Get the redemptions hints from the deployed HintHelpers contract
-  const redemptionhint = await hintHelpers.getRedemptionHints(EEURAmount, price, 50)
 
-  const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedEEURAmount } = redemptionhint
+// Get the redemptions hints from the deployed HintHelpers contract
+const redemptionhint = await hintHelpers.getRedemptionHints(EEURAmount, price, 50)
 
-  // Get the approximate partial redemption hint
-  const { hintAddress: approxPartialRedemptionHint } = await contracts.hintHelpers.getApproxHint(partialRedemptionNewICR, numTrials, 42)
-  
-  /* Use the approximate partial redemption hint to get the exact partial redemption hint from the 
-  * deployed SortedTroves contract
-  */
+const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedEEURAmount } = redemptionhint
+
+// Get the approximate partial redemption hint
+const { hintAddress: approxPartialRedemptionHint } = await contracts.hintHelpers.getApproxHint(partialRedemptionNewICR, numTrials, 42)
+
+/\* Use the approximate partial redemption hint to get the exact partial redemption hint from the
+
+- deployed SortedTroves contract
+  \*/
   const exactPartialRedemptionHint = (await sortedTroves.findInsertPosition(partialRedemptionNewICR,
-    approxPartialRedemptionHint,
-    approxPartialRedemptionHint))
+  approxPartialRedemptionHint,
+  approxPartialRedemptionHint))
 
-  /* Finally, perform the on-chain redemption, passing the truncated EEUR amount, the correct hints, and the expected
-  * ICR of the final partially redeemed trove in the sequence. 
-  */
+/\* Finally, perform the on-chain redemption, passing the truncated EEUR amount, the correct hints, and the expected
+
+- ICR of the final partially redeemed trove in the sequence.
+  \*/
   await troveManager.redeemCollateral(truncatedEEURAmount,
-    firstRedemptionHint,
-    exactPartialRedemptionHint[0],
-    exactPartialRedemptionHint[1],
-    partialRedemptionNewICR,
-    0, maxFee,
-    { from: redeemer },
+  firstRedemptionHint,
+  exactPartialRedemptionHint[0],
+  exactPartialRedemptionHint[1],
+  partialRedemptionNewICR,
+  0, maxFee,
+  { from: redeemer },
   )
+
 ```
 
 ## Gas compensation
@@ -990,6 +1165,7 @@ Gas compensation per liquidated Trove is given by the formula:
 Gas compensation = `50 EEUR + 0.5% of trove’s collateral (EWT)`
 
 The intentions behind this formula are:
+
 - To ensure that smaller Troves are liquidated promptly in normal times, at least
 - To ensure that larger Troves are liquidated promptly even in extreme high gas price periods. The larger the Trove, the stronger the incentive to liquidate it.
 
@@ -1015,7 +1191,7 @@ But if the redemption causes an amount (debt - 50) to be cancelled, the Trove is
 
 Gas compensation functions are found in the parent _LiquityBase.sol_ contract:
 
-`_getCollGasCompensation(uint _entireColl)` returns the amount of EWT to be drawn from a trove's collateral and sent as gas compensation. 
+`_getCollGasCompensation(uint _entireColl)` returns the amount of EWT to be drawn from a trove's collateral and sent as gas compensation.
 
 `_getCompositeDebt(uint _debt)` returns the composite debt (drawn debt + gas compensation) of a trove, for the purpose of ICR calculation.
 
@@ -1023,7 +1199,7 @@ Gas compensation functions are found in the parent _LiquityBase.sol_ contract:
 
 Any EEUR holder may deposit EEUR to the Stability Pool. It is designed to absorb debt from liquidations, and reward depositors with the liquidated collateral, shared between depositors in proportion to their deposit size.
 
-Since liquidations are expected to occur at an ICR of just below 110%, and even in most extreme cases, still above 100%, a depositor can expect to receive a net gain from most liquidations. When that holds, the dollar value of the EWT gain from a liquidation exceeds the dollar value of the EEUR loss (assuming the price of EEUR is $1).  
+Since liquidations are expected to occur at an ICR of just below 110%, and even in most extreme cases, still above 100%, a depositor can expect to receive a net gain from most liquidations. When that holds, the dollar value of the EWT gain from a liquidation exceeds the dollar value of the EEUR loss (assuming the price of EEUR is $1).
 
 We define the **collateral surplus** in a liquidation as `$(EWT) - debt`, where `$(...)` represents the dollar value.
 
@@ -1045,12 +1221,12 @@ Because the EWT collateral fraction matches the offset debt fraction, the effect
 
 ### Stability Pool deposit losses and EWT gains - implementation
 
-Deposit functionality is handled by `StabilityPool.sol` (`provideToSP`, `withdrawFromSP`, etc).  StabilityPool also handles the liquidation calculation, and holds the EEUR and EWT balances.
+Deposit functionality is handled by `StabilityPool.sol` (`provideToSP`, `withdrawFromSP`, etc). StabilityPool also handles the liquidation calculation, and holds the EEUR and EWT balances.
 
-When a liquidation is offset with the Stability Pool, debt from the liquidation is cancelled with an equal amount of EEUR in the pool, which is burned. 
+When a liquidation is offset with the Stability Pool, debt from the liquidation is cancelled with an equal amount of EEUR in the pool, which is burned.
 
 Individual deposits absorb the debt from the liquidated Trove in proportion to their deposit as a share of total deposits.
- 
+
 Similarly the liquidated Trove’s EWT is assigned to depositors in the same proportion.
 
 For example: a liquidation that empties 30% of the Stability Pool will reduce each deposit by 30%, no matter the size of the deposit.
@@ -1061,15 +1237,15 @@ Here’s an example of the Stability Pool absorbing liquidations. The Stability 
 
 There are two Troves to be liquidated, T1 and T2:
 
-|   | Trove | Collateral (EWT) | Debt (EEUR) | ICR         | $(EWT) ($) | Collateral surplus ($) |
-|---|-------|------------------|-------------|-------------|------------|------------------------|
-|   | T1    | 1.6              | 150         | 1.066666667 | 160        | 10                     |
-|   | T2    | 2.45             | 225         | 1.088888889 | 245        | 20                     |
+|     | Trove | Collateral (EWT) | Debt (EEUR) | ICR         | $(EWT) ($) | Collateral surplus ($) |
+| --- | ----- | ---------------- | ----------- | ----------- | ---------- | ---------------------- |
+|     | T1    | 1.6              | 150         | 1.066666667 | 160        | 10                     |
+|     | T2    | 2.45             | 225         | 1.088888889 | 245        | 20                     |
 
 Here are the deposits, before any liquidations occur:
 
 | Depositor | Deposit | Share  |
-|-----------|---------|--------|
+| --------- | ------- | ------ |
 | A         | 100     | 0.1667 |
 | B         | 200     | 0.3333 |
 | C         | 300     | 0.5    |
@@ -1078,7 +1254,7 @@ Here are the deposits, before any liquidations occur:
 Now, the first liquidation T1 is absorbed by the Pool: 150 debt is cancelled with 150 Pool EEUR, and its 1.6 EWT is split between depositors. We see the gains earned by A, B, C, are in proportion to their share of the total EEUR in the Stability Pool:
 
 | Deposit | Debt absorbed from T1 | Deposit after | Total EWT gained | $(deposit + EWT gain) ($) | Current ROI   |
-|---------|-----------------------|---------------|------------------|---------------------------|---------------|
+| ------- | --------------------- | ------------- | ---------------- | ------------------------- | ------------- |
 | A       | 25                    | 75            | 0.2666666667     | 101.6666667               | 0.01666666667 |
 | B       | 50                    | 150           | 0.5333333333     | 203.3333333               | 0.01666666667 |
 | C       | 75                    | 225           | 0.8              | 305                       | 0.01666666667 |
@@ -1087,7 +1263,7 @@ Now, the first liquidation T1 is absorbed by the Pool: 150 debt is cancelled wit
 And now the second liquidation, T2, occurs: 225 debt is cancelled with 225 Pool EEUR, and 2.45 EWT is split between depositors. The accumulated EWT gain includes all EWT gain from T1 and T2.
 
 | Depositor | Debt absorbed from T2 | Deposit after | Accumulated EWT | $(deposit + EWT gain) ($) | Current ROI |
-|-----------|-----------------------|---------------|-----------------|---------------------------|-------------|
+| --------- | --------------------- | ------------- | --------------- | ------------------------- | ----------- |
 | A         | 37.5                  | 37.5          | 0.675           | 105                       | 0.05        |
 | B         | 75                    | 75            | 1.35            | 210                       | 0.05        |
 | C         | 112.5                 | 112.5         | 2.025           | 315                       | 0.05        |
@@ -1100,7 +1276,6 @@ It’s clear that:
 
 Eventually, a deposit can be fully “used up” in absorbing debt, and reduced to 0. This happens whenever a liquidation occurs that empties the Stability Pool. A deposit stops earning EWT gains when it has been reduced to 0.
 
-
 ### Stability Pool implementation
 
 A depositor obtains their compounded deposits and corresponding EWT gain in a “pull-based” manner. The system calculates the depositor’s compounded deposit and accumulated EWT gain when the depositor makes an operation that changes their EWT deposit.
@@ -1109,7 +1284,7 @@ Depositors deposit EEUR via `provideToSP`, and withdraw with `withdrawFromSP`. T
 
 ### How deposits and EWT gains are tracked
 
-We use a highly scalable method of tracking deposits and EWT gains that has O(1) complexity. 
+We use a highly scalable method of tracking deposits and EWT gains that has O(1) complexity.
 
 When a liquidation occurs, rather than updating each depositor’s deposit and EWT gain, we simply update two intermediate variables: a product `P`, and a sum `S`.
 
@@ -1146,7 +1321,7 @@ where `t` is year and `supplyCap` is (provisionally) set to represent 32 million
 It results in the following cumulative issuance schedule for the community AFRR supply:
 
 | Year | Total community AFRR issued |
-|------|-----------------------------|
+| ---- | --------------------------- |
 | 0    | 0%                          |
 | 1    | 50%                         |
 | 2    | 75%                         |
@@ -1191,18 +1366,20 @@ When a deposit is changed (top-up, withdrawal):
 - The front end’s stake updated, with new snapshots of `P` and `G`
 
 When a liquidation occurs:
+
 - A AFRR reward event occurs, and `G` is updated
 
-## AFRR issuance to liquity providers
+## AFRR issuance to liquidity providers
 
 On deployment a new Uniswap pool will be created for the pair EEUR/EWT and a Staking rewards contract will be deployed. The contract is based on [Unipool by Synthetix](https://github.com/Synthetixio/Unipool/blob/master/contracts/Unipool.sol). More information about their liquidity rewards program can be found in the [original SIP 31](https://sips.synthetix.io/sips/sip-31) and in [their blog](https://blog.synthetix.io/new-uniswap-seth-lp-reward-system/).
 
 Essentially the way it works is:
-- Liqudity providers add funds to the Uniswap pool, and get UNIv2 tokens in exchange
-- Liqudity providers stake those UNIv2 tokens into Unipool rewards contract
-- Liqudity providers accrue rewards, proportional to the amount of staked tokens and staking time
-- Liqudity providers can claim their rewards when they want
-- Liqudity providers can unstake UNIv2 tokens to exit the program (i.e., stop earning rewards) when they want
+
+- Liquidity providers add funds to the Uniswap pool, and get UNIv2 tokens in exchange
+- Liquidity providers stake those UNIv2 tokens into Unipool rewards contract
+- Liquidity providers accrue rewards, proportional to the amount of staked tokens and staking time
+- Liquidity providers can claim their rewards when they want
+- Liquidity providers can unstake UNIv2 tokens to exit the program (i.e., stop earning rewards) when they want
 
 Our implementation is simpler because funds for rewards will only be added once, on deployment of AFRR token (for more technical details about the differences, see PR #271 on our repo).
 
@@ -1237,11 +1414,13 @@ Redemption and issuance fees are based on the `baseRate` state variable in Trove
 The current fee schedule:
 
 Upon each redemption:
+
 - `baseRate` is decayed based on time passed since the last fee event
 - `baseRate` is incremented by an amount proportional to the fraction of the total EEUR supply that was redeemed
 - The redemption rate is given by `min{REDEMPTION_FEE_FLOOR + baseRate * EWTdrawn, DECIMAL_PRECISION}`
 
 Upon each debt issuance:
+
 - `baseRate` is decayed based on time passed since the last fee event
 - The borrowing rate is given by `min{BORROWING_FEE_FLOOR + baseRate * newDebtIssued, MAX_BORROWING_FEE}`
 
@@ -1265,12 +1444,11 @@ The decay parameter is tuned such that the fee changes by a factor of 0.99 per h
 
 ### Staking AFRR and earning fees
 
-AFRR holders may `stake` and `unstake` their AFRR in the `AFRRStaking.sol` contract. 
+AFRR holders may `stake` and `unstake` their AFRR in the `AFRRStaking.sol` contract.
 
 When a fee event occurs, the fee in EEUR or EWT is sent to the staking contract, and a reward-per-unit-staked sum (`F_EWT`, or `F_EEUR`) is incremented. A AFRR stake earns a share of the fee equal to its share of the total AFRR staked, at the instant the fee occurred.
 
 This staking formula and implementation follows the basic [“Batog” pull-based reward distribution](http://batog.info/papers/scalable-reward-distribution.pdf).
-
 
 ## Redistributions and Corrected Stakes
 
@@ -1278,7 +1456,7 @@ When a liquidation occurs and the Stability Pool is empty or smaller than the li
 
 For two Troves A and B with collateral `A.coll > B.coll`, Trove A should earn a bigger share of the liquidated collateral and debt.
 
-In Liquity it is important that all active Troves remain ordered by their ICR. We have proven that redistribution of the liquidated debt and collateral proportional to active Troves’ collateral, preserves the ordering of active Troves by ICR, as liquidations occur over time.  Please see the [proofs section](https://github.com/liquity/dev/tree/main/packages/contracts/mathProofs).
+In Liquity it is important that all active Troves remain ordered by their ICR. We have proven that redistribution of the liquidated debt and collateral proportional to active Troves’ collateral, preserves the ordering of active Troves by ICR, as liquidations occur over time. Please see the [proofs section](https://github.com/liquity/dev/tree/main/packages/contracts/mathProofs).
 
 However, when it comes to implementation, gas costs (on Ethereum) make it too expensive to loop over all Troves and write new data to storage for each one. When a Trove receives redistribution rewards, the system does not update the Trove's collateral and debt properties - instead, the Trove’s rewards remain "pending" until the borrower's next operation.
 
@@ -1303,7 +1481,9 @@ When a Trove is opened, its stake is calculated based on its collateral, and sna
 A Trove’s stake is given by:
 
 ```
-stake = _coll.mul(totalStakesSnapshot).div(totalCollateralSnapshot)
+
+stake = \_coll.mul(totalStakesSnapshot).div(totalCollateralSnapshot)
+
 ```
 
 It then earns redistribution rewards based on this corrected stake. A newly opened Trove’s stake will be less than its raw collateral, if the system contains active Troves with pending redistribution rewards when it was made.
@@ -1327,7 +1507,7 @@ PDFs of these can be found in https://github.com/liquity/dev/blob/main/papers
 
 _**Trove:**_ a collateralized debt position, bound to a single EWT address. Also referred to as a “CDP” in similar protocols.
 
-_**EEUR**_:  The stablecoin that may be issued from a user's collateralized debt position and freely transferred/traded to any EWT address. Intended to maintain parity with the US dollar, and can always be redeemed directly with the system: 1 EEUR is always exchangeable for $1 EUR worth of EWT.
+_**EEUR**_: The stablecoin that may be issued from a user's collateralized debt position and freely transferred/traded to any EWT address. Intended to maintain parity with the US dollar, and can always be redeemed directly with the system: 1 EEUR is always exchangeable for $1 EUR worth of EWT.
 
 _**Active Trove:**_ an EWT address owns an “active Trove” if there is a node in the `SortedTroves` list with ID equal to the address, and non-zero collateral is recorded on the Trove struct for that address.
 
@@ -1383,9 +1563,9 @@ _**Offset:**_ cancellation of liquidated debt with EEUR in the Stability Pool, a
 
 _**Redistribution:**_ assignment of liquidated debt and collateral directly to active Troves, in proportion to their collateral.
 
-_**Pure offset:**_  when a Trove's debt is entirely cancelled with EEUR in the Stability Pool, and all of it's liquidated EWT collateral is assigned to Stability Providers.
+_**Pure offset:**_ when a Trove's debt is entirely cancelled with EEUR in the Stability Pool, and all of it's liquidated EWT collateral is assigned to Stability Providers.
 
-_**Mixed offset and redistribution:**_  When the Stability Pool EEUR only covers a fraction of the liquidated Trove's debt.  This fraction of debt is cancelled with EEUR in the Stability Pool, and an equal fraction of the Trove's collateral is assigned to depositors. The remaining collateral & debt is redistributed directly to active Troves.
+_**Mixed offset and redistribution:**_ When the Stability Pool EEUR only covers a fraction of the liquidated Trove's debt. This fraction of debt is cancelled with EEUR in the Stability Pool, and an equal fraction of the Trove's collateral is assigned to depositors. The remaining collateral & debt is redistributed directly to active Troves.
 
 _**Gas compensation:**_ A refund, in EEUR and EWT, automatically paid to the caller of a liquidation function, intended to at least cover the gas cost of the transaction. Designed to ensure that liquidators are not dissuaded by potentially high gas costs.
 
@@ -1413,9 +1593,11 @@ Note: you can skip the manual installation of node-gyp itself (`npm install -g n
 ### Clone & Install
 
 ```
+
 git clone https://github.com/liquity/dev.git liquity
 cd liquity
 yarn
+
 ```
 
 ### Top-level scripts
@@ -1425,7 +1607,9 @@ There are a number of scripts in the top-level package.json file to ease develop
 #### Run all tests
 
 ```
+
 yarn test
+
 ```
 
 #### Deploy contracts to a testnet
@@ -1433,37 +1617,42 @@ yarn test
 E.g.:
 
 ```
-yarn deploy --network ropsten
-```
 
-Supported networks are currently: ropsten, kovan, rinkeby, goerli. The above command will deploy into the default channel (the one that's used by the public dev-frontend). To deploy into the internal channel instead:
+yarn deploy --network ewVolta
 
 ```
-yarn deploy --network ropsten --channel internal
+
+Supported networks are currently: ropsten, kovan, rinkeby, goerli, ewVolta and ewMainnet. The above command will deploy into the default channel (the one that's used by the public dev-frontend). To deploy into the internal channel instead:
+
+```
+
+yarn deploy --network ewVolta --channel internal
+
 ```
 
 You can optionally specify an explicit gas price too:
 
 ```
-yarn deploy --network ropsten --gas-price 20
+
+yarn deploy --network ewVolta --gas-price 20
+
 ```
 
-After a successful deployment, the addresses of the newly deployed contracts will be written to a version-controlled JSON file under `packages/lib/deployments/default`.
+After a successful deployment, the addresses of the newly deployed contracts will be written to a version-controlled JSON file under `packages/lib-ethers/deployments/default`.
 
 To publish a new deployment, you must execute the above command for all of the following combinations:
 
-| Network | Channel  |
-| ------- | -------- |
-| ropsten | default  |
-| ropsten | internal |
-| kovan   | default  |
-| rinkeby | default  |
-| goerli  | default  |
+| Network   | Channel |
+| --------- | ------- |
+| ewVolta   | default |
+| ewMainnet | default |
 
 At some point in the future, we will make this process automatic. Once you're done deploying to all the networks, execute the following command:
 
 ```
+
 yarn save-live-version
+
 ```
 
 This copies the contract artifacts to a version controlled area (`packages/lib/live`) then checks that you really did deploy to all the networks. Next you need to commit and push all changed files. The repo's GitHub workflow will then build a new Docker image of the frontend interfacing with the new addresses.
@@ -1471,28 +1660,34 @@ This copies the contract artifacts to a version controlled area (`packages/lib/l
 #### Start a local blockchain and deploy the contracts
 
 ```
+
 yarn start-dev-chain
+
 ```
 
 Starts an openethereum node in a Docker container, running the [private development chain](https://openethereum.github.io/wiki/Private-development-chain), then deploys the contracts to this chain.
 
 You may want to use this before starting the dev-frontend in development mode. To use the newly deployed contracts, switch MetaMask to the built-in "Localhost 8545" network.
 
-> Q: How can I get Ether on the local blockchain?  
-> A: Import this private key into MetaMask:  
-> `0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7`  
+> Q: How can I get Ether on the local blockchain?
+> A: Import this private key into MetaMask:
+> `0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7`
 > This account has all the Ether you'll ever need.
 
 Once you no longer need the local node, stop it with:
 
 ```
+
 yarn stop-dev-chain
+
 ```
 
 #### Start dev-frontend in development mode
 
 ```
+
 yarn start-dev-frontend
+
 ```
 
 This will start dev-frontend in development mode on http://localhost:3000. The app will automatically be reloaded if you change a source file under `packages/dev-frontend`.
@@ -1506,7 +1701,9 @@ To stop the dev-frontend running in this mode, bring up the terminal in which yo
 This will automatically start the local blockchain, so you need to make sure that's not already running before you run the following command.
 
 ```
+
 yarn start-demo
+
 ```
 
 This spawns a modified version of dev-frontend that ignores MetaMask, and directly uses the local blockchain node. Every time the page is reloaded (at http://localhost:3000), a new random account is created with a balance of 100 EWT. Additionally, transactions are automatically signed, so you no longer need to accept wallet confirmations. This lets you play around with Liquity more freely.
@@ -1514,7 +1711,9 @@ This spawns a modified version of dev-frontend that ignores MetaMask, and direct
 When you no longer need the demo mode, press Ctrl+C in the terminal then run:
 
 ```
+
 yarn stop-demo
+
 ```
 
 #### Build dev-frontend for production
@@ -1522,13 +1721,17 @@ yarn stop-demo
 In a freshly cloned & installed monorepo, or if you have only modified code inside the dev-frontend package:
 
 ```
+
 yarn build
+
 ```
 
 If you have changed something in one or more packages apart from dev-frontend, it's best to use:
 
 ```
+
 yarn rebuild
+
 ```
 
 This combines the top-level `prepare` and `build` scripts.
@@ -1540,10 +1743,12 @@ You'll find the output in `packages/dev-frontend/build`.
 Your custom built frontend can be configured by putting a file named `config.json` inside the same directory as `index.html` built in the previous step. The format of this file is:
 
 ```
+
 {
-  "frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
-  "infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
+"frontendTag": "0x2781fD154358b009abf6280db4Ec066FCC6cb435",
+"infuraApiKey": "158b6511a5c74d1ac028a8a2afe8f626"
 }
+
 ```
 
 ## Running a frontend with Docker
@@ -1557,8 +1762,10 @@ You will need to have [Docker](https://docs.docker.com/get-docker/) installed.
 ### Running with `docker`
 
 ```
+
 docker pull liquity/dev-frontend
 docker run --name liquity -d --rm -p 3000:80 liquity/dev-frontend
+
 ```
 
 This will start serving your frontend using HTTP on port 3000. If everything went well, you should be able to open http://localhost:3000/ in your browser. To use a different port, just replace 3000 with your desired port number.
@@ -1566,7 +1773,9 @@ This will start serving your frontend using HTTP on port 3000. If everything wen
 To stop the service:
 
 ```
+
 docker kill liquity
+
 ```
 
 ### Configuring a public frontend
@@ -1588,20 +1797,23 @@ The kickback rate is the portion of AFRR you pass on to users of your frontend. 
 It is highly recommended that you do this while running a frontend locally, before you start hosting it publicly:
 
 ```
+
 docker run --name liquity -d --rm -p 3000:80 \
-  -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
-  -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
-  liquity/dev-frontend
+ -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
+ -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
+ liquity/dev-frontend
+
 ```
 
 Remember to replace the environment variables in the above example. After executing this command, open http://localhost:3000/ in a browser with MetaMask installed, then switch MetaMask to the account whose address you specified as FRONTEND_TAG to begin setting the kickback rate.
 
 ### Setting a kickback rate with Gnosis Safe
 
-If you are using Gnosis safe, you have to set the kickback rate mannually through contract interaction. On the dashboard of Gnosis safe, click on "New transaction" and pick "Contraction interaction." Then, follow the [instructions](https://help.gnosis-safe.io/en/articles/3738081-contract-interactions): 
-- First, set the contract address as ```0x66017D22b0f8556afDd19FC67041899Eb65a21bb ```; 
-- Second, for method, choose "registerFrontEnd" from the list; 
-- Finally, type in the unit256 _Kickbackrate_. The kickback rate should be an integer representing an 18-digit decimal. So for a kickback rate of 99% (0.99), the value is: ```990000000000000000```. The number is 18 digits long.
+If you are using Gnosis safe, you have to set the kickback rate mannually through contract interaction. On the dashboard of Gnosis safe, click on "New transaction" and pick "Contraction interaction." Then, follow the [instructions](https://help.gnosis-safe.io/en/articles/3738081-contract-interactions):
+
+- First, set the contract address as `0x66017D22b0f8556afDd19FC67041899Eb65a21bb `;
+- Second, for method, choose "registerFrontEnd" from the list;
+- Finally, type in the unit256 _Kickbackrate_. The kickback rate should be an integer representing an 18-digit decimal. So for a kickback rate of 99% (0.99), the value is: `990000000000000000`. The number is 18 digits long.
 
 ### Next steps for hosting a frontend
 
@@ -1614,16 +1826,20 @@ A frontend doesn't require any database or server-side computation, so the easie
 To obtain the files you need to upload, you need to extract them from a frontend Docker container. If you were following the guide for setting a kickback rate and haven't stopped the container yet, then you already have one! Otherwise, you can create it with a command like this (remember to use your own `FRONTEND_TAG` and `INFURA_API_KEY`):
 
 ```
+
 docker run --name liquity -d --rm \
-  -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
-  -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
-  liquity/dev-frontend
+ -e FRONTEND_TAG=0x2781fD154358b009abf6280db4Ec066FCC6cb435 \
+ -e INFURA_API_KEY=158b6511a5c74d1ac028a8a2afe8f626 \
+ liquity/dev-frontend
+
 ```
 
 While the container is running, use `docker cp` to extract the frontend's files to a folder of your choosing. For example to extract them to a new folder named "devui" inside the current folder, run:
 
 ```
+
 docker cp liquity:/usr/share/nginx/html ./devui
+
 ```
 
 Upload the contents of this folder to your chosen hosting service (or serve them using your own infrastructure), and you're set!
@@ -1636,22 +1852,24 @@ The frontend Docker container simply serves files using plain HTTP, which is sus
 
 Remember to customize both [docker-compose.yml](packages/dev-frontend/docker-compose-example/docker-compose.yml) and the [site config](packages/dev-frontend/docker-compose-example/config/nginx/site-confs/liquity.example.com).
 
-
-
 ## Disclaimer
 
 The content of this readme document (“Readme”) is of purely informational nature. In particular, none of the content of the Readme shall be understood as advice provided by Liquity AG, any Liquity Project Team member or other contributor to the Readme, nor does any of these persons warrant the actuality and accuracy of the Readme.
 
-Please read this Disclaimer carefully before accessing, interacting with, or using the Liquity Protocol software, consisting of the Liquity Protocol technology stack (in particular its smart contracts) as well as any other Liquity technology such as e.g., the launch kit for frontend operators (together the “Liquity Protocol Software”). 
+Please read this Disclaimer carefully before accessing, interacting with, or using the Liquity Protocol software, consisting of the Liquity Protocol technology stack (in particular its smart contracts) as well as any other Liquity technology such as e.g., the launch kit for frontend operators (together the “Liquity Protocol Software”).
 
 While Liquity AG developed the Liquity Protocol Software, the Liquity Protocol Software runs in a fully decentralized and autonomous manner on the EWT network. Liquity AG is not involved in the operation of the Liquity Protocol Software nor has it any control over transactions made using its smart contracts. Further, Liquity AG does neither enter into any relationship with users of the Liquity Protocol Software and/or frontend operators, nor does it operate an own frontend. Any and all functionalities of the Liquity Protocol Software, including the EEUR and the AFRR, are of purely technical nature and there is no claim towards any private individual or legal entity in this regard.
 
 LIQUITY AG IS NOT LIABLE TO ANY USER FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE, IN CONNECTION WITH THE USE OR INABILITY TO USE THE LIQUITY PROTOCOL SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF EWT, EEUR OR AFRR, NON-ALLOCATION OF TECHNICAL FEES TO AFRR HOLDERS, LOSS OF DATA, BUSINESS INTERRUPTION, DATA BEING RENDERED INACCURATE OR OTHER LOSSES SUSTAINED BY A USER OR THIRD PARTIES AS A RESULT OF THE LIQUITY PROTOCOL SOFTWARE AND/OR ANY ACTIVITY OF A FRONTEND OPERATOR OR A FAILURE OF THE LIQUITY PROTOCOL SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE).
 
-The Liquity Protocol Software has been developed and published under the GNU GPL v3 open-source license, which forms an integral part of this disclaimer. 
+The Liquity Protocol Software has been developed and published under the GNU GPL v3 open-source license, which forms an integral part of this disclaimer.
 
 THE LIQUITY PROTOCOL SOFTWARE HAS BEEN PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. THE LIQUITY PROTOCOL SOFTWARE IS HIGHLY EXPERIMENTAL AND ANY REAL EWT AND/OR EEUR AND/OR AFRR SENT, STAKED OR DEPOSITED TO THE LIQUITY PROTOCOL SOFTWARE ARE AT RISK OF BEING LOST INDEFINITELY, WITHOUT ANY KIND OF CONSIDERATION.
 
 There are no official frontend operators, and the use of any frontend is made by users at their own risk. To assess the trustworthiness of a frontend operator lies in the sole responsibility of the users and must be made carefully.
 
-User is solely responsible for complying with applicable law when interacting (in particular, when using EWT, EEUR, AFRR or other Token) with the Liquity Protocol Software whatsoever. 
+User is solely responsible for complying with applicable law when interacting (in particular, when using EWT, EEUR, AFRR or other Token) with the Liquity Protocol Software whatsoever.
+
+```
+
+```

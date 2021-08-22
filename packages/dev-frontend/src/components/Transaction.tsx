@@ -155,7 +155,7 @@ export const useTransactionFunction = (
     setTransactionState({ type: "waitingForApproval", id });
 
     try {
-      const tx = await send();
+      const tx = await send({ gasLimit: 1000000 }); // hopefully adds this to all tx, not sure why it's needed RJA TOOO
 
       setTransactionState({
         type: "waitingForConfirmation",
@@ -171,7 +171,7 @@ export const useTransactionFunction = (
         setTransactionState({
           type: "failed",
           id,
-          error: new Error("Failed to send transaction (try again)")
+          error: new Error(`Failed to send transaction (try again): ${error.message}`)
         });
       }
     }

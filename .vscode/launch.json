@@ -1,0 +1,82 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Webpack",
+      "cwd": "${workspaceRoot}/packages/dev-frontend",
+      "program": "${workspaceFolder}/node_modules/webpack/bin/webpack.js",
+      "env": { "NODE_ENV": "development" }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current File",
+      "program": "${file}",
+      "preLaunchTask": "Echo vars"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current TS",
+      "program": "${file}",
+      "preLaunchTask": "Compile",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Hardhat - Deploy To ewVolta",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "packages/contracts",
+      "program": "node_modules/.bin/hardhat",
+      "runtimeArgs": [],
+      "args": ["run", "--network", "ewVolta", "mainnetDeployment/ewVoltaDeployment.js"],
+      "outFiles": ["contracts/**/*.js"],
+      "preLaunchTask": "Echo vars"
+    },
+
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome - Dev Frontend",
+      "url": "http://localhost:3000",
+      "cwd": "${workspaceFolder}/projects/dev-frontend/src",
+      "webRoot": "${workspaceFolder}/packages/dev-frontend/build",
+      "sourceMaps": true,
+      "preLaunchTask": "Echo vars",
+      "trace": "verbose"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome - Dev Frontend (OLD)",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "localRoot": "${workspaceFolder}/projects/dev-frontend",
+      "remoteRoot": "${workspaceFolder}/",
+      "cwd": "${workspaceFolder}/projects/dev-frontend",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/projects/dev-frontend/*",
+        "webpack:///src/*": "${webRoot}/projects/dev-frontend/src/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*"
+      },
+      "outFiles": [
+        "${workspaceFolder}/**/*.js",
+        "${workspaceFolder}/**/*.ts",
+        "!**/node_modules/**",
+        "!**/dist/srd/**",
+        "${workspaceFolder}/packages/lib-ethers/dist/**/*.js",
+        "${workspaceFolder}/dist/**/*.js"
+      ],
+      "preLaunchTask": "Echo vars"
+    }
+  ]
+}

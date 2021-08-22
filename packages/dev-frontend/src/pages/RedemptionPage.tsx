@@ -5,9 +5,17 @@ import { Redemption } from "../components/Redemption/Redemption";
 import { InfoMessage } from "../components/InfoMessage";
 import { useLiquity } from "../hooks/LiquityContext";
 import { Icon } from "../components/Icon";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
-const uniLink = (lusdAddress: string) =>
-  `https://app.uniswap.org/#/swap?inputCurrency=${lusdAddress}&outputCurrency=ETH`;
+// const uniLink = (lusdAddress: string) =>
+//  `https://app.uniswap.org/#/swap?inputCurrency=${lusdAddress}&outputCurrency=ETH`;
+
+const csLink = (lusdAddress: string, isVolta = true) => {
+  return `https://${
+    isVolta ? "999test." : ""
+  }carbonswap.exchange/#/swap?inputCurrency=${lusdAddress}&outputCurrency=EWT`;
+};
 
 export const RedemptionPage: React.FC = () => {
   const {
@@ -15,6 +23,7 @@ export const RedemptionPage: React.FC = () => {
       connection: { addresses }
     }
   } = useLiquity();
+  const { chainId } = useWeb3React<Web3Provider>();
 
   return (
     <Container variant="columns">
@@ -27,9 +36,9 @@ export const RedemptionPage: React.FC = () => {
                 emerge.
               </Paragraph>
               <Paragraph sx={{ mt: 2 }}>
-                Most of the time you will get a better rate for converting LUSD to ETH on{" "}
-                <Link href={uniLink(addresses["lusdToken"])} target="_blank">
-                  Uniswap <Icon name="external-link-alt" size="xs" />
+                Most of the time you will get a better rate for converting EEUR to EWT on{" "}
+                <Link href={csLink(addresses["lusdToken"], chainId === 73799)} target="_blank">
+                  Carbonswap <Icon name="external-link-alt" size="xs" />
                 </Link>{" "}
                 or other exchanges.
               </Paragraph>

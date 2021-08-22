@@ -6,12 +6,19 @@ import { InfoMessage } from "../../../InfoMessage";
 import { useFarmView } from "../../context/FarmViewContext";
 import { RemainingLQTY } from "../RemainingLQTY";
 import { Yield } from "../Yield";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
-const uniLink = (lusdAddress: string) => `https://app.uniswap.org/#/add/ETH/${lusdAddress}`;
+// const uniLink = (lusdAddress: string) => `https://app.uniswap.org/#/add/ETH/${lusdAddress}`;
+const csLink = (lusdAddress: string, isVolta = true) => {
+  return `https://${
+    isVolta ? "999test." : ""
+  }carbonswap.exchange/#/swap?inputCurrency=${lusdAddress}&outputCurrency=EWT`;
+};
 
 export const Inactive: React.FC = () => {
   const { dispatchEvent } = useFarmView();
-
+  const { chainId } = useWeb3React<Web3Provider>();
   const {
     liquity: {
       connection: { addresses }
@@ -25,20 +32,24 @@ export const Inactive: React.FC = () => {
   return (
     <Card>
       <Heading>
-        Uniswap Liquidity Farm
+        Carbonswap Liquidity Farm
         <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingLQTY />
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
-        <InfoMessage title="You aren't farming LQTY.">
-          <Paragraph>You can farm LQTY by staking your Uniswap ETH/LUSD LP tokens.</Paragraph>
+        <InfoMessage title="You aren't farming AFRR.">
+          <Paragraph>You can farm AFRR by staking your Carbonswap EWT/EEUR LP tokens.</Paragraph>
 
           <Paragraph sx={{ mt: 2 }}>
             You can obtain LP tokens by adding liquidity to the{" "}
-            <Link href={uniLink(addresses["lusdToken"])} target="_blank">
-              ETH/LUSD pool on Uniswap. <Icon name="external-link-alt" size="xs" />
-            </Link>
+            <a
+              target="_blank"
+              href={csLink(addresses["lusdToken"], chainId === 73799)}
+              rel="noreferrer"
+            >
+              EWT/EEUR pool on Carbonswap. <Icon name="external-link-alt" size="xs" />
+            </a>
           </Paragraph>
         </InfoMessage>
 

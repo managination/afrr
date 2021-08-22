@@ -42,6 +42,7 @@ const EthersWeb3ReactProvider: React.FC = ({ children }) => {
   );
 };
 
+// Removed unsupported eth networks
 const UnsupportedMainnetFallback: React.FC = () => (
   <Flex
     sx={{
@@ -56,9 +57,7 @@ const UnsupportedMainnetFallback: React.FC = () => (
       <Icon name="exclamation-triangle" /> This app is for testing purposes only.
     </Heading>
 
-    <Paragraph sx={{ mb: 3 }}>
-      Please change your network to Ropsten, Rinkeby, Kovan or Görli.
-    </Paragraph>
+    <Paragraph sx={{ mb: 3 }}>Please change your network to ewVolta or ewMainnet</Paragraph>
 
     <Paragraph>
       If you'd like to use the Liquity Protocol on mainnet, please pick a frontend{" "}
@@ -70,6 +69,26 @@ const UnsupportedMainnetFallback: React.FC = () => (
   </Flex>
 );
 
+const netNames: { [key: number]: { name: string; supported: boolean } } = {
+  42: { name: "kovan", supported: false },
+  4: { name: "rinkeby", supported: false },
+  3: { name: "ropsten", supported: false },
+  5: { name: "goerli", supported: false },
+  1: { name: "mainnet", supported: false },
+  246: { name: "ewMainnet", supported: false }, // TODO not yet
+  73799: { name: "ewVolta", supported: true }
+};
+
+const supportedNetNamesList = () =>
+  Object.values(netNames)
+    .filter(x => x.supported)
+    .map(x => x.name)
+    .join(", ");
+
+const netName = (chainId: number): string => {
+  return netNames[chainId].name ?? "unknown network";
+};
+
 const App = () => {
   const loader = (
     <Flex sx={{ alignItems: "center", justifyContent: "center", height: "100vh" }}>
@@ -78,6 +97,7 @@ const App = () => {
     </Flex>
   );
 
+  // Removed unsupported eth networks
   const unsupportedNetworkFallback = (chainId: number) => (
     <Flex
       sx={{
@@ -89,10 +109,9 @@ const App = () => {
       }}
     >
       <Heading sx={{ mb: 3 }}>
-        <Icon name="exclamation-triangle" /> Liquity is not yet deployed to{" "}
-        {chainId === 1 ? "mainnet" : "this network"}.
+        <Icon name="exclamation-triangle" /> EWC Liquity is not deployed to {netName(chainId)}.
       </Heading>
-      Please switch to Ropsten, Rinkeby, Kovan or Görli.
+      Please switch to one of: {supportedNetNamesList()}.
     </Flex>
   );
 

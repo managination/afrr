@@ -17,8 +17,6 @@
 
 /secrets.js
 
-.vscode
-
 yarn-error.log
 
 # solidity-coverage

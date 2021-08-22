@@ -1,17 +1,17 @@
 const fs = require("fs");
 
-const network = process.argv[2] || "mainnet";
+const network = process.argv[2] || "mainnet"; // TODO: RJA ??
 const { addresses, startBlock } = require(`@liquity/lib-ethers/deployments/${network}.json`);
 
 console.log(`Preparing subgraph manifest for network "${network}"`);
 
 const yaml = (strings, ...keys) =>
-  strings
+    strings
     .flatMap((string, i) => [string, Array.isArray(keys[i]) ? keys[i].join("") : keys[i]])
     .join("")
     .substring(1); // Skip initial newline
 
-const manifest = yaml`
+const manifest = yaml `
 specVersion: 0.0.2
 description: Liquity is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
 repository: https://github.com/liquity/dev/tree/main/packages/subgraph

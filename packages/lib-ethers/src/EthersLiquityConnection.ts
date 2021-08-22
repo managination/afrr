@@ -4,11 +4,17 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Decimal } from "@liquity/lib-base";
 
 import devOrNull from "../deployments/dev.json";
-import goerli from "../deployments/goerli.json";
-import kovan from "../deployments/kovan.json";
-import rinkeby from "../deployments/rinkeby.json";
-import ropsten from "../deployments/ropsten.json";
-import mainnet from "../deployments/mainnet.json";
+
+// Removed unsupported Eth Networks also
+// import goerli from "../deployments/goerli.json";
+// import kovan from "../deployments/kovan.json";
+// import rinkeby from "../deployments/rinkeby.json";
+// import ropsten from "../deployments/ropsten.json";
+// import mainnet from "../deployments/mainnet.json";
+
+// Added EWC Networks
+import ewVolta from "../deployments/ewVolta.json";
+//import ewMainnet from "../deployments/ewMainnet.json"; // TODO
 
 import { numberify, panic } from "./_utils";
 import { EthersProvider, EthersSigner } from "./types";
@@ -24,14 +30,17 @@ import { _connectToMulticall, _Multicall } from "./_Multicall";
 
 const dev = devOrNull as _LiquityDeploymentJSON | null;
 
+// comment out unsupported Eth Networks, add EWC Networks
 const deployments: {
   [chainId: number]: _LiquityDeploymentJSON | undefined;
 } = {
-  [mainnet.chainId]: mainnet,
-  [ropsten.chainId]: ropsten,
-  [rinkeby.chainId]: rinkeby,
-  [goerli.chainId]: goerli,
-  [kovan.chainId]: kovan,
+  // [mainnet.chainId]: mainnet,
+  // [ropsten.chainId]: ropsten,
+  // [rinkeby.chainId]: rinkeby,
+  // [goerli.chainId]: goerli,
+  // [kovan.chainId]: kovan,
+  [ewVolta.chainId]: ewVolta,
+  //[ewMainnet.chainId]: ewMainnet, // TODO
 
   ...(dev !== null ? { [dev.chainId]: dev } : {})
 };
@@ -119,6 +128,19 @@ const connectionFrom = (
     throw new Error(`Invalid useStore value ${optionalParams.useStore}`);
   }
 
+  console.log("**CONNECTIONFROM BRANDED**");
+  const x = branded({
+    provider,
+    signer,
+    _contracts,
+    _multicall,
+    deploymentDate: new Date(deploymentDate),
+    totalStabilityPoolLQTYReward: Decimal.from(totalStabilityPoolLQTYReward),
+    liquidityMiningLQTYRewardRate: Decimal.from(liquidityMiningLQTYRewardRate),
+    ...deployment,
+    ...optionalParams
+  });
+  console.log(x);
   return branded({
     provider,
     signer,
@@ -309,7 +331,12 @@ export function _connectByChainId(
   const deployment: _LiquityDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
 
-  return connectionFrom(
+  console.log("**DEPLOYMENT BEING USED**", deployment);
+  console.log("**CONNECT TO CONTRACTS**");
+  const y = _connectToContracts(signer ?? provider, deployment);
+  console.log(y);
+  console.log("**CONNECTION FROM**");
+  const x = connectionFrom(
     provider,
     signer,
     _connectToContracts(signer ?? provider, deployment),
@@ -317,6 +344,8 @@ export function _connectByChainId(
     deployment,
     optionalParams
   );
+  console.log(x);
+  return x;
 }
 
 /** @internal */

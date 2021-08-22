@@ -26,11 +26,8 @@ const transactionId = /farm-/i;
 
 export const Active: React.FC = () => {
   const { dispatchEvent } = useFarmView();
-  const {
-    liquidityMiningStake,
-    liquidityMiningLQTYReward,
-    totalStakedUniTokens
-  } = useLiquitySelector(selector);
+  const { liquidityMiningStake, liquidityMiningLQTYReward, totalStakedUniTokens } =
+    useLiquitySelector(selector);
 
   const handleAdjustPressed = useCallback(() => {
     dispatchEvent("ADJUST_PRESSED");
@@ -47,7 +44,7 @@ export const Active: React.FC = () => {
   return (
     <Card>
       <Heading>
-        Uniswap Liquidity Farm
+        Carbonswap Liquidity Farm
         {!isTransactionPending && (
           <Flex sx={{ justifyContent: "flex-end" }}>
             <RemainingLQTY />

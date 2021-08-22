@@ -8,7 +8,7 @@ const accounts = require("./hardhatAccountsList2k.js");
 const accountsList = accounts.accountsList
 
 const fs = require('fs')
-const getSecret = (secretKey, defaultValue='') => {
+const getSecret = (secretKey, defaultValue = '') => {
     const SECRETS_FILE = "./secrets.js"
     let secret = defaultValue
     if (fs.existsSync(SECRETS_FILE)) {
@@ -18,13 +18,26 @@ const getSecret = (secretKey, defaultValue='') => {
 
     return secret
 }
-const alchemyUrl = () => {
+
+// Removing unused Eth Networks
+/* const alchemyUrl = () => {
     return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
 }
 
 const alchemyUrlRinkeby = () => {
     return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
-}
+} */
+
+// task action function receives the Hardhat Runtime Environment as second argument
+task(
+    "blockNumber",
+    "Prints the current block number",
+    async(_, { ethers }) => {
+        await ethers.provider.getBlockNumber().then((blockNumber) => {
+            console.log(`Current block number for ${hre.network.name} network: ${blockNumber}`);
+        });
+    }
+);
 
 module.exports = {
     paths: {
@@ -32,8 +45,7 @@ module.exports = {
         // artifacts: "./artifacts"
     },
     solidity: {
-        compilers: [
-            {
+        compilers: [{
                 version: "0.4.23",
                 settings: {
                     optimizer: {
@@ -65,11 +77,12 @@ module.exports = {
     networks: {
         hardhat: {
             accounts: accountsList,
-            gas: 10000000,  // tx gas limit
-            blockGasLimit: 12500000, 
+            gas: 10000000, // tx gas limit
+            blockGasLimit: 12500000,
             gasPrice: 20000000000,
         },
-        mainnet: {
+        // Removed unsupported Eth Networks
+        /* mainnet: {
             url: alchemyUrl(),
             gasPrice: 150000000000,
             accounts: [
@@ -79,8 +92,19 @@ module.exports = {
         },
         rinkeby: {
             url: alchemyUrlRinkeby(),
-            gas: 10000000,  // tx gas limit
+            gas: 10000000, // tx gas limit
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+        }, */
+        // Added EWC Networks
+        ewVolta: {
+            url: "https://volta-rpc.energyweb.org/",
+            gas: 30000000, // tx gas limit
+            accounts: [getSecret('EWVOLTA_DEPLOYER_PRIVATEKEY', '')]
+        },
+        ewMainnet: {
+            url: "https://rpc.energyweb.org/",
+            gas: 30000000, // tx gas limit
+            accounts: [getSecret('EWMAINNET_DEPLOYER_PRIVATEKEY', '')]
         },
     },
     etherscan: {
