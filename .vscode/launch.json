@@ -40,7 +40,17 @@
       "outFiles": ["contracts/**/*.js"],
       "preLaunchTask": "Echo vars"
     },
-
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Hardhat - Test Contracts (Current File Open In Editor)",
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "packages/contracts",
+      "program": "node_modules/.bin/hardhat",
+      "runtimeArgs": [],
+      "args": ["test", "${file}"]
+    },
     {
       "type": "chrome",
       "request": "launch",
@@ -51,32 +61,6 @@
       "sourceMaps": true,
       "preLaunchTask": "Echo vars",
       "trace": "verbose"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome - Dev Frontend (OLD)",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
-      "localRoot": "${workspaceFolder}/projects/dev-frontend",
-      "remoteRoot": "${workspaceFolder}/",
-      "cwd": "${workspaceFolder}/projects/dev-frontend",
-      "sourceMaps": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/projects/dev-frontend/*",
-        "webpack:///src/*": "${webRoot}/projects/dev-frontend/src/*",
-        "webpack:///*": "*",
-        "webpack:///./~/*": "${webRoot}/node_modules/*"
-      },
-      "outFiles": [
-        "${workspaceFolder}/**/*.js",
-        "${workspaceFolder}/**/*.ts",
-        "!**/node_modules/**",
-        "!**/dist/srd/**",
-        "${workspaceFolder}/packages/lib-ethers/dist/**/*.js",
-        "${workspaceFolder}/dist/**/*.js"
-      ],
-      "preLaunchTask": "Echo vars"
     }
   ]
 }

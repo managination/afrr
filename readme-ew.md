@@ -66,7 +66,12 @@ Note that the repo contains old deployment scripts (DO NOT USE THESE): There are
 yarn test
 yarn test-contracts
 yarn coverage
+```
 
+To run a specific contract test (for example):
+
+```
+npx hardhat test test/GrowthTokenTest.js
 ```
 
 ### REBUILDING CONTRACTS:
