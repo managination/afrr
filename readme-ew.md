@@ -71,6 +71,7 @@ yarn coverage
 To run a specific contract test (for example):
 
 ```
+cd packages/contracts
 npx hardhat test test/GrowthTokenTest.js
 ```
 
