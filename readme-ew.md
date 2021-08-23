@@ -84,6 +84,8 @@ yarn prepare (this recompiles the contracts and creates the packages/contracts/a
 
 ```
 
+Then deploy new set of contracts as in step 7 above.
+
 ### PRETTIER CONTRACTS:
 
 https://github.com/prettier-solidity/prettier-plugin-solidity can be run on any contract file, e.g.:
