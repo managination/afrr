@@ -113,10 +113,11 @@ Copy the packages/dev-frontend/config.json.sample => packages/dev-frontend/confi
 
 ```
 yarn rebuild
-yarn workspace @liquity/dev-frontend build:set-version
 yarn start-dev-frontend
-
 ```
+
+This can be used once files checked in to set UI version in build:
+yarn workspace @liquity/dev-frontend build:set-version
 
 Note: turned off graphql build as it's not on EWC (packages/subgraph)
 
@@ -134,7 +135,7 @@ UI builds in repo at: packages/dev-frontend/build
 Deploy UI build from repo:
 
 ```
-scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
+scp -r packages/dev-frontend/build/* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
 
 ```
 

@@ -11,9 +11,9 @@ const externalAddrs = {
 }
 
 const liquityAddrs = {
-    GENERAL_SAFE: "0x1095C1c3CbF6F5fc9225cda21c822b240DB91dD7", // RJA Volta Acct 2
-    LQTY_SAFE: "0x0D0149cd10a0aA6AD4c7b2819AF0F1044E6bf0A8", // RJA Volta MultiSig Wallet
-    DEPLOYER: "0xC49965F4F6f4eBe512f16916eaAEE8A3d822D03b", // RJA Volta Acct 3
+    GENERAL_SAFE: "0x1095C1c3CbF6F5fc9225cda21c822b240DB91dD7", // Volta Acct 2
+    LQTY_SAFE: "0x0D0149cd10a0aA6AD4c7b2819AF0F1044E6bf0A8", // Volta MultiSig Wallet
+    DEPLOYER: "0xC49965F4F6f4eBe512f16916eaAEE8A3d822D03b", // Volta Acct 3
 }
 
 // EWC deployment will not use lockup/beneficiaries, so emptying this object causes the lockup contracts to not be created (i.e., the lockup factory is still created, but never used)

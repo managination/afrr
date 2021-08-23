@@ -31,7 +31,7 @@ const GitHubCommit: React.FC<{ children?: string }> = ({ children }) =>
   children?.match(/[0-9a-f]{40}/) ? (
     <a
       target="_blank"
-      href={`https://github.com/energywebfoundation/afrr/commit/${children}`}
+      href={`https://github.com/managination/afrr/commit/${children}`}
       rel="noreferrer"
     >
       {children.substr(0, 7)}
