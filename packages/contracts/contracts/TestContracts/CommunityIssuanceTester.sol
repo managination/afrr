@@ -9,17 +9,17 @@ contract CommunityIssuanceTester is CommunityIssuance {
         lqtyToken.transfer(msg.sender, _amount);
     }
 
-    function getCumulativeIssuanceFraction() external view returns (uint) {
-       return _getCumulativeIssuanceFraction();
-    }
 
     function unprotectedIssueLQTY() external returns (uint) {
+
         // No checks on caller address
-       
-        uint latestTotalLQTYIssued = LQTYSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
+
+        uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE).mul(DECIMAL_PRECISION);
         uint issuance = latestTotalLQTYIssued.sub(totalLQTYIssued);
-      
+
         totalLQTYIssued = latestTotalLQTYIssued;
+        emit TotalLQTYIssuedUpdated(latestTotalLQTYIssued);
+
         return issuance;
     }
 }

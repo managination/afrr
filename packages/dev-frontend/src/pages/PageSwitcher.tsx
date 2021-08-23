@@ -33,7 +33,7 @@ export const PageSwitcher: React.FC = () => {
 
   return <Dashboard />;
 
-  // TODO
+  // REGISTRATION TURNED OFF FOR DEV TESTING, TURN IT ON AGAIN LATER FOR ANY DEPLOYMENT
   /*   
   if (registering || unregistered) {
     if (frontend.status === "registered") {

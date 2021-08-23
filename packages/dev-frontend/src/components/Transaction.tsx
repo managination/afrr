@@ -155,7 +155,7 @@ export const useTransactionFunction = (
     setTransactionState({ type: "waitingForApproval", id });
 
     try {
-      const tx = await send({ gasLimit: 1000000 }); // hopefully adds this to all tx, not sure why it's needed RJA TOOO
+      const tx = await send({ gasLimit: 1000000 }); // added so tx calls work on Volta (due to ether network upgrade?)
 
       setTransactionState({
         type: "waitingForConfirmation",

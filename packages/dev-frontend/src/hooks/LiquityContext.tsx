@@ -30,12 +30,12 @@ type LiquityProviderProps = {
 };
 
 const wsParams = (network: string, infuraApiKey: string): [string, string] => [
-  `wss://${network === "ewVolta" ? "volta-" : ""}rpc.energyweb.org`, //`wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // TODO: RJA ??, no infura on ewc
+  `wss://${network === "ewVolta" ? "volta-" : ""}rpc.energyweb.org`, //`wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // no infura on ewc
   network
 ];
 
 /* const wsParams2 = (chainId: number): [string, string] => [
-  `wss://${chainId === 73799 ? "volta-" : ""}rpc.energyweb.org`, //`wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // TODO: RJA ??, no infura on ewc
+  `wss://${chainId === 73799 ? "volta-" : ""}rpc.energyweb.org`, //`wss://${network === "homestead" ? "mainnet" : network}.infura.io/ws/v3/${infuraApiKey}`, // no infura on ewc
   "unknown" // TODO chainId === 73799 ? "ewVolta" : "ewMainnet"
 ]; */
 

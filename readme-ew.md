@@ -2,84 +2,78 @@
 
 ## EWC SPECIFIC NOTES SECTION
 
-TODO:
+### TODO:
 
-- Liquity is set to only allow 1800 EEUR min troves
 - "registration" of front-end check is turned off
 - some tests are broken now (community issuance in particular)
-- get Tellor guys going?
-- if we deploy with tellor current, we'd have to redeploy liquity in total again to switch to tellor X
-- something needs to call tellor or request price periodically or Liquity will think it's frozen
 - at end of deploy don't relinquish ownership but set owner to multisig address
 - add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
 
-BEGIN NOTES
+### BEGIN NOTES
 
-The readme is from Liquity, with symbol names changed here for readability. However, the code/contract build/deploy instructions given in this EWC section are the ONLY ONES I've used/tested. Liquity has a lot of older/unused/outdated code and instructions in this entire repo. Don't follow the instructions except inside this EWC notes section.
+The readme is from Liquity, with symbol names changed here to match EWC. However, the code/contract build/deploy instructions given in this EWC section are the only ones that have been used/tested on EWC. The repo has a lot of old, outdated and unused code.
 
 1. download repo
-2. run: yarn
-3. change deployment private keys/addresses as desired (various files, see contracts package)
-4. deploy tellor contract/playground, get it's address and use it also in config settings
+2. copy packages/lib-ethers/.env.sample => packages/lib-ethers/.env and enter the deployer address private key.
+3. copy packages/contracts/secrets.js.template => packages/contracts/secrets.js and enter the required keys for EWC settings.
+4. run: yarn (note this will also run prepare script)
+
+```
+yarn
+```
+
+5. deploy tellor contract (or playground) and get it's address (used in next step))
+6. change deployment private keys/addresses as desired (various files, see contracts package, e.g. packages/contracts/mainnetDeployment/deploymentParams.ewVolta.js)
+
+### TELLOR INFO
 
 Tellor Playground: https://github.com/tellor-io/TellorPlayground
 
-Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file! Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
-Liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy in pricefeed.sol). Also, the Tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
+Tellor Playground Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
+
+TELLOR MESOSPHERE:
+
+Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580, used 2, 60, 25
+
+Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file!
+Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
+Liquity logic will think the oracle is broken (it tries to get latest and previous prices on initial deploy in pricefeed.sol).
+Also, the Tellor oracle prices must be newer than 4 hours ago, or deploy will also fail as Liquity will think the oracle is frozen.)
 WARNING: General note, Liquity is set to consider an oracle "frozen" if it's last price update was > 4 hours ago!!
 
 There "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
 but I'm finding that isn't sufficient...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate on chain before subsequent calls checking ownership will work correctly. I've seen very nasty intermittent deploy bugs otherwise.
 
-5. Deploy contracts to supported networks, e.g.
+7. Deploy contracts to supported networks, e.g.
 
+```
 cd packages/contracts
 npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
-npx hardhat run --network ewVolta mainnetDeployment/ewMainnetDeployment.js
 
-OLD DEPLOY SCRIPTS (DO NOT USE THESE):
+```
 
-There are also deploy code in packages/lib-ethers, but don't use that. It runs deploy.ts in packages/lib-ethers, which APPARENTLY was only used for dev testing until final Liquity release - it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts and doesn't set everything up. These old scripts were run as:
+Each run is incremental, so it can be restarted if error, and it will just add missing contracts. If you want to force re-creation of all contracts,
+delete the file packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json. Doing so will force the deploy to re-create all contracts again from scratch, including
+unipool, unitokens, etc. (i.e. you get a complete new set of contracts for all Liquity).
 
-yarn deploy --network ewVolta
-yarn deploy --network ewMainnet
+Note that the repo contains old deployment scripts (DO NOT USE THESE): There are also deploy code in packages/lib-ethers, but don't use that. It runs deploy.ts in packages/lib-ethers, which APPARENTLY was only used for dev testing until final Liquity release - it does not build Uni tokens, staking pools, etc, just deploys bare Liquity contracts and doesn't set everything up. These old scripts were run as: yarn deploy --network ewVolta
 
-6. To open in VS Code: from root directory run "code afrr.code-workspace" (so debug tasks load)
-7. TODO: Validate deployed contracts manually (hardhat used etherscan, which we don't have on ewc)
-8. There is a LOT of Liquity code that we aren't using - it is old, outdated, etc...I'm not cleaning all that out. Only the instructions given in this readme are accurate for EW deployment.
+8. Validate deployed contracts manually (hardhat used etherscan, which is not available on EWC)
 
-TESTING:
+### TESTING
 
-from root dir:
-
+```
 yarn test
+yarn test-contracts
+yarn coverage
 
-CONNECTING TO UI SITE:
+```
 
-ssh bitnami@ui.afrr.io
-hosted site dir: /opt/bitnami/nginx/html/
-
-UI builds in repo at: packages/dev-frontend/build
-
-Deploy UI build from repo:
-
-scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
-
-TELLOR PLAYGROUND:
-
-Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
-Mainnet: 0x55553e916DCe04d91Ac9E45c71CEaFFA4317FDFB
-
-TELLOR MESOSPHERE:
-
-Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580
-used 2, 60, 25 (it is crypto after all 🤣)
-Mainnet: TBD
-
-REBUILD CONTRACTS:
+### REBUILDING CONTRACTS:
 
 If you change contract code, rebuild contracts:
 
+```
 cd packages/contracts
 {edit contracts as needed}
 next, commit changes so contract version file gets new value (from the commit):
@@ -88,50 +82,65 @@ git commit -m "updated contracts whatever info you want goes here..."
 git push
 yarn prepare (this recompiles the contracts and creates the packages/contracts/artifacts files, and creates the packages/contracts/artifacts/version file)
 
-TESTS:
+```
 
-yarn test
-yarn test-contracts
-yarn coverage
+### PRETTIER CONTRACTS:
 
-DEPLOYING CONTRACTS:
+https://github.com/prettier-solidity/prettier-plugin-solidity can be run on any contract file, e.g.:
 
-To run deployment:
-
-npx hardhat run --network ewVolta mainnetDeployment/ewVoltaDeployment.js
-
-Each run is incremental, so it can be restarted if error, and it will just add missing contracts. If you want to force re-creation of all contracts,
-delete the file packages/contracts/mainnetDeployment/ewVoltaDeploymentOutput.json. Doing so will force the deploy to re-create all contracts again from scratch, including
-unipool, unitokens, etc. (i.e. you get a complete new set of contracts for all Liquity).
-
-PRETTIER CONTRACTS:
-
-I installed https://github.com/prettier-solidity/prettier-plugin-solidity but did not run it on Liquity contracts, so git wouldn't go nuts with diff, but
-it can be run on any contract file, e.g.:
-
+```
 cd packages/contracts
 npx prettier --write ./contracts/ChainLinkBypass.sol
 
-USING REMIX/REMIXD:
+```
+
+### USING REMIX/REMIXD:
 
 (typically with web3 injection from MetaMask)
 
+```
 remixd -s . --remix-ide https://remix.ethereum.org
 
-MULTICALL:
+```
 
-Liquity uses Multicall contract. I've deployed it to Volta:
+### MULTICALL:
 
-https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
-0x7d741E28Db631668F98cC5F0682df3A1F3eC2E84
+Liquity uses Multicall contract. It's on Volta at 0x17e567A5FfAAAC3427E7AcE0d75a6FCf216ef47A
 
-REBUILDING UI:
-yarn rebuild from root of repo
+### REBUILDING UI:
+
+Copy the packages/dev-frontend/config.json.sample => packages/dev-frontend/config.json and enter desired values, then
+
+```
+yarn rebuild
 yarn workspace @liquity/dev-frontend build:set-version
+yarn start-dev-frontend
+
+```
+
+Note: turned off graphql build as it's not on EWC (packages/subgraph)
+
+### DEPLOYING DEV UI:
+
+```
+ssh bitnami@ui.afrr.io
+
+```
 
 hosted site dir: /opt/bitnami/nginx/html/
 
+UI builds in repo at: packages/dev-frontend/build
+
+Deploy UI build from repo:
+
+```
+scp -r packages/dev-frontend/build/\* bitnami@ui.afrr.io:/opt/bitnami/nginx/html
+
+```
+
 ## END EWC NOTES SECTION
+
+What follows is the Liquity readme with token names changed to match EWC deployment requirements for readability.
 
 ![Tests](https://github.com/liquity/dev/workflows/CI/badge.svg) [![Frontend status](https://img.shields.io/uptimerobot/status/m784948796-056b56fd51c67d682c11bb24?label=Testnet&logo=nginx&logoColor=white)](https://devui.liquity.org) ![uptime](https://img.shields.io/uptimerobot/ratio/7/m784948796-056b56fd51c67d682c11bb24) [![Discord](https://img.shields.io/discord/700620821198143498?label=join%20chat&logo=discord&logoColor=white)](https://discord.gg/2up5U32) [![Docker Pulls](https://img.shields.io/docker/pulls/liquity/dev-frontend?label=dev-frontend%20pulls&logo=docker&logoColor=white)](https://hub.docker.com/r/liquity/dev-frontend)
 
