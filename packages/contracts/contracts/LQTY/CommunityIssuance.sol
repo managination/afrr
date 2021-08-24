@@ -30,7 +30,7 @@ contract CommunityIssuance is
      *
      * Set to 32M (slightly less than 1/3) of total LQTY supply.
      */
-    uint256 public constant LQTYSupplyCap = 32e24; // 32 million
+    uint256 public constant LQTYSupplyCap = 100e24; // 100 million, changed from 32mil to match changes to LQTYToken.sol issuance mints
 
     ILQTYToken public lqtyToken;
 

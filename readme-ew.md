@@ -2,10 +2,12 @@
 
 ## EWC SPECIFIC NOTES SECTION
 
-### TODO:
+### NOTES:
 
-- "registration" of front-end check is turned off
-- some tests are broken now (community issuance in particular)
+- The UI front=end "registration" check is currently turned off since it was just deployed to testnet (Volta). The registration checks should be re-enabled as appropriate.
+
+### TODOs?:
+
 - at end of deploy don't relinquish ownership but set owner to multisig address
 - add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
 

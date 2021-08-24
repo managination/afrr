@@ -135,8 +135,9 @@ contract('LQTY Token', async accounts => {
 
     it('totalSupply(): gets the total supply', async() => {
         const total = (await lqtyTokenTester.totalSupply()).toString()
-
-        assert.equal(total, "104333333333333333333333333")
+        const twentyFourThrees = "3".repeat(24)
+        const totalSupply = "104".concat(twentyFourThrees)
+        assert.equal(total, totalSupply)
     })
 
     it("name(): returns the token's name", async() => {
