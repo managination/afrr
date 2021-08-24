@@ -447,7 +447,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
             //    abs. error: ${absError}`
             // )
 
-        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
+        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1)
     })
 
     it("Total LQTY tokens issued is dec(60, 18) after an hour", async() => {
@@ -472,7 +472,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
             //    abs. error: ${absError}`
             // )
 
-        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
+        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1)
     })
 
     it("Total LQTY tokens issued is dec(24 * 60, 18) after a day", async() => {
@@ -497,7 +497,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
             //    abs. error: ${absError}`
             // )
 
-        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
+        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1)
     })
 
     it("Total LQTY tokens issued is dec(7* 24 * 60, 18) after a week", async() => {
@@ -522,7 +522,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
             //    abs. error: ${absError}`
             // )
 
-        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
+        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1)
     })
 
     it("Total LQTY tokens issued is dec(30 * 24 * 60, 18) after a month", async() => {
@@ -547,7 +547,7 @@ contract('LQTY community issuance arithmetic tests', async accounts => {
             //    abs. error: ${absError}`
             // )
 
-        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1000000000000000)
+        assert.isAtMost(th.getDifference(totalLQTYIssued, expectedTotalLQTYIssued), 1)
     })
 
     it.skip("Total LQTY tokens issued is 5,027,363.22 after 3 months", async() => {
