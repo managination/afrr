@@ -34,7 +34,7 @@ Tellor Playground Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
 
 TELLOR MESOSPHERE:
 
-Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580, used 2, 60, 25
+Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580 (constructor args used: 2, 60, 25)
 
 Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file!
 Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
