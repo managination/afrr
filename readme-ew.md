@@ -18,7 +18,7 @@ The readme is from Liquity, with symbol names changed here to match EWC. However
 1. download repo
 2. copy packages/lib-ethers/.env.sample => packages/lib-ethers/.env and enter the deployer address private key (with leading 0x)
 3. copy packages/contracts/secrets.js.template => packages/contracts/secrets.js and enter the required keys for EWC settings. Generally the priv key here will likely match the one used in .env rom step 2. The keys here do not have leading 0x though.
-4. run: yarn (note this will also run prepare script)
+4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will likely fail, as it needs another config file - see Building the UI below. You don't need the UI at this point though.)
 
 ```
 yarn
