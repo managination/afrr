@@ -18,16 +18,15 @@ The readme is from Liquity, with symbol names changed here to match EWC. However
 1. download repo
 2. copy packages/lib-ethers/.env.sample => packages/lib-ethers/.env and enter the deployer address private key (with leading 0x)
 3. copy packages/contracts/secrets.js.template => packages/contracts/secrets.js and enter the required keys for EWC settings. Generally the priv key here will likely match the one used in .env rom step 2. The keys here do not have leading 0x though.
-4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will likely fail, as it needs another config file - see Building the UI below. You don't need the UI at this point though.)
+4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will fail, as it needs another config file - see Building the UI below, but you can ignore that as you don't need the UI at this point)
 
 ```
 yarn
 ```
 
-5. deploy tellor contract (or playground) and get it's address (used in next step))
-6. change deployment private keys/addresses as desired (various files, see contracts package, e.g. packages/contracts/mainnetDeployment/deploymentParams.ewVolta.js)
-
 ### TELLOR INFO
+
+5. deploy tellor contract (or playground) and get it's address (used in next step))
 
 Tellor Playground: https://github.com/tellor-io/TellorPlayground
 
@@ -46,7 +45,10 @@ WARNING: General note, Liquity is set to consider an oracle "frozen" if it's las
 There "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
 but I'm finding that isn't sufficient...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate on chain before subsequent calls checking ownership will work correctly. I've seen very nasty intermittent deploy bugs otherwise.
 
-7. Deploy contracts to supported networks, e.g.
+### DEPLOY CONTRACTS
+
+6. change deployment private keys/addresses as desired (see contracts package, e.g. packages/contracts/mainnetDeployment/deploymentParams.ewVolta.js)
+7. run deploy script:
 
 ```
 cd packages/contracts
