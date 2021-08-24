@@ -72,11 +72,11 @@ yarn test-contracts
 yarn coverage
 ```
 
-To run a specific contract test (for example):
+To only run a specific contract test (for example):
 
 ```
 cd packages/contracts
-npx hardhat test test/GrowthTokenTest.js
+npx hardhat test test/GrowthTokenTest
 ```
 
 ### REBUILDING CONTRACTS:
