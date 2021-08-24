@@ -9,7 +9,7 @@
 ### TODOs?:
 
 - at end of deploy don't relinquish ownership but set owner to multisig address
-- add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
+- add ability to set collateralization ratio from 150% to 1 million % (to be able to pause Liquity)
 
 ### BEGIN NOTES
 
