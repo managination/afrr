@@ -89,7 +89,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
         Month 5: 0.044093311972020200
         Month 6: 0.041651488815552900
 
-        NEW Flat Curve issues 43830 AFRR/month = 0.004383%
+        NEW Flat Curve issues 43200 AFRR/month = 0.004320% (NOTE: you must use 30 days/month to calc this)
       */
 
             // OLD: used distribution curve
@@ -101,7 +101,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
                 // issuance_M6 = toBN('41651488815552900').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
 
             // NEW flat distribution 0.0004383 % per month
-            issuance_M1 = issuance_M2 = issuance_M3 = issuance_M4 = issuance_M5 = issuance_M6 = toBN('438300000000000').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
+            issuance_M1 = issuance_M2 = issuance_M3 = issuance_M4 = issuance_M5 = issuance_M6 = toBN('432000000000000').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
         })
 
         it("liquidation < 1 minute after a deposit does not change totalLQTYIssued", async() => {
