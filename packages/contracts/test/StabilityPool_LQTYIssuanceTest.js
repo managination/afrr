@@ -227,7 +227,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
             await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
             // OLD Curve: Expected gains for each depositor after 1 year (50% total issued).  Each deposit gets 1/3 of issuance.
-            // NEW Distribution: Expected gains for each depositor after 1 year (0.52% total issued).  Each deposit gets 1/3 of issuance.
+            // NEW Distribution: Expected gains for each depositor after 1 year (0.5256% total issued).  Each deposit gets 1/3 of issuance.
             const expectedLQTYGain_1yr = communityLQTYSupply.mul(toBN('525600')).div(toBN('100000000')).div(toBN('3'))
 
             // Check LQTY gain
@@ -303,7 +303,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
             await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
             // OLD Expected gains for each depositor after 1 year (50% total issued)
-            // NEW Distribution: Expected gains for each depositor after 1 year (0.52% total issued).
+            // NEW Distribution: Expected gains for each depositor after 1 year (0.5256% total issued).
 
             // const A_expectedLQTYGain_1yr = communityLQTYSupply
             //    .div(toBN('2')) // 50% of total issued after 1 year
@@ -416,7 +416,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
             assert.isAtMost(getDifference(await stabilityPool.getTotalLUSDDeposits(), dec(30000, 18)), 1000)
 
             // OLD Expected gains for each depositor after 1 year (50% total issued)
-            // NEW Distribution: Expected gains for each depositor after 1 year (0.52% total issued).
+            // NEW Distribution: Expected gains for each depositor after 1 year (0.5256% total issued).
             // const A_expectedLQTYGain_Y1 = communityLQTYSupply
             //    .div(toBN('2')) // 50% of total issued in Y1
             //    .div(toBN('6')) // A got 1/6 of the issuance
@@ -948,8 +948,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
             await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
             await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
-            // Expected issuance for year 1 is 50% of total supply.
-            const expectedIssuance_Y1 = communityLQTYSupply.div(toBN('2'))
+            // OLD CURVE: Expected issuance for year 1 is 50% of total supply.
+            // NEW DISTRIBUTION: Expected issuance for year 1 is 0.5256% of total supply.
+            const expectedIssuance_Y1 = communityLQTYSupply.mul(toBN('525600')).div(toBN('100000000'))
 
             // Get actual LQTY gains
             const A_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(A)
@@ -973,7 +974,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
                 .mul(expectedIssuance_Y1).div(toBN('2')) // F2's share = 200/400 = 1/2
                 .div(toBN(dec(1, 18)))
 
-            // Check gains are correct, error tolerance = 1e-6 of a token
+            // Check gains are correct, error tolerance is 1e-6 of a tokens
             assert.isAtMost(getDifference(A_LQTYGain_Y1, A_expectedGain_Y1), 1e12)
             assert.isAtMost(getDifference(B_LQTYGain_Y1, B_expectedGain_Y1), 1e12)
             assert.isAtMost(getDifference(C_LQTYGain_Y1, C_expectedGain_Y1), 1e12)
@@ -989,8 +990,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
             await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
             await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
-            // Expected gains for each depositor in Y2(25% total issued).  .
-            const expectedIssuance_Y2 = communityLQTYSupply.div(toBN('4'))
+            // OLD CURVE: Expected gains for each depositor in Y2(25% total issued).
+            // NEW DISTRIBUTION: LINEAR
+            const expectedIssuance_Y2 = expectedIssuance_Y1; //communityLQTYSupply.div(toBN('4'))
 
             const expectedFinalIssuance = expectedIssuance_Y1.add(expectedIssuance_Y2)
 
