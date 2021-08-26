@@ -51,9 +51,10 @@ jobs:
       - name: Copy folder content recursively to remote
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: ./packages/dev-frontend/build
-          remote: /opt/bitnami/nginx/html/
+          local: packages/dev-frontend/build
+          remote: /opt/bitnami/nginx/html
+          dotfiles: true
           host: ${{ secrets.BITNAMI_HOST }}
           username: ${{ secrets.BITNAMI_USERNAME }}
           privateKey: ${{ secrets.BITNAMI_SSH_KEY }}
-          password: ${{ secrets.PASSWORD }}
+          passphrase: ${{ secrets.BITNAMI_SSH_KEY_PASSPHRASE }}
