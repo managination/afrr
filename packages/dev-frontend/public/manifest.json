@@ -1,6 +1,6 @@
 {
     "short_name": "AFRR Dev UI",
-    "name": "AFRR Developer UI",
+    "name": "AFRR Developer UI (Autodeployed)",
     "icons": [{
         "src": "favicon.png",
         "sizes": "32x32",
