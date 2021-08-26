@@ -1,4 +1,4 @@
-name: Release Dev UI
+name: Release Dev UI Updated
 
 env:
   CI: true
