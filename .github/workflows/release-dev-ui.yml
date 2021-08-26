@@ -13,6 +13,8 @@ on:
     branches: [master, main]
     paths:
       - "packages/dev-frontend/**"
+  workflow_dispatch:
+    branches: [master, main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
