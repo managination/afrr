@@ -45,13 +45,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn rebuild
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          mkdir ../build
-          cp -TR packages/dev-frontend/build ../build
-          tar -cvf deploy.tar ../build/
-
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
         with:
@@ -59,5 +52,5 @@ jobs:
           username: ${{ secrets.BITNAMI_USERNAME }}
           key: ${{ secrets.BITNAMI_KEY }}
           port: ${{ secrets.BITNAMI_PORT }}
-          source: "deploy.tar"
+          source: "packages/dev-frontend/build/*"
           target: "/opt/bitnami/nginx/html"
