@@ -67,7 +67,7 @@ Note that the repo contains old deployment scripts (DO NOT USE THESE): There are
 ### TESTING
 
 ```
-yarn test
+yarn test (note, this still has some fails, I didn't change anything in it, test-contracts is the main test to run)
 yarn test-contracts
 yarn coverage
 ```
