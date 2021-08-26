@@ -14,7 +14,7 @@ The readme is from Liquity, with symbol names changed here to match EWC. However
 1. download repo
 2. edit packages/lib-ethers/.env and enter the deployer address private key (the checked in file just has a dummy value so things compile)
 3. edit packages/contracts/secrets.js and enter the required keys also, which are generally the same priv key as the one used in .env from step 2. The keys here do not have leading 0x though.
-4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will fail, as it needs another config file - see Building the UI below, but you can ignore that as you don't need the UI at this point)
+4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend (see also building the UI below)
 
 Note the priv key used above is as follows. Obviously, you should change this to the private key you use, and never put funds in to this address or use it for anything, it's just so code can compile:
 Address: 0x1234a48eC14D14DefaF4920043d806d909A14D75
