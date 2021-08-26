@@ -1,4 +1,4 @@
-name: Release Dev UI Updated
+name: Build and Copy Dev UI
 
 env:
   CI: true
