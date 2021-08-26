@@ -14,6 +14,7 @@ node_modules
 
 /temp
 .env
+!/packages/lib-ethers/.env
 .eslintcache
 
 # Don't track NPM lockfile (we use Yarn)

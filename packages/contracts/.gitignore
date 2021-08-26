@@ -15,8 +15,6 @@
 # Exported function gas costs and test outputs
 /gasTest/outputs
 
-/secrets.js
-
 yarn-error.log
 
 # solidity-coverage

@@ -2,10 +2,6 @@
 
 ## EWC SPECIFIC NOTES SECTION
 
-### NOTES:
-
-- The UI front=end "registration" check is currently turned off since it was just deployed to testnet (Volta). The registration checks should be re-enabled as appropriate.
-
 ### TODOs?:
 
 - at end of deploy don't relinquish ownership but set owner to multisig address
@@ -16,9 +12,13 @@
 The readme is from Liquity, with symbol names changed here to match EWC. However, the code/contract build/deploy instructions given in this EWC section are the only ones that have been used/tested on EWC. The repo has a lot of old, outdated and unused code.
 
 1. download repo
-2. copy packages/lib-ethers/.env.sample => packages/lib-ethers/.env and enter the deployer address private key (with leading 0x)
-3. copy packages/contracts/secrets.js.template => packages/contracts/secrets.js and enter the required keys for EWC settings. Generally the priv key here will likely match the one used in .env rom step 2. The keys here do not have leading 0x though.
+2. edit packages/lib-ethers/.env and enter the deployer address private key (the checked in file just has a dummy value so things compile)
+3. edit packages/contracts/secrets.js and enter the required keys also, which are generally the same priv key as the one used in .env from step 2. The keys here do not have leading 0x though.
 4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will fail, as it needs another config file - see Building the UI below, but you can ignore that as you don't need the UI at this point)
+
+Note the priv key used above is as follows. Obviously, you should change this to the private key you use, and never put funds in to this address or use it for anything, it's just so code can compile:
+Address: 0x1234a48eC14D14DefaF4920043d806d909A14D75
+Private key: bde6ddfac3e27a137fb93c5cd131fc32d0bd2f3505b35720e8032692c90938ba
 
 ```
 yarn
@@ -134,6 +134,8 @@ yarn workspace @liquity/dev-frontend build:set-version
 Note: turned off graphql build as it's not on EWC (packages/subgraph)
 
 ### DEPLOYING DEV UI:
+
+Note: The UI front=end "registration" check is currently turned off since it was just deployed to testnet (Volta). The registration checks should be re-enabled as appropriate.
 
 ```
 ssh bitnami@ui.afrr.io
