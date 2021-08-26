@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card, Heading, Box, Flex, Button, Link, Paragraph } from "theme-ui";
+/* eslint-enable @typescript-eslint/no-unused-vars */
 import { useLiquity } from "../../../../hooks/LiquityContext";
 import { Icon } from "../../../Icon";
 import { InfoMessage } from "../../../InfoMessage";
