@@ -1,3 +1,6 @@
+# this action is only meant to deploy to a dev UI site, and it assumes a config.json file is in the root
+# of the UI build dir and has a key of 0x0000... in it, and UI registration is turned off also. It will
+# not work for other scenarios
 name: Build and Copy Dev UI
 
 env:
@@ -45,12 +48,12 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn rebuild
 
-      - name: copy file via ssh
-        uses: appleboy/scp-action@master
+      - name: Copy folder content recursively to remote
+        uses: garygrossgarten/github-action-scp@release
         with:
+          local: ./packages/dev-frontend/build
+          remote: /opt/bitnami/nginx/html/
           host: ${{ secrets.BITNAMI_HOST }}
           username: ${{ secrets.BITNAMI_USERNAME }}
-          key: ${{ secrets.BITNAMI_SSH_KEY }}
-          port: ${{ secrets.BITNAMI_PORT }}
-          source: "./packages/dev-frontend/build/*"
-          target: "/opt/bitnami/nginx/html/"
+          privateKey: ${{ secrets.BITNAMI_SSH_KEY }}
+          password: ${{ secrets.PASSWORD }}
