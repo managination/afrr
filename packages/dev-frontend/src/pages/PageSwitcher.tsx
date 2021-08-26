@@ -7,9 +7,11 @@ import { useLiquitySelector } from "@liquity/lib-react";
 import { useLiquity } from "../hooks/LiquityContext";
 
 import { Dashboard } from "./Dashboard";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { UnregisteredFrontend } from "./UnregisteredFrontend";
 import { FrontendRegistration } from "./FrontendRegistration";
 import { FrontendRegistrationSuccess } from "./FrontendRegistrationSuccess";
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const selectFrontend = ({ frontend }: LiquityStoreState) => frontend;
 

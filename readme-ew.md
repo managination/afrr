@@ -2,30 +2,31 @@
 
 ## EWC SPECIFIC NOTES SECTION
 
-### TODO:
+### TODOs?:
 
-- "registration" of front-end check is turned off
-- some tests are broken now (community issuance in particular)
 - at end of deploy don't relinquish ownership but set owner to multisig address
-- add ability to set collateralization ratio from 150% to 1 million % (to add a pause it)
+- add ability to set collateralization ratio from 150% to 1 million % (to be able to pause Liquity)
 
 ### BEGIN NOTES
 
 The readme is from Liquity, with symbol names changed here to match EWC. However, the code/contract build/deploy instructions given in this EWC section are the only ones that have been used/tested on EWC. The repo has a lot of old, outdated and unused code.
 
 1. download repo
-2. copy packages/lib-ethers/.env.sample => packages/lib-ethers/.env and enter the deployer address private key.
-3. copy packages/contracts/secrets.js.template => packages/contracts/secrets.js and enter the required keys for EWC settings.
-4. run: yarn (note this will also run prepare script)
+2. edit packages/lib-ethers/.env and enter the deployer address private key (the checked in file just has a dummy value so things compile)
+3. edit packages/contracts/secrets.js and enter the required keys also, which are generally the same priv key as the one used in .env from step 2. The keys here do not have leading 0x though.
+4. run: yarn (note this will also run prepare script, which compiles contracts and also the dev-frontend. The UI compile will fail, as it needs another config file - see Building the UI below, but you can ignore that as you don't need the UI at this point)
+
+Note the priv key used above is as follows. Obviously, you should change this to the private key you use, and never put funds in to this address or use it for anything, it's just so code can compile:
+Address: 0x1234a48eC14D14DefaF4920043d806d909A14D75
+Private key: bde6ddfac3e27a137fb93c5cd131fc32d0bd2f3505b35720e8032692c90938ba
 
 ```
 yarn
 ```
 
-5. deploy tellor contract (or playground) and get it's address (used in next step))
-6. change deployment private keys/addresses as desired (various files, see contracts package, e.g. packages/contracts/mainnetDeployment/deploymentParams.ewVolta.js)
-
 ### TELLOR INFO
+
+5. deploy tellor contract (or playground) and get it's address (used in next step))
 
 Tellor Playground: https://github.com/tellor-io/TellorPlayground
 
@@ -33,7 +34,7 @@ Tellor Playground Volta: 0x855cCA512c81bfc217EDF8e56ab11211c997fFda
 
 TELLOR MESOSPHERE:
 
-Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580, used 2, 60, 25
+Volta: 0xF26Dd3ADa661B14295b9B4Bd6347697eF3715580 (constructor args used: 2, 60, 25)
 
 Tellor (or Tellor Playground must have already been manually installed and configured, and the Tellor Address set in the deployment params file!
 Also, the Tellor oracle MUST HAVE ALREADY had AT LEAST TWO rounds of price updates for EWT/EUR or Liquity contract deploy will fail, as the
@@ -44,7 +45,10 @@ WARNING: General note, Liquity is set to consider an oracle "frozen" if it's las
 There "could" be bugs in the Liquity deploy, based on the # of confirmations required at each deployment step. It MUST be high enough such that subsequent contract calls will get the LATEST chain data from prior deployment contract tx's...they used 1 for testnets
 but I'm finding that isn't sufficient...for example. once a renounceOwnership call is done inside a contract setAddress call, it must propagate on chain before subsequent calls checking ownership will work correctly. I've seen very nasty intermittent deploy bugs otherwise.
 
-7. Deploy contracts to supported networks, e.g.
+### DEPLOY CONTRACTS
+
+6. change deployment private keys/addresses as desired (see contracts package, e.g. packages/contracts/mainnetDeployment/deploymentParams.ewVolta.js)
+7. run deploy script:
 
 ```
 cd packages/contracts
@@ -63,15 +67,17 @@ Note that the repo contains old deployment scripts (DO NOT USE THESE): There are
 ### TESTING
 
 ```
-yarn test
 yarn test-contracts
 yarn coverage
 ```
 
-To run a specific contract test (for example):
+note: yarn test has some fails, I didn't change anything in it, test-contracts is the main test to run
+
+To only run a specific contract test (for example):
 
 ```
-npx hardhat test test/GrowthTokenTest.js
+cd packages/contracts
+npx hardhat test test/GrowthTokenTest
 ```
 
 ### REBUILDING CONTRACTS:
@@ -129,6 +135,8 @@ yarn workspace @liquity/dev-frontend build:set-version
 Note: turned off graphql build as it's not on EWC (packages/subgraph)
 
 ### DEPLOYING DEV UI:
+
+Note: The UI front=end "registration" check is currently turned off since it was just deployed to testnet (Volta). The registration checks should be re-enabled as appropriate.
 
 ```
 ssh bitnami@ui.afrr.io
