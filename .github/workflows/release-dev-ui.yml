@@ -52,5 +52,5 @@ jobs:
           username: ${{ secrets.BITNAMI_USERNAME }}
           key: ${{ secrets.BITNAMI_KEY }}
           port: ${{ secrets.BITNAMI_PORT }}
-          source: "packages/dev-frontend/build/*"
+          source: "./packages/dev-frontend/build/*"
           target: "/opt/bitnami/nginx/html"
