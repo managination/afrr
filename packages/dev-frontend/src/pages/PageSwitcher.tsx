@@ -17,7 +17,9 @@ const selectFrontend = ({ frontend }: LiquityStoreState) => frontend;
 
 export const PageSwitcher: React.FC = () => {
   const {
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     account,
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     config: { frontendTag }
   } = useLiquity();
 
@@ -25,7 +27,9 @@ export const PageSwitcher: React.FC = () => {
   const unregistered = frontendTag !== AddressZero && frontend.status === "unregistered";
   // console.log("frontendTag=" + frontendTag);
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [registering, setRegistering] = useState(false);
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   useEffect(() => {
     if (unregistered) {
