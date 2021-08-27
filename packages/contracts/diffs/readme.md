@@ -9,5 +9,5 @@ To compare Liquity live deployed contracts against what is in their repo:
 To compare Liquity live deployed contracts against the ew versions in this repo:
 
 ```
-./rundiffs-ew.sh > diff-liquity-live-ew-ew.log
+./rundiffs-ew.sh > diff-liquity-live-ew-repo.log
 ```
