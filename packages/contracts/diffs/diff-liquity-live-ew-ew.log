@@ -1,0 +1,1410 @@
+************************************************************
+DIFF: ActivePool (live) to (ew)
+************************************************************
+136c136
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: BorrowerOperations (live) to (ew)
+************************************************************
+666c666
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: CollSurplusPool (live) to (ew)
+************************************************************
+123c123
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: CommunityIssuance (live) to (ew)
+************************************************************
+13,15c13,19
+< 
+< contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
+<     using SafeMath for uint;
+---
+> contract CommunityIssuance is
+>     ICommunityIssuance,
+>     Ownable,
+>     CheckContract,
+>     BaseMath
+> {
+>     using SafeMath for uint256;
+19c23
+<     string constant public NAME = "CommunityIssuance";
+---
+>     string public constant NAME = "CommunityIssuance";
+21c25
+<     uint constant public SECONDS_IN_ONE_MINUTE = 60;
+---
+>     uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
+23,45c27,33
+<    /* The issuance factor F determines the curvature of the issuance curve.
+<     *
+<     * Minutes in one year: 60*24*365 = 525600
+<     *
+<     * For 50% of remaining tokens issued each year, with minutes as time units, we have:
+<     * 
+<     * F ** 525600 = 0.5
+<     * 
+<     * Re-arranging:
+<     * 
+<     * 525600 * ln(F) = ln(0.5)
+<     * F = 0.5 ** (1/525600)
+<     * F = 0.999998681227695000 
+<     */
+<     uint constant public ISSUANCE_FACTOR = 999998681227695000;
+< 
+<     /* 
+<     * The community LQTY supply cap is the starting balance of the Community Issuance contract.
+<     * It should be minted to this contract by LQTYToken, when the token is deployed.
+<     * 
+<     * Set to 32M (slightly less than 1/3) of total LQTY supply.
+<     */
+<     uint constant public LQTYSupplyCap = 32e24; // 32 million
+---
+>     /*
+>      * The community LQTY supply cap is the starting balance of the Community Issuance contract.
+>      * It should be minted to this contract by LQTYToken, when the token is deployed.
+>      *
+>      * Set to 32M (slightly less than 1/3) of total LQTY supply.
+>      */
+>     uint256 public constant LQTYSupplyCap = 100e24; // 100 million, changed from 32mil to match changes to LQTYToken.sol issuance mints
+51,52c39,40
+<     uint public totalLQTYIssued;
+<     uint public immutable deploymentTime;
+---
+>     uint256 public totalLQTYIssued;
+>     uint256 public immutable deploymentTime;
+58c46
+<     event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
+---
+>     event TotalLQTYIssuedUpdated(uint256 _totalLQTYIssued);
+66,68c54,55
+<     function setAddresses
+<     (
+<         address _lqtyTokenAddress, 
+---
+>     function setAddresses(
+>         address _lqtyTokenAddress,
+70,74c57
+<     ) 
+<         external 
+<         onlyOwner 
+<         override 
+<     {
+---
+>     ) external override onlyOwner {
+82c65
+<         uint LQTYBalance = lqtyToken.balanceOf(address(this));
+---
+>         uint256 LQTYBalance = lqtyToken.balanceOf(address(this));
+91c74
+<     function issueLQTY() external override returns (uint) {
+---
+>     function issueLQTY() external override returns (uint256) {
+94c77
+<         uint latestTotalLQTYIssued = LQTYSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
+---
+>         uint latestTotalLQTYIssued = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE).mul(DECIMAL_PRECISION);
+99,101d81
+<         
+<         return issuance;
+<     }
+103,118c83
+<     /* Gets 1-f^t    where: f < 1
+< 
+<     f: issuance factor that determines the shape of the curve
+<     t:  time passed since last LQTY issuance event  */
+<     function _getCumulativeIssuanceFraction() internal view returns (uint) {
+<         // Get the time passed since deployment
+<         uint timePassedInMinutes = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE);
+< 
+<         // f^t
+<         uint power = LiquityMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
+< 
+<         //  (1 - f^t)
+<         uint cumulativeIssuanceFraction = (uint(DECIMAL_PRECISION).sub(power));
+<         assert(cumulativeIssuanceFraction <= DECIMAL_PRECISION); // must be in range [0,1]
+< 
+<         return cumulativeIssuanceFraction;
+---
+>         return issuance;
+121c86
+<     function sendLQTY(address _account, uint _LQTYamount) external override {
+---
+>     function sendLQTY(address _account, uint256 _LQTYamount) external override {
+130c95,98
+<         require(msg.sender == stabilityPoolAddress, "CommunityIssuance: caller is not SP");
+---
+>         require(
+>             msg.sender == stabilityPoolAddress,
+>             "CommunityIssuance: caller is not SP"
+>         );
+132c100
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: DefaultPool (live) to (ew)
+************************************************************
+110c110
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: GasPool (live) to (ew)
+************************************************************
+1,4d0
+< /**
+<  *Submitted for verification at Etherscan.io on 2021-04-06
+< */
+< 
+22c18
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: HintHelpers (live) to (ew)
+************************************************************
+171c171
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: LockupContract (live) to (ew)
+************************************************************
+86c86
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: LockupContractFactory (live) to (ew)
+************************************************************
+74c74
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: LQTYStaking (live) to (ew)
+************************************************************
+247c247
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: LQTYToken (live) to (ew)
+************************************************************
+55,62c55,62
+<     string constant internal _NAME = "LQTY";
+<     string constant internal _SYMBOL = "LQTY";
+<     string constant internal _VERSION = "1";
+<     uint8 constant internal  _DECIMALS = 18;
+< 
+<     mapping (address => uint256) private _balances;
+<     mapping (address => mapping (address => uint256)) private _allowances;
+<     uint private _totalSupply;
+---
+>     string internal constant _NAME = "AFRR";
+>     string internal constant _SYMBOL = "AFRR";
+>     string internal constant _VERSION = "1";
+>     uint8 internal constant _DECIMALS = 18;
+> 
+>     mapping(address => uint256) private _balances;
+>     mapping(address => mapping(address => uint256)) private _allowances;
+>     uint256 private _totalSupply;
+67c67,68
+<     bytes32 private constant _PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+---
+>     bytes32 private constant _PERMIT_TYPEHASH =
+>         0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+69c70,71
+<     bytes32 private constant _TYPE_HASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+---
+>     bytes32 private constant _TYPE_HASH =
+>         0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+78,79c80,81
+<     
+<     mapping (address => uint256) private _nonces;
+---
+> 
+>     mapping(address => uint256) private _nonces;
+83c85
+<     uint public constant ONE_YEAR_IN_SECONDS = 31536000;  // 60 * 60 * 24 * 365
+---
+>     uint256 public constant ONE_YEAR_IN_SECONDS = 31536000; // 60 * 60 * 24 * 365
+86c88
+<     uint internal _1_MILLION = 1e24;    // 1e6 * 1e18 = 1e24
+---
+>     uint256 internal _1_MILLION = 1e24; // 1e6 * 1e18 = 1e24
+88c90
+<     uint internal immutable deploymentStartTime;
+---
+>     uint256 internal immutable deploymentStartTime;
+94c96
+<     uint internal immutable lpRewardsEntitlement;
+---
+>     uint256 internal immutable lpRewardsEntitlement;
+102c104,106
+<     event LockupContractFactoryAddressSet(address _lockupContractFactoryAddress);
+---
+>     event LockupContractFactoryAddressSet(
+>         address _lockupContractFactoryAddress
+>     );
+106,108c110,111
+<     constructor
+<     (
+<         address _communityIssuanceAddress, 
+---
+>     constructor(
+>         address _communityIssuanceAddress,
+114,116c117
+<     ) 
+<         public 
+<     {
+---
+>     ) public {
+122,123c123,124
+<         deploymentStartTime  = block.timestamp;
+<         
+---
+>         deploymentStartTime = block.timestamp;
+> 
+134,135c135,140
+<         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(_TYPE_HASH, hashedName, hashedVersion);
+<         
+---
+>         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(
+>             _TYPE_HASH,
+>             hashedName,
+>             hashedVersion
+>         );
+> 
+137,138c142,143
+<      
+<         uint bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
+---
+> 
+>         uint256 bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
+141c146
+<         uint depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
+---
+>         uint256 depositorsAndFrontEndsEntitlement = _1_MILLION.mul(100); // changed to 100 MIL Per Micha (see CommunityIssuance.sol distribution curve change also)
+144c149
+<         uint _lpRewardsEntitlement = _1_MILLION.mul(4).div(3);  // Allocate 1.33 million for LP rewards
+---
+>         uint256 _lpRewardsEntitlement = _1_MILLION.mul(4).div(3); // Allocate 1.33 million for LP rewards
+147c152
+<         
+---
+> 
+149,152c154,157
+<         uint multisigEntitlement = _1_MILLION.mul(100)
+<             .sub(bountyEntitlement)
+<             .sub(depositorsAndFrontEndsEntitlement)
+<             .sub(_lpRewardsEntitlement);
+---
+>         uint256 multisigEntitlement = _1_MILLION.mul(1); // changed to 1 MIL per Micha
+>         //.sub(bountyEntitlement)
+>         //.sub(depositorsAndFrontEndsEntitlement)
+>         //.sub(_lpRewardsEntitlement);
+163c168,173
+<     function balanceOf(address account) external view override returns (uint256) {
+---
+>     function balanceOf(address account)
+>         external
+>         view
+>         override
+>         returns (uint256)
+>     {
+171c181,186
+<     function getLpRewardsEntitlement() external view override returns (uint256) {
+---
+>     function getLpRewardsEntitlement()
+>         external
+>         view
+>         override
+>         returns (uint256)
+>     {
+175c190,194
+<     function transfer(address recipient, uint256 amount) external override returns (bool) {
+---
+>     function transfer(address recipient, uint256 amount)
+>         external
+>         override
+>         returns (bool)
+>     {
+188c207,212
+<     function allowance(address owner, address spender) external view override returns (uint256) {
+---
+>     function allowance(address owner, address spender)
+>         external
+>         view
+>         override
+>         returns (uint256)
+>     {
+192,193c216,223
+<     function approve(address spender, uint256 amount) external override returns (bool) {
+<         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
+---
+>     function approve(address spender, uint256 amount)
+>         external
+>         override
+>         returns (bool)
+>     {
+>         if (_isFirstYear()) {
+>             _requireCallerIsNotMultisig();
+>         }
+199,201c229,237
+<     function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
+<         if (_isFirstYear()) { _requireSenderIsNotMultisig(sender); }
+<         
+---
+>     function transferFrom(
+>         address sender,
+>         address recipient,
+>         uint256 amount
+>     ) external override returns (bool) {
+>         if (_isFirstYear()) {
+>             _requireSenderIsNotMultisig(sender);
+>         }
+> 
+205c241,248
+<         _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance"));
+---
+>         _approve(
+>             sender,
+>             msg.sender,
+>             _allowances[sender][msg.sender].sub(
+>                 amount,
+>                 "ERC20: transfer amount exceeds allowance"
+>             )
+>         );
+209,212c252,265
+<     function increaseAllowance(address spender, uint256 addedValue) external override returns (bool) {
+<         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
+<         
+<         _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
+---
+>     function increaseAllowance(address spender, uint256 addedValue)
+>         external
+>         override
+>         returns (bool)
+>     {
+>         if (_isFirstYear()) {
+>             _requireCallerIsNotMultisig();
+>         }
+> 
+>         _approve(
+>             msg.sender,
+>             spender,
+>             _allowances[msg.sender][spender].add(addedValue)
+>         );
+216,219c269,285
+<     function decreaseAllowance(address spender, uint256 subtractedValue) external override returns (bool) {
+<         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
+<         
+<         _approve(msg.sender, spender, _allowances[msg.sender][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+---
+>     function decreaseAllowance(address spender, uint256 subtractedValue)
+>         external
+>         override
+>         returns (bool)
+>     {
+>         if (_isFirstYear()) {
+>             _requireCallerIsNotMultisig();
+>         }
+> 
+>         _approve(
+>             msg.sender,
+>             spender,
+>             _allowances[msg.sender][spender].sub(
+>                 subtractedValue,
+>                 "ERC20: decreased allowance below zero"
+>             )
+>         );
+223c289,292
+<     function sendToLQTYStaking(address _sender, uint256 _amount) external override {
+---
+>     function sendToLQTYStaking(address _sender, uint256 _amount)
+>         external
+>         override
+>     {
+225c294,296
+<         if (_isFirstYear()) { _requireSenderIsNotMultisig(_sender); }  // Prevent the multisig from staking LQTY
+---
+>         if (_isFirstYear()) {
+>             _requireSenderIsNotMultisig(_sender);
+>         } // Prevent the multisig from staking LQTY
+231c302
+<     function domainSeparator() public view override returns (bytes32) {    
+---
+>     function domainSeparator() public view override returns (bytes32) {
+235c306,311
+<             return _buildDomainSeparator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION);
+---
+>             return
+>                 _buildDomainSeparator(
+>                     _TYPE_HASH,
+>                     _HASHED_NAME,
+>                     _HASHED_VERSION
+>                 );
+239,246c315,321
+<     function permit
+<     (
+<         address owner, 
+<         address spender, 
+<         uint amount, 
+<         uint deadline, 
+<         uint8 v, 
+<         bytes32 r, 
+---
+>     function permit(
+>         address owner,
+>         address spender,
+>         uint256 amount,
+>         uint256 deadline,
+>         uint8 v,
+>         bytes32 r,
+248,256c323,340
+<     ) 
+<         external 
+<         override 
+<     {            
+<         require(deadline >= now, 'LQTY: expired deadline');
+<         bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
+<                          domainSeparator(), keccak256(abi.encode(
+<                          _PERMIT_TYPEHASH, owner, spender, amount, 
+<                          _nonces[owner]++, deadline))));
+---
+>     ) external override {
+>         require(deadline >= now, "LQTY: expired deadline");
+>         bytes32 digest = keccak256(
+>             abi.encodePacked(
+>                 "\x19\x01",
+>                 domainSeparator(),
+>                 keccak256(
+>                     abi.encode(
+>                         _PERMIT_TYPEHASH,
+>                         owner,
+>                         spender,
+>                         amount,
+>                         _nonces[owner]++,
+>                         deadline
+>                     )
+>                 )
+>             )
+>         );
+258c342
+<         require(recoveredAddress == owner, 'LQTY: invalid signature');
+---
+>         require(recoveredAddress == owner, "LQTY: invalid signature");
+262c346,347
+<     function nonces(address owner) external view override returns (uint256) { // FOR EIP 2612
+---
+>     function nonces(address owner) external view override returns (uint256) {
+>         // FOR EIP 2612
+274,278c359,374
+<     function _buildDomainSeparator(bytes32 typeHash, bytes32 name, bytes32 version) private view returns (bytes32) {
+<         return keccak256(abi.encode(typeHash, name, version, _chainID(), address(this)));
+<     }
+< 
+<     function _transfer(address sender, address recipient, uint256 amount) internal {
+---
+>     function _buildDomainSeparator(
+>         bytes32 typeHash,
+>         bytes32 name,
+>         bytes32 version
+>     ) private view returns (bytes32) {
+>         return
+>             keccak256(
+>                 abi.encode(typeHash, name, version, _chainID(), address(this))
+>             );
+>     }
+> 
+>     function _transfer(
+>         address sender,
+>         address recipient,
+>         uint256 amount
+>     ) internal {
+282c378,381
+<         _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
+---
+>         _balances[sender] = _balances[sender].sub(
+>             amount,
+>             "ERC20: transfer amount exceeds balance"
+>         );
+295c394,398
+<     function _approve(address owner, address spender, uint256 amount) internal {
+---
+>     function _approve(
+>         address owner,
+>         address spender,
+>         uint256 amount
+>     ) internal {
+302c405
+<     
+---
+> 
+314c417
+<     
+---
+> 
+317,318c420
+<             _recipient != address(0) && 
+<             _recipient != address(this),
+---
+>             _recipient != address(0) && _recipient != address(this),
+323c425
+<             _recipient != lqtyStakingAddress,
+---
+>                 _recipient != lqtyStakingAddress,
+329,330c431,434
+<         require(lockupContractFactory.isRegisteredLockup(_recipient), 
+<         "LQTYToken: recipient must be a LockupContract registered in the Factory");
+---
+>         require(
+>             lockupContractFactory.isRegisteredLockup(_recipient),
+>             "LQTYToken: recipient must be a LockupContract registered in the Factory"
+>         );
+334c438,441
+<         require(_sender != multisigAddress, "LQTYToken: sender must not be the multisig");
+---
+>         require(
+>             _sender != multisigAddress,
+>             "LQTYToken: sender must not be the multisig"
+>         );
+338c445,448
+<         require(!_callerIsMultisig(), "LQTYToken: caller must not be the multisig");
+---
+>         require(
+>             !_callerIsMultisig(),
+>             "LQTYToken: caller must not be the multisig"
+>         );
+342c452,455
+<          require(msg.sender == lqtyStakingAddress, "LQTYToken: caller must be the LQTYStaking contract");
+---
+>         require(
+>             msg.sender == lqtyStakingAddress,
+>             "LQTYToken: caller must be the LQTYStaking contract"
+>         );
+366c479
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: LUSDToken (live) to (ew)
+************************************************************
+31,32c31,32
+<     string constant internal _NAME = "LUSD Stablecoin";
+<     string constant internal _SYMBOL = "LUSD";
+---
+>     string constant internal _NAME = "EEUR Stablecoin";
+>     string constant internal _SYMBOL = "EEUR";
+306c306
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: MultiTroveGetter (live) to (ew)
+************************************************************
+0a1,2
+> // SPDX-License-Identifier: MIT
+> 
+3a6,7
+> import "./TroveManager.sol";
+> import "./SortedTroves.sol";
+116c120
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: PriceFeed (live) to (ew)
+************************************************************
+16,22c16,22
+< * PriceFeed for mainnet deployment, to be connected to Chainlink's live ETH:USD aggregator reference 
+< * contract, and a wrapper contract TellorCaller, which connects to TellorMaster contract.
+< *
+< * The PriceFeed uses Chainlink as primary oracle, and Tellor as fallback. It contains logic for
+< * switching oracles based on oracle failures, timeouts, and conditions for returning to the primary
+< * Chainlink oracle.
+< */
+---
+>  * PriceFeed for mainnet deployment, to be connected to Chainlink's live ETH:USD aggregator reference
+>  * contract, and a wrapper contract TellorCaller, which connects to TellorMaster contract.
+>  *
+>  * The PriceFeed uses Chainlink as primary oracle, and Tellor as fallback. It contains logic for
+>  * switching oracles based on oracle failures, timeouts, and conditions for returning to the primary
+>  * Chainlink oracle.
+>  */
+26c26
+<     string constant public NAME = "PriceFeed";
+---
+>     string public constant NAME = "PriceFeed";
+28,29c28,29
+<     AggregatorV3Interface public priceAggregator;  // Mainnet Chainlink aggregator
+<     ITellorCaller public tellorCaller;  // Wrapper contract that calls the Tellor system
+---
+>     AggregatorV3Interface public priceAggregator; // Mainnet Chainlink aggregator
+>     ITellorCaller public tellorCaller; // Wrapper contract that calls the Tellor system
+35c35,39
+<     uint constant public ETHUSD_TELLOR_REQ_ID = 1;
+---
+>     // TODO: WE WILL HAVE TO CHANGE THIS TO THE EWTEUR PAIR ID OF EWC TELLOR
+>     // IT WOULD BE NICE TO PASS THIS IN ON CONTRACT SETADDRESSES BUT WE ARE TRYING
+>     // TO NOT CHANGE THE CONTRACT CODE AT ALL. THIS IS SET IN THE deploymnetParams JSON
+>     // FILE ALSO (AND IDEALLY ONLY THERE). THIS VALUE MUST MATCH THAT ONE.
+>     uint256 public constant ETHUSD_TELLOR_REQ_ID = 1;
+38,39c42,43
+<     uint constant public TARGET_DIGITS = 18;  
+<     uint constant public TELLOR_DIGITS = 6;
+---
+>     uint256 public constant TARGET_DIGITS = 18;
+>     uint256 public constant TELLOR_DIGITS = 6;
+42,43c46,47
+<     uint constant public TIMEOUT = 14400;  // 4 hours: 60 * 60 * 4
+<     
+---
+>     uint256 public constant TIMEOUT = 14400; // 4 hours: 60 * 60 * 4
+> 
+45c49
+<     uint constant public MAX_PRICE_DEVIATION_FROM_PREVIOUS_ROUND =  5e17; // 50%
+---
+>     uint256 public constant MAX_PRICE_DEVIATION_FROM_PREVIOUS_ROUND = 5e17; // 50%
+47,51c51,55
+<     /* 
+<     * The maximum relative price difference between two oracle responses allowed in order for the PriceFeed
+<     * to return to using the Chainlink oracle. 18-digit precision.
+<     */
+<     uint constant public MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES = 5e16; // 5%
+---
+>     /*
+>      * The maximum relative price difference between two oracle responses allowed in order for the PriceFeed
+>      * to return to using the Chainlink oracle. 18-digit precision.
+>      */
+>     uint256 public constant MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES = 5e16; // 5%
+54c58
+<     uint public lastGoodPrice;
+---
+>     uint256 public lastGoodPrice;
+72,73c76,77
+<         chainlinkWorking, 
+<         usingTellorChainlinkUntrusted, 
+---
+>         chainlinkWorking,
+>         usingTellorChainlinkUntrusted,
+75c79
+<         usingTellorChainlinkFrozen, 
+---
+>         usingTellorChainlinkFrozen,
+82c86
+<     event LastGoodPriceUpdated(uint _lastGoodPrice);
+---
+>     event LastGoodPriceUpdated(uint256 _lastGoodPrice);
+86c90
+<     
+---
+> 
+90,93c94
+<     )
+<         external
+<         onlyOwner
+<     {
+---
+>     ) external onlyOwner {
+96c97
+<        
+---
+> 
+104,108c105,117
+<         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
+<         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
+<         
+<         require(!_chainlinkIsBroken(chainlinkResponse, prevChainlinkResponse) && !_chainlinkIsFrozen(chainlinkResponse), 
+<             "PriceFeed: Chainlink must be working and current");
+---
+>         ChainlinkResponse
+>             memory chainlinkResponse = _getCurrentChainlinkResponse();
+>         ChainlinkResponse
+>             memory prevChainlinkResponse = _getPrevChainlinkResponse(
+>                 chainlinkResponse.roundId,
+>                 chainlinkResponse.decimals
+>             );
+> 
+>         require(
+>             !_chainlinkIsBroken(chainlinkResponse, prevChainlinkResponse) &&
+>                 !_chainlinkIsFrozen(chainlinkResponse),
+>             "PriceFeed: Chainlink must be working and current"
+>         );
+118,129c127,138
+<     * fetchPrice():
+<     * Returns the latest price obtained from the Oracle. Called by Liquity functions that require a current price.
+<     *
+<     * Also callable by anyone externally.
+<     *
+<     * Non-view function - it stores the last good price seen by Liquity.
+<     *
+<     * Uses a main oracle (Chainlink) and a fallback oracle (Tellor) in case Chainlink fails. If both fail, 
+<     * it uses the last good price seen by Liquity.
+<     *
+<     */
+<     function fetchPrice() external override returns (uint) {
+---
+>      * fetchPrice():
+>      * Returns the latest price obtained from the Oracle. Called by Liquity functions that require a current price.
+>      *
+>      * Also callable by anyone externally.
+>      *
+>      * Non-view function - it stores the last good price seen by Liquity.
+>      *
+>      * Uses a main oracle (Chainlink) and a fallback oracle (Tellor) in case Chainlink fails. If both fail,
+>      * it uses the last good price seen by Liquity.
+>      *
+>      */
+>     function fetchPrice() external override returns (uint256) {
+131,132c140,146
+<         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
+<         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
+---
+>         ChainlinkResponse
+>             memory chainlinkResponse = _getCurrentChainlinkResponse();
+>         ChainlinkResponse
+>             memory prevChainlinkResponse = _getPrevChainlinkResponse(
+>                 chainlinkResponse.roundId,
+>                 chainlinkResponse.decimals
+>             );
+142c156
+<                     return lastGoodPrice; 
+---
+>                     return lastGoodPrice;
+145,147c159,161
+<                 * If Tellor is only frozen but otherwise returning valid data, return the last good price.
+<                 * Tellor may need to be tipped to return current data.
+<                 */
+---
+>                  * If Tellor is only frozen but otherwise returning valid data, return the last good price.
+>                  * Tellor may need to be tipped to return current data.
+>                  */
+152c166
+<                 
+---
+> 
+159c173
+<             if (_chainlinkIsFrozen(chainlinkResponse)) {          
+---
+>             if (_chainlinkIsFrozen(chainlinkResponse)) {
+163c177
+<                     return lastGoodPrice;     
+---
+>                     return lastGoodPrice;
+168,169c182,185
+<                
+<                 if (_tellorIsFrozen(tellorResponse)) {return lastGoodPrice;}
+---
+> 
+>                 if (_tellorIsFrozen(tellorResponse)) {
+>                     return lastGoodPrice;
+>                 }
+176c192,197
+<             if (_chainlinkPriceChangeAboveMax(chainlinkResponse, prevChainlinkResponse)) {
+---
+>             if (
+>                 _chainlinkPriceChangeAboveMax(
+>                     chainlinkResponse,
+>                     prevChainlinkResponse
+>                 )
+>             ) {
+178c199
+<                  if (_tellorIsBroken(tellorResponse)) {
+---
+>                 if (_tellorIsBroken(tellorResponse)) {
+180c201
+<                     return lastGoodPrice;     
+---
+>                     return lastGoodPrice;
+183,184c204,205
+<                 // If Tellor is frozen, switch to Tellor and return last good price 
+<                 if (_tellorIsFrozen(tellorResponse)) { 
+---
+>                 // If Tellor is frozen, switch to Tellor and return last good price
+>                 if (_tellorIsFrozen(tellorResponse)) {
+189,193c210,216
+<                 /* 
+<                 * If Tellor is live and both oracles have a similar price, conclude that Chainlink's large price deviation between
+<                 * two consecutive rounds was likely a legitmate market price movement, and so continue using Chainlink 
+<                 */
+<                 if (_bothOraclesSimilarPrice(chainlinkResponse, tellorResponse)) {
+---
+>                 /*
+>                  * If Tellor is live and both oracles have a similar price, conclude that Chainlink's large price deviation between
+>                  * two consecutive rounds was likely a legitmate market price movement, and so continue using Chainlink
+>                  */
+>                 if (
+>                     _bothOraclesSimilarPrice(chainlinkResponse, tellorResponse)
+>                 ) {
+195c218
+<                 }               
+---
+>                 }
+205,206c228,229
+<                 _changeStatus(Status.usingChainlinkTellorUntrusted);    
+<             }   
+---
+>                 _changeStatus(Status.usingChainlinkTellorUntrusted);
+>             }
+212,214c235,236
+< 
+<         // --- CASE 2: The system fetched last price from Tellor --- 
+<         if (status == Status.usingTellorChainlinkUntrusted) { 
+---
+>         // --- CASE 2: The system fetched last price from Tellor ---
+>         if (status == Status.usingTellorChainlinkUntrusted) {
+216c238,244
+<             if (_bothOraclesLiveAndUnbrokenAndSimilarPrice(chainlinkResponse, prevChainlinkResponse, tellorResponse)) {
+---
+>             if (
+>                 _bothOraclesLiveAndUnbrokenAndSimilarPrice(
+>                     chainlinkResponse,
+>                     prevChainlinkResponse,
+>                     tellorResponse
+>                 )
+>             ) {
+223c251
+<                 return lastGoodPrice; 
+---
+>                 return lastGoodPrice;
+227,231c255,261
+<             * If Tellor is only frozen but otherwise returning valid data, just return the last good price.
+<             * Tellor may need to be tipped to return current data.
+<             */
+<             if (_tellorIsFrozen(tellorResponse)) {return lastGoodPrice;}
+<             
+---
+>              * If Tellor is only frozen but otherwise returning valid data, just return the last good price.
+>              * Tellor may need to be tipped to return current data.
+>              */
+>             if (_tellorIsFrozen(tellorResponse)) {
+>                 return lastGoodPrice;
+>             }
+> 
+239,242c269,278
+<             * If both oracles are now live, unbroken and similar price, we assume that they are reporting
+<             * accurately, and so we switch back to Chainlink.
+<             */
+<             if (_bothOraclesLiveAndUnbrokenAndSimilarPrice(chainlinkResponse, prevChainlinkResponse, tellorResponse)) {
+---
+>              * If both oracles are now live, unbroken and similar price, we assume that they are reporting
+>              * accurately, and so we switch back to Chainlink.
+>              */
+>             if (
+>                 _bothOraclesLiveAndUnbrokenAndSimilarPrice(
+>                     chainlinkResponse,
+>                     prevChainlinkResponse,
+>                     tellorResponse
+>                 )
+>             ) {
+245c281
+<             } 
+---
+>             }
+263c299,301
+<                 if (_tellorIsFrozen(tellorResponse)) {return lastGoodPrice;}
+---
+>                 if (_tellorIsFrozen(tellorResponse)) {
+>                     return lastGoodPrice;
+>                 }
+277c315,317
+<                 if (_tellorIsFrozen(tellorResponse)) {return lastGoodPrice;}
+---
+>                 if (_tellorIsFrozen(tellorResponse)) {
+>                     return lastGoodPrice;
+>                 }
+289,290c329,332
+<              // If Chainlink is live and Tellor is frozen, just use last good price (no status change) since we have no basis for comparison
+<             if (_tellorIsFrozen(tellorResponse)) {return lastGoodPrice;}
+---
+>             // If Chainlink is live and Tellor is frozen, just use last good price (no status change) since we have no basis for comparison
+>             if (_tellorIsFrozen(tellorResponse)) {
+>                 return lastGoodPrice;
+>             }
+305c347
+<          if (status == Status.usingChainlinkTellorUntrusted) {
+---
+>         if (status == Status.usingChainlinkTellorUntrusted) {
+318c360,366
+<             if (_bothOraclesLiveAndUnbrokenAndSimilarPrice(chainlinkResponse, prevChainlinkResponse, tellorResponse)) {
+---
+>             if (
+>                 _bothOraclesLiveAndUnbrokenAndSimilarPrice(
+>                     chainlinkResponse,
+>                     prevChainlinkResponse,
+>                     tellorResponse
+>                 )
+>             ) {
+323c371
+<             // If Chainlink is live but deviated >50% from it's previous price and Tellor is still untrusted, switch 
+---
+>             // If Chainlink is live but deviated >50% from it's previous price and Tellor is still untrusted, switch
+325c373,378
+<             if (_chainlinkPriceChangeAboveMax(chainlinkResponse, prevChainlinkResponse)) {
+---
+>             if (
+>                 _chainlinkPriceChangeAboveMax(
+>                     chainlinkResponse,
+>                     prevChainlinkResponse
+>                 )
+>             ) {
+330c383
+<             // Otherwise if Chainlink is live and deviated <50% from it's previous price and Tellor is still untrusted, 
+---
+>             // Otherwise if Chainlink is live and deviated <50% from it's previous price and Tellor is still untrusted,
+339,347c392,405
+<     * for two reasons:
+<     *
+<     * 1) It is necessary data for the price deviation check in case 1,
+<     * and
+<     * 2) Chainlink is the PriceFeed's preferred primary oracle - having two consecutive valid round responses adds
+<     * peace of mind when using or returning to Chainlink.
+<     */
+<     function _chainlinkIsBroken(ChainlinkResponse memory _currentResponse, ChainlinkResponse memory _prevResponse) internal view returns (bool) {
+<         return _badChainlinkResponse(_currentResponse) || _badChainlinkResponse(_prevResponse);
+---
+>      * for two reasons:
+>      *
+>      * 1) It is necessary data for the price deviation check in case 1,
+>      * and
+>      * 2) Chainlink is the PriceFeed's preferred primary oracle - having two consecutive valid round responses adds
+>      * peace of mind when using or returning to Chainlink.
+>      */
+>     function _chainlinkIsBroken(
+>         ChainlinkResponse memory _currentResponse,
+>         ChainlinkResponse memory _prevResponse
+>     ) internal view returns (bool) {
+>         return
+>             _badChainlinkResponse(_currentResponse) ||
+>             _badChainlinkResponse(_prevResponse);
+350,352c408,416
+<     function _badChainlinkResponse(ChainlinkResponse memory _response) internal view returns (bool) {
+<          // Check for response call reverted
+<         if (!_response.success) {return true;}
+---
+>     function _badChainlinkResponse(ChainlinkResponse memory _response)
+>         internal
+>         view
+>         returns (bool)
+>     {
+>         // Check for response call reverted
+>         if (!_response.success) {
+>             return true;
+>         }
+354c418,420
+<         if (_response.roundId == 0) {return true;}
+---
+>         if (_response.roundId == 0) {
+>             return true;
+>         }
+356c422,424
+<         if (_response.timestamp == 0 || _response.timestamp > block.timestamp) {return true;}
+---
+>         if (_response.timestamp == 0 || _response.timestamp > block.timestamp) {
+>             return true;
+>         }
+358c426,428
+<         if (_response.answer <= 0) {return true;}
+---
+>         if (_response.answer <= 0) {
+>             return true;
+>         }
+363c433,437
+<     function _chainlinkIsFrozen(ChainlinkResponse memory _response) internal view returns (bool) {
+---
+>     function _chainlinkIsFrozen(ChainlinkResponse memory _response)
+>         internal
+>         view
+>         returns (bool)
+>     {
+367,372c441,461
+<     function _chainlinkPriceChangeAboveMax(ChainlinkResponse memory _currentResponse, ChainlinkResponse memory _prevResponse) internal pure returns (bool) {
+<         uint currentScaledPrice = _scaleChainlinkPriceByDigits(uint256(_currentResponse.answer), _currentResponse.decimals);
+<         uint prevScaledPrice = _scaleChainlinkPriceByDigits(uint256(_prevResponse.answer), _prevResponse.decimals);
+< 
+<         uint minPrice = LiquityMath._min(currentScaledPrice, prevScaledPrice);
+<         uint maxPrice = LiquityMath._max(currentScaledPrice, prevScaledPrice);
+---
+>     function _chainlinkPriceChangeAboveMax(
+>         ChainlinkResponse memory _currentResponse,
+>         ChainlinkResponse memory _prevResponse
+>     ) internal pure returns (bool) {
+>         uint256 currentScaledPrice = _scaleChainlinkPriceByDigits(
+>             uint256(_currentResponse.answer),
+>             _currentResponse.decimals
+>         );
+>         uint256 prevScaledPrice = _scaleChainlinkPriceByDigits(
+>             uint256(_prevResponse.answer),
+>             _prevResponse.decimals
+>         );
+> 
+>         uint256 minPrice = LiquityMath._min(
+>             currentScaledPrice,
+>             prevScaledPrice
+>         );
+>         uint256 maxPrice = LiquityMath._max(
+>             currentScaledPrice,
+>             prevScaledPrice
+>         );
+375,379c464,471
+<         * Use the larger price as the denominator:
+<         * - If price decreased, the percentage deviation is in relation to the the previous price.
+<         * - If price increased, the percentage deviation is in relation to the current price.
+<         */
+<         uint percentDeviation = maxPrice.sub(minPrice).mul(DECIMAL_PRECISION).div(maxPrice);
+---
+>          * Use the larger price as the denominator:
+>          * - If price decreased, the percentage deviation is in relation to the the previous price.
+>          * - If price increased, the percentage deviation is in relation to the current price.
+>          */
+>         uint256 percentDeviation = maxPrice
+>             .sub(minPrice)
+>             .mul(DECIMAL_PRECISION)
+>             .div(maxPrice);
+385c477,481
+<     function _tellorIsBroken(TellorResponse memory _response) internal view returns (bool) {
+---
+>     function _tellorIsBroken(TellorResponse memory _response)
+>         internal
+>         view
+>         returns (bool)
+>     {
+387c483,485
+<         if (!_response.success) {return true;}
+---
+>         if (!_response.success) {
+>             return true;
+>         }
+389c487,489
+<         if (_response.timestamp == 0 || _response.timestamp > block.timestamp) {return true;}
+---
+>         if (_response.timestamp == 0 || _response.timestamp > block.timestamp) {
+>             return true;
+>         }
+391c491,493
+<         if (_response.value == 0) {return true;}
+---
+>         if (_response.value == 0) {
+>             return true;
+>         }
+396c498,502
+<      function _tellorIsFrozen(TellorResponse  memory _tellorResponse) internal view returns (bool) {
+---
+>     function _tellorIsFrozen(TellorResponse memory _tellorResponse)
+>         internal
+>         view
+>         returns (bool)
+>     {
+400,401c506
+<     function _bothOraclesLiveAndUnbrokenAndSimilarPrice
+<     (
+---
+>     function _bothOraclesLiveAndUnbrokenAndSimilarPrice(
+405,409c510
+<     )
+<         internal
+<         view
+<         returns (bool)
+<     {
+---
+>     ) internal view returns (bool) {
+411,412c512
+<         if
+<         (
+---
+>         if (
+417,418c517
+<         )
+<         {
+---
+>         ) {
+425,427c524,534
+<     function _bothOraclesSimilarPrice( ChainlinkResponse memory _chainlinkResponse, TellorResponse memory _tellorResponse) internal pure returns (bool) {
+<         uint scaledChainlinkPrice = _scaleChainlinkPriceByDigits(uint256(_chainlinkResponse.answer), _chainlinkResponse.decimals);
+<         uint scaledTellorPrice = _scaleTellorPriceByDigits(_tellorResponse.value);
+---
+>     function _bothOraclesSimilarPrice(
+>         ChainlinkResponse memory _chainlinkResponse,
+>         TellorResponse memory _tellorResponse
+>     ) internal pure returns (bool) {
+>         uint256 scaledChainlinkPrice = _scaleChainlinkPriceByDigits(
+>             uint256(_chainlinkResponse.answer),
+>             _chainlinkResponse.decimals
+>         );
+>         uint256 scaledTellorPrice = _scaleTellorPriceByDigits(
+>             _tellorResponse.value
+>         );
+430,432c537,548
+<         uint minPrice = LiquityMath._min(scaledTellorPrice, scaledChainlinkPrice);
+<         uint maxPrice = LiquityMath._max(scaledTellorPrice, scaledChainlinkPrice);
+<         uint percentPriceDifference = maxPrice.sub(minPrice).mul(DECIMAL_PRECISION).div(minPrice);
+---
+>         uint256 minPrice = LiquityMath._min(
+>             scaledTellorPrice,
+>             scaledChainlinkPrice
+>         );
+>         uint256 maxPrice = LiquityMath._max(
+>             scaledTellorPrice,
+>             scaledChainlinkPrice
+>         );
+>         uint256 percentPriceDifference = maxPrice
+>             .sub(minPrice)
+>             .mul(DECIMAL_PRECISION)
+>             .div(minPrice);
+435,437c551,553
+<         * Return true if the relative price difference is <= 3%: if so, we assume both oracles are probably reporting
+<         * the honest market price, as it is unlikely that both have been broken/hacked and are still in-sync.
+<         */
+---
+>          * Return true if the relative price difference is <= 3%: if so, we assume both oracles are probably reporting
+>          * the honest market price, as it is unlikely that both have been broken/hacked and are still in-sync.
+>          */
+441c557,561
+<     function _scaleChainlinkPriceByDigits(uint _price, uint _answerDigits) internal pure returns (uint) {
+---
+>     function _scaleChainlinkPriceByDigits(uint256 _price, uint256 _answerDigits)
+>         internal
+>         pure
+>         returns (uint256)
+>     {
+443,448c563,568
+<         * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Liquity.
+<         * At date of Liquity launch, Chainlink uses an 8-digit price, but we also handle the possibility of
+<         * future changes.
+<         *
+<         */
+<         uint price;
+---
+>          * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Liquity.
+>          * At date of Liquity launch, Chainlink uses an 8-digit price, but we also handle the possibility of
+>          * future changes.
+>          *
+>          */
+>         uint256 price;
+451,453c571,572
+<             price = _price.div(10 ** (_answerDigits - TARGET_DIGITS));
+<         }
+<         else if (_answerDigits < TARGET_DIGITS) {
+---
+>             price = _price.div(10**(_answerDigits - TARGET_DIGITS));
+>         } else if (_answerDigits < TARGET_DIGITS) {
+455c574
+<             price = _price.mul(10 ** (TARGET_DIGITS - _answerDigits));
+---
+>             price = _price.mul(10**(TARGET_DIGITS - _answerDigits));
+460c579,583
+<     function _scaleTellorPriceByDigits(uint _price) internal pure returns (uint) {
+---
+>     function _scaleTellorPriceByDigits(uint256 _price)
+>         internal
+>         pure
+>         returns (uint256)
+>     {
+469c592
+<     function _storePrice(uint _currentPrice) internal {
+---
+>     function _storePrice(uint256 _currentPrice) internal {
+474,475c597,603
+<      function _storeTellorPrice(TellorResponse memory _tellorResponse) internal returns (uint) {
+<         uint scaledTellorPrice = _scaleTellorPriceByDigits(_tellorResponse.value);
+---
+>     function _storeTellorPrice(TellorResponse memory _tellorResponse)
+>         internal
+>         returns (uint256)
+>     {
+>         uint256 scaledTellorPrice = _scaleTellorPriceByDigits(
+>             _tellorResponse.value
+>         );
+481,482c609,616
+<     function _storeChainlinkPrice(ChainlinkResponse memory _chainlinkResponse) internal returns (uint) {
+<         uint scaledChainlinkPrice = _scaleChainlinkPriceByDigits(uint256(_chainlinkResponse.answer), _chainlinkResponse.decimals);
+---
+>     function _storeChainlinkPrice(ChainlinkResponse memory _chainlinkResponse)
+>         internal
+>         returns (uint256)
+>     {
+>         uint256 scaledChainlinkPrice = _scaleChainlinkPriceByDigits(
+>             uint256(_chainlinkResponse.answer),
+>             _chainlinkResponse.decimals
+>         );
+490,492c624,629
+<     function _getCurrentTellorResponse() internal view returns (TellorResponse memory tellorResponse) {
+<         try tellorCaller.getTellorCurrentValue(ETHUSD_TELLOR_REQ_ID) returns
+<         (
+---
+>     function _getCurrentTellorResponse()
+>         internal
+>         view
+>         returns (TellorResponse memory tellorResponse)
+>     {
+>         try tellorCaller.getTellorCurrentValue(ETHUSD_TELLOR_REQ_ID) returns (
+496,497c633
+<         )
+<         {
+---
+>         ) {
+505,506c641,642
+<         }catch {
+<              // If call to Tellor reverts, return a zero response with success = false
+---
+>         } catch {
+>             // If call to Tellor reverts, return a zero response with success = false
+511c647,651
+<     function _getCurrentChainlinkResponse() internal view returns (ChainlinkResponse memory chainlinkResponse) {
+---
+>     function _getCurrentChainlinkResponse()
+>         internal
+>         view
+>         returns (ChainlinkResponse memory chainlinkResponse)
+>     {
+522,523c662
+<         try priceAggregator.latestRoundData() returns
+<         (
+---
+>         try priceAggregator.latestRoundData() returns (
+526c665
+<             uint256 /* startedAt */,
+---
+>             uint256, /* startedAt */
+529,530c668
+<         )
+<         {
+---
+>         ) {
+543c681,684
+<     function _getPrevChainlinkResponse(uint80 _currentRoundId, uint8 _currentDecimals) internal view returns (ChainlinkResponse memory prevChainlinkResponse) {
+---
+>     function _getPrevChainlinkResponse(
+>         uint80 _currentRoundId,
+>         uint8 _currentDecimals
+>     ) internal view returns (ChainlinkResponse memory prevChainlinkResponse) {
+545,547c686,688
+<         * NOTE: Chainlink only offers a current decimals() value - there is no way to obtain the decimal precision used in a 
+<         * previous round.  We assume the decimals used in the previous round are the same as the current round.
+<         */
+---
+>          * NOTE: Chainlink only offers a current decimals() value - there is no way to obtain the decimal precision used in a
+>          * previous round.  We assume the decimals used in the previous round are the same as the current round.
+>          */
+550,551c691
+<         try priceAggregator.getRoundData(_currentRoundId - 1) returns 
+<         (
+---
+>         try priceAggregator.getRoundData(_currentRoundId - 1) returns (
+554c694
+<             uint256 /* startedAt */,
+---
+>             uint256, /* startedAt */
+557,558c697
+<         )
+<         {
+---
+>         ) {
+571c710
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: SortedTroves (live) to (ew)
+************************************************************
+420c420
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: StabilityPool (live) to (ew)
+************************************************************
+397c397
+< 
+---
+>         
+998c998
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: TellorCaller (live) to (ew)
+************************************************************
+53c53
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: TroveManager (live) to (ew)
+************************************************************
+1556c1556
+< }
+\ No newline at end of file
+---
+> }
+
+
+************************************************************
+DIFF: Unipool (live) to (ew)
+************************************************************
+243c243
+< }
+\ No newline at end of file
+---
+> }
