@@ -22,6 +22,7 @@ const MoneyValues = {
 
     _MCR: web3.utils.toBN('1100000000000000000'),
     _ICR100: web3.utils.toBN('1000000000000000000'),
+    _ICR150: web3.utils.toBN('1500000000000000000'),
     _CCR: web3.utils.toBN('1500000000000000000'),
 }
 
