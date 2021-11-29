@@ -70,7 +70,7 @@ contract('LQTYStaking revenue share tests', async accounts => {
     lqtyStaking = LQTYContracts.lqtyStaking
   })
 
-  describe.only('stake and unstake', function () {
+  describe('stake and unstake', function () {
     it('stake(): reverts if amount is zero', async () => {
       // FF time one year so owner can transfer LQTY
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)

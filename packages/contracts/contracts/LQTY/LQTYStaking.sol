@@ -121,9 +121,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         emit StakingGainsWithdrawn(msg.sender, LUSDGain, ETHGain);
 
          // Send accumulated LUSD and ETH gains to the caller
-        // TODO: use the staking gains to repay the debt
         if (currentStake != 0) {
-//            lusdToken.transfer(msg.sender, LUSDGain);
             lusdToken.approve(borrowerOperationsAddress, LUSDGain);
             IBorrowerOperations(borrowerOperationsAddress).repayLUSDFor(msg.sender, LUSDGain, msg.sender, msg.sender);
             _sendETHGainToUser(ETHGain);
@@ -161,8 +159,6 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         emit StakingGainsWithdrawn(msg.sender, LUSDGain, ETHGain);
 
         // Send accumulated LUSD and ETH gains to the caller
-        // TODO: use the staking gains to repay the debt
-//        lusdToken.transfer(msg.sender, LUSDGain);
         lusdToken.approve(borrowerOperationsAddress, LUSDGain);
         IBorrowerOperations(borrowerOperationsAddress).repayLUSDFor(msg.sender, LUSDGain, msg.sender, msg.sender);
         _sendETHGainToUser(ETHGain);
